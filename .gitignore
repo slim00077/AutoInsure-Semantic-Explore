@@ -1,0 +1,13 @@
+node_modules/
+dist/
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+.env
+data/*
+!data/.gitkeep
+backend/dist/
+frontend/dist/
+*.log
+.DS_Store

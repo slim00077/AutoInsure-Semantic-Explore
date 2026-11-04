@@ -1,0 +1,1160 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE rdf:RDF [
+    <!ENTITY owl "http://www.w3.org/2002/07/owl#" >
+    <!ENTITY xsd "http://www.w3.org/2001/XMLSchema#" >
+    <!ENTITY rdfs "http://www.w3.org/2000/01/rdf-schema#" >
+    <!ENTITY rdf "http://www.w3.org/1999/02/22-rdf-syntax-ns#" >
+    <!ENTITY actors "http://www.semanticweb.org/assurance/actors#" >
+]>
+
+<!--
+    Ontologie : Assurance Automobile et Gestion des Sinistres
+    Projet Web Semantique - version complete
+-->
+
+<rdf:RDF xmlns="http://www.semanticweb.org/assurance/actors#"
+     xml:base="http://www.semanticweb.org/assurance/actors"
+     xmlns:owl="http://www.w3.org/2002/07/owl#"
+     xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+     xmlns:xml="http://www.w3.org/XML/1998/namespace"
+     xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+     xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+     xmlns:actors="http://www.semanticweb.org/assurance/actors#">
+
+    <owl:Ontology rdf:about="http://www.semanticweb.org/assurance/actors">
+        <owl:versionIRI rdf:resource="http://www.semanticweb.org/assurance/actors/2.0"/>
+        <rdfs:label xml:lang="fr">Ontologie de l'assurance automobile et de la gestion des sinistres</rdfs:label>
+        <rdfs:comment xml:lang="fr">Modelise le cycle Assure - Contrat - Vehicule - Garantie - Sinistre - Dommage - Expertise - Indemnisation.</rdfs:comment>
+    </owl:Ontology>
+
+
+    <!-- ///////////////////////////////////////////////////////////////
+         // Object Properties
+         /////////////////////////////////////////////////////////////// -->
+
+    <!-- Assure / Compagnie / Contrat -->
+
+    <owl:ObjectProperty rdf:about="#possede">
+        <rdfs:label xml:lang="fr">possède</rdfs:label>
+        <rdfs:domain rdf:resource="#Assure"/>
+        <rdfs:range rdf:resource="#ContratAssurance"/>
+    </owl:ObjectProperty>
+
+    <owl:ObjectProperty rdf:about="#propose">
+        <owl:inverseOf rdf:resource="#estProposePar"/>
+        <rdfs:domain rdf:resource="#CompagnieAssurance"/>
+        <rdfs:range rdf:resource="#ContratAssurance"/>
+    </owl:ObjectProperty>
+
+    <owl:ObjectProperty rdf:about="#estProposePar">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:domain rdf:resource="#ContratAssurance"/>
+        <rdfs:range rdf:resource="#CompagnieAssurance"/>
+    </owl:ObjectProperty>
+
+    <!-- Contrat -->
+
+    <owl:ObjectProperty rdf:about="#couvre">
+        <owl:inverseOf rdf:resource="#estCouvertPar"/>
+        <rdfs:domain rdf:resource="#ContratAssurance"/>
+        <rdfs:range rdf:resource="#Vehicule"/>
+    </owl:ObjectProperty>
+
+    <owl:ObjectProperty rdf:about="#estCouvertPar">
+        <rdfs:domain rdf:resource="#Vehicule"/>
+        <rdfs:range rdf:resource="#ContratAssurance"/>
+    </owl:ObjectProperty>
+
+    <owl:ObjectProperty rdf:about="#contient">
+        <rdfs:domain rdf:resource="#ContratAssurance"/>
+        <rdfs:range rdf:resource="#Garantie"/>
+    </owl:ObjectProperty>
+
+    <owl:ObjectProperty rdf:about="#aPourPrime">
+        <rdfs:domain rdf:resource="#ContratAssurance"/>
+        <rdfs:range rdf:resource="#Prime"/>
+    </owl:ObjectProperty>
+
+    <owl:ObjectProperty rdf:about="#aPourClause">
+        <rdfs:domain rdf:resource="#ContratAssurance"/>
+        <rdfs:range rdf:resource="#Clause"/>
+    </owl:ObjectProperty>
+
+    <owl:ObjectProperty rdf:about="#aPourDocument">
+        <rdfs:domain rdf:resource="#ContratAssurance"/>
+        <rdfs:range rdf:resource="#ContratDocument"/>
+    </owl:ObjectProperty>
+
+    <!-- Vehicule -->
+
+    <owl:ObjectProperty rdf:about="#estConduitPar">
+        <rdfs:domain rdf:resource="#Vehicule"/>
+        <rdfs:range rdf:resource="#Conducteur"/>
+    </owl:ObjectProperty>
+
+    <owl:ObjectProperty rdf:about="#repare">
+        <rdfs:domain rdf:resource="#Garage"/>
+        <rdfs:range rdf:resource="#Vehicule"/>
+    </owl:ObjectProperty>
+
+    <!-- Sinistre -->
+
+    <owl:ObjectProperty rdf:about="#declare">
+        <owl:inverseOf rdf:resource="#estDeclarePar"/>
+        <rdfs:domain rdf:resource="#Assure"/>
+        <rdfs:range rdf:resource="#Sinistre"/>
+    </owl:ObjectProperty>
+
+    <owl:ObjectProperty rdf:about="#estDeclarePar">
+        <rdfs:domain rdf:resource="#Sinistre"/>
+        <rdfs:range rdf:resource="#Assure"/>
+    </owl:ObjectProperty>
+
+    <owl:ObjectProperty rdf:about="#concerne">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:domain rdf:resource="#Sinistre"/>
+        <rdfs:range rdf:resource="#Vehicule"/>
+    </owl:ObjectProperty>
+
+    <owl:ObjectProperty rdf:about="#implique">
+        <rdfs:comment xml:lang="fr">Conducteur au volant au moment du sinistre.</rdfs:comment>
+        <rdfs:domain rdf:resource="#Sinistre"/>
+        <rdfs:range rdf:resource="#Conducteur"/>
+    </owl:ObjectProperty>
+
+    <owl:ObjectProperty rdf:about="#rattacheAContrat">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:comment xml:lang="fr">Contrat sous lequel le sinistre est declare.</rdfs:comment>
+        <rdfs:domain rdf:resource="#Sinistre"/>
+        <rdfs:range rdf:resource="#ContratAssurance"/>
+    </owl:ObjectProperty>
+
+    <owl:ObjectProperty rdf:about="#mobiliseGarantie">
+        <rdfs:comment xml:lang="fr">Garantie du contrat activee pour couvrir le sinistre.</rdfs:comment>
+        <rdfs:domain rdf:resource="#Sinistre"/>
+        <rdfs:range rdf:resource="#Garantie"/>
+    </owl:ObjectProperty>
+
+    <owl:ObjectProperty rdf:about="#provoque">
+        <rdfs:domain rdf:resource="#Sinistre"/>
+        <rdfs:range rdf:resource="#Dommage"/>
+    </owl:ObjectProperty>
+
+    <owl:ObjectProperty rdf:about="#estDocumentePar">
+        <rdfs:domain rdf:resource="#Sinistre"/>
+        <rdfs:range rdf:resource="#DeclarationSinistre"/>
+    </owl:ObjectProperty>
+
+    <owl:ObjectProperty rdf:about="#faitObjetDe">
+        <rdfs:domain rdf:resource="#Sinistre"/>
+        <rdfs:range rdf:resource="#Expertise"/>
+    </owl:ObjectProperty>
+
+    <!-- Expertise -->
+
+    <owl:ObjectProperty rdf:about="#realisePar">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:domain rdf:resource="#Expertise"/>
+        <rdfs:range rdf:resource="#Expert"/>
+    </owl:ObjectProperty>
+
+    <owl:ObjectProperty rdf:about="#evalue">
+        <rdfs:domain rdf:resource="#Expertise"/>
+        <rdfs:range rdf:resource="#Dommage"/>
+    </owl:ObjectProperty>
+
+    <owl:ObjectProperty rdf:about="#produit">
+        <rdfs:domain rdf:resource="#Expertise"/>
+        <rdfs:range rdf:resource="#RapportExpertise"/>
+    </owl:ObjectProperty>
+
+    <!-- Dommage / Indemnisation -->
+
+    <owl:ObjectProperty rdf:about="#subiPar">
+        <rdfs:domain rdf:resource="#Dommage"/>
+        <rdfs:range rdf:resource="#Personne"/>
+    </owl:ObjectProperty>
+
+    <owl:ObjectProperty rdf:about="#donneLieuA">
+        <rdfs:domain rdf:resource="#Dommage"/>
+        <rdfs:range rdf:resource="#Indemnisation"/>
+    </owl:ObjectProperty>
+
+    <owl:ObjectProperty rdf:about="#utiliseBareme">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:domain rdf:resource="#Indemnisation"/>
+        <rdfs:range rdf:resource="#BaremeIndemnisation"/>
+    </owl:ObjectProperty>
+
+    <owl:ObjectProperty rdf:about="#appliqueFranchise">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:domain rdf:resource="#Indemnisation"/>
+        <rdfs:range rdf:resource="#Franchise"/>
+    </owl:ObjectProperty>
+
+    <owl:ObjectProperty rdf:about="#verseeA">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:comment xml:lang="fr">Beneficiaire de l'indemnisation.</rdfs:comment>
+        <rdfs:domain rdf:resource="#Indemnisation"/>
+        <rdfs:range rdf:resource="#Personne"/>
+    </owl:ObjectProperty>
+
+    <owl:ObjectProperty rdf:about="#verseePar">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:domain rdf:resource="#Indemnisation"/>
+        <rdfs:range rdf:resource="#CompagnieAssurance"/>
+    </owl:ObjectProperty>
+
+
+    <!-- ///////////////////////////////////////////////////////////////
+         // Data Properties
+         /////////////////////////////////////////////////////////////// -->
+
+    <!-- Personne -->
+    <owl:DatatypeProperty rdf:about="#nom">
+        <rdfs:domain rdf:resource="#Personne"/>
+        <rdfs:range rdf:resource="&xsd;string"/>
+    </owl:DatatypeProperty>
+    <owl:DatatypeProperty rdf:about="#prenom">
+        <rdfs:domain rdf:resource="#Personne"/>
+        <rdfs:range rdf:resource="&xsd;string"/>
+    </owl:DatatypeProperty>
+    <owl:DatatypeProperty rdf:about="#dateNaissance">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:domain rdf:resource="#Personne"/>
+        <rdfs:range rdf:resource="&xsd;dateTime"/>
+    </owl:DatatypeProperty>
+    <owl:DatatypeProperty rdf:about="#numeroPermis">
+        <rdfs:domain rdf:resource="#Conducteur"/>
+        <rdfs:range rdf:resource="&xsd;string"/>
+    </owl:DatatypeProperty>
+    <owl:DatatypeProperty rdf:about="#specialite">
+        <rdfs:domain rdf:resource="#Expert"/>
+        <rdfs:range rdf:resource="&xsd;string"/>
+    </owl:DatatypeProperty>
+
+    <!-- Organisation -->
+    <owl:DatatypeProperty rdf:about="#raisonSociale">
+        <rdfs:domain rdf:resource="#Organisation"/>
+        <rdfs:range rdf:resource="&xsd;string"/>
+    </owl:DatatypeProperty>
+    <owl:DatatypeProperty rdf:about="#ville">
+        <rdfs:domain rdf:resource="#Organisation"/>
+        <rdfs:range rdf:resource="&xsd;string"/>
+    </owl:DatatypeProperty>
+
+    <!-- Vehicule -->
+    <owl:DatatypeProperty rdf:about="#immatriculation">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:domain rdf:resource="#Vehicule"/>
+        <rdfs:range rdf:resource="&xsd;string"/>
+    </owl:DatatypeProperty>
+    <owl:DatatypeProperty rdf:about="#marque">
+        <rdfs:domain rdf:resource="#Vehicule"/>
+        <rdfs:range rdf:resource="&xsd;string"/>
+    </owl:DatatypeProperty>
+    <owl:DatatypeProperty rdf:about="#modele">
+        <rdfs:domain rdf:resource="#Vehicule"/>
+        <rdfs:range rdf:resource="&xsd;string"/>
+    </owl:DatatypeProperty>
+    <owl:DatatypeProperty rdf:about="#anneeFabrication">
+        <rdfs:domain rdf:resource="#Vehicule"/>
+        <rdfs:range rdf:resource="&xsd;integer"/>
+    </owl:DatatypeProperty>
+    <owl:DatatypeProperty rdf:about="#valeurVehicule">
+        <rdfs:domain rdf:resource="#Vehicule"/>
+        <rdfs:range rdf:resource="&xsd;decimal"/>
+    </owl:DatatypeProperty>
+
+    <!-- Contrat -->
+    <owl:DatatypeProperty rdf:about="#numeroContrat">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:domain rdf:resource="#ContratAssurance"/>
+        <rdfs:range rdf:resource="&xsd;string"/>
+    </owl:DatatypeProperty>
+    <owl:DatatypeProperty rdf:about="#dateDebut">
+        <rdfs:domain rdf:resource="#ContratAssurance"/>
+        <rdfs:range rdf:resource="&xsd;dateTime"/>
+    </owl:DatatypeProperty>
+    <owl:DatatypeProperty rdf:about="#dateFin">
+        <rdfs:domain rdf:resource="#ContratAssurance"/>
+        <rdfs:range rdf:resource="&xsd;dateTime"/>
+    </owl:DatatypeProperty>
+    <owl:DatatypeProperty rdf:about="#statutContrat">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:comment xml:lang="fr">Valeurs : Actif, Expire, Resilie.</rdfs:comment>
+        <rdfs:domain rdf:resource="#ContratAssurance"/>
+        <rdfs:range rdf:resource="&xsd;string"/>
+    </owl:DatatypeProperty>
+
+    <!-- Prime / Garantie / Clause / Franchise / Bareme -->
+    <owl:DatatypeProperty rdf:about="#montantPrime">
+        <rdfs:domain rdf:resource="#Prime"/>
+        <rdfs:range rdf:resource="&xsd;decimal"/>
+    </owl:DatatypeProperty>
+    <owl:DatatypeProperty rdf:about="#frequencePaiement">
+        <rdfs:domain rdf:resource="#Prime"/>
+        <rdfs:range rdf:resource="&xsd;string"/>
+    </owl:DatatypeProperty>
+    <owl:DatatypeProperty rdf:about="#plafondGarantie">
+        <rdfs:domain rdf:resource="#Garantie"/>
+        <rdfs:range rdf:resource="&xsd;decimal"/>
+    </owl:DatatypeProperty>
+    <owl:DatatypeProperty rdf:about="#texteClause">
+        <rdfs:domain rdf:resource="#Clause"/>
+        <rdfs:range rdf:resource="&xsd;string"/>
+    </owl:DatatypeProperty>
+    <owl:DatatypeProperty rdf:about="#montantFranchise">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:domain rdf:resource="#Franchise"/>
+        <rdfs:range rdf:resource="&xsd;decimal"/>
+    </owl:DatatypeProperty>
+    <owl:DatatypeProperty rdf:about="#plafondIndemnisation">
+        <rdfs:domain rdf:resource="#BaremeIndemnisation"/>
+        <rdfs:range rdf:resource="&xsd;decimal"/>
+    </owl:DatatypeProperty>
+    <owl:DatatypeProperty rdf:about="#tauxIndemnisation">
+        <rdfs:domain rdf:resource="#BaremeIndemnisation"/>
+        <rdfs:range rdf:resource="&xsd;decimal"/>
+    </owl:DatatypeProperty>
+    <owl:DatatypeProperty rdf:about="#regleCalcul">
+        <rdfs:domain rdf:resource="#BaremeIndemnisation"/>
+        <rdfs:range rdf:resource="&xsd;string"/>
+    </owl:DatatypeProperty>
+
+    <!-- Sinistre -->
+    <owl:DatatypeProperty rdf:about="#numeroSinistre">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:domain rdf:resource="#Sinistre"/>
+        <rdfs:range rdf:resource="&xsd;string"/>
+    </owl:DatatypeProperty>
+    <owl:DatatypeProperty rdf:about="#dateSinistre">
+        <rdfs:domain rdf:resource="#Sinistre"/>
+        <rdfs:range rdf:resource="&xsd;dateTime"/>
+    </owl:DatatypeProperty>
+    <owl:DatatypeProperty rdf:about="#lieuSinistre">
+        <rdfs:domain rdf:resource="#Sinistre"/>
+        <rdfs:range rdf:resource="&xsd;string"/>
+    </owl:DatatypeProperty>
+    <owl:DatatypeProperty rdf:about="#descriptionSinistre">
+        <rdfs:domain rdf:resource="#Sinistre"/>
+        <rdfs:range rdf:resource="&xsd;string"/>
+    </owl:DatatypeProperty>
+
+    <!-- Dommage -->
+    <owl:DatatypeProperty rdf:about="#description">
+        <rdfs:domain rdf:resource="#Dommage"/>
+        <rdfs:range rdf:resource="&xsd;string"/>
+    </owl:DatatypeProperty>
+    <owl:DatatypeProperty rdf:about="#gravite">
+        <rdfs:comment xml:lang="fr">Valeurs : Legere, Moyenne, Grave.</rdfs:comment>
+        <rdfs:domain rdf:resource="#Dommage"/>
+        <rdfs:range rdf:resource="&xsd;string"/>
+    </owl:DatatypeProperty>
+    <owl:DatatypeProperty rdf:about="#coutEstime">
+        <rdfs:domain rdf:resource="#Dommage"/>
+        <rdfs:range rdf:resource="&xsd;decimal"/>
+    </owl:DatatypeProperty>
+
+    <!-- Expertise -->
+    <owl:DatatypeProperty rdf:about="#dateExpertise">
+        <rdfs:domain rdf:resource="#Expertise"/>
+        <rdfs:range rdf:resource="&xsd;dateTime"/>
+    </owl:DatatypeProperty>
+    <owl:DatatypeProperty rdf:about="#conclusion">
+        <rdfs:domain rdf:resource="#Expertise"/>
+        <rdfs:range rdf:resource="&xsd;string"/>
+    </owl:DatatypeProperty>
+
+    <!-- Indemnisation -->
+    <owl:DatatypeProperty rdf:about="#montantIndemnisation">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:domain rdf:resource="#Indemnisation"/>
+        <rdfs:range rdf:resource="&xsd;decimal"/>
+    </owl:DatatypeProperty>
+    <owl:DatatypeProperty rdf:about="#dateIndemnisation">
+        <rdfs:domain rdf:resource="#Indemnisation"/>
+        <rdfs:range rdf:resource="&xsd;dateTime"/>
+    </owl:DatatypeProperty>
+    <owl:DatatypeProperty rdf:about="#statutIndemnisation">
+        <rdf:type rdf:resource="&owl;FunctionalProperty"/>
+        <rdfs:comment xml:lang="fr">Valeurs : EnCours, Acceptee, Refusee.</rdfs:comment>
+        <rdfs:domain rdf:resource="#Indemnisation"/>
+        <rdfs:range rdf:resource="&xsd;string"/>
+    </owl:DatatypeProperty>
+    <owl:DatatypeProperty rdf:about="#motifDecision">
+        <rdfs:domain rdf:resource="#Indemnisation"/>
+        <rdfs:range rdf:resource="&xsd;string"/>
+    </owl:DatatypeProperty>
+
+    <!-- Document -->
+    <owl:DatatypeProperty rdf:about="#dateDocument">
+        <rdfs:domain rdf:resource="#Document"/>
+        <rdfs:range rdf:resource="&xsd;dateTime"/>
+    </owl:DatatypeProperty>
+
+
+    <!-- ///////////////////////////////////////////////////////////////
+         // Classes
+         /////////////////////////////////////////////////////////////// -->
+
+    <!-- Personne : les roles ne sont PAS disjoints (un assure peut aussi etre conducteur) -->
+    <owl:Class rdf:about="#Personne"/>
+    <owl:Class rdf:about="#Assure"><rdfs:subClassOf rdf:resource="#Personne"/></owl:Class>
+    <owl:Class rdf:about="#Conducteur"><rdfs:subClassOf rdf:resource="#Personne"/></owl:Class>
+    <owl:Class rdf:about="#Victime"><rdfs:subClassOf rdf:resource="#Personne"/></owl:Class>
+    <owl:Class rdf:about="#Expert"><rdfs:subClassOf rdf:resource="#Personne"/></owl:Class>
+
+    <!-- Organisation -->
+    <owl:Class rdf:about="#Organisation"/>
+    <owl:Class rdf:about="#CompagnieAssurance"><rdfs:subClassOf rdf:resource="#Organisation"/></owl:Class>
+    <owl:Class rdf:about="#Garage"><rdfs:subClassOf rdf:resource="#Organisation"/></owl:Class>
+
+    <!-- Vehicule -->
+    <owl:Class rdf:about="#Vehicule"/>
+    <owl:Class rdf:about="#Voiture"><rdfs:subClassOf rdf:resource="#Vehicule"/></owl:Class>
+    <owl:Class rdf:about="#Moto"><rdfs:subClassOf rdf:resource="#Vehicule"/></owl:Class>
+    <owl:Class rdf:about="#Camion"><rdfs:subClassOf rdf:resource="#Vehicule"/></owl:Class>
+
+    <!-- ContratAssurance -->
+    <owl:Class rdf:about="#ContratAssurance">
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="#aPourPrime"/>
+                <owl:minQualifiedCardinality rdf:datatype="&xsd;nonNegativeInteger">1</owl:minQualifiedCardinality>
+                <owl:onClass rdf:resource="#Prime"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="#contient"/>
+                <owl:minQualifiedCardinality rdf:datatype="&xsd;nonNegativeInteger">1</owl:minQualifiedCardinality>
+                <owl:onClass rdf:resource="#Garantie"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="#couvre"/>
+                <owl:minQualifiedCardinality rdf:datatype="&xsd;nonNegativeInteger">1</owl:minQualifiedCardinality>
+                <owl:onClass rdf:resource="#Vehicule"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <!-- La responsabilite civile est obligatoire pour tout contrat -->
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="#contient"/>
+                <owl:someValuesFrom rdf:resource="#GarantieResponsabiliteCivile"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </owl:Class>
+
+    <owl:Class rdf:about="#AssuranceResponsabiliteCivile">
+        <rdfs:subClassOf rdf:resource="#ContratAssurance"/>
+        <rdfs:comment xml:lang="fr">Formule de base : responsabilite civile uniquement.</rdfs:comment>
+    </owl:Class>
+
+    <owl:Class rdf:about="#AssuranceIntermediaire">
+        <rdfs:subClassOf rdf:resource="#ContratAssurance"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="#contient"/>
+                <owl:someValuesFrom rdf:resource="#GarantieIncendie"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:comment xml:lang="fr">RC + garanties complementaires (incendie, bris de glace...).</rdfs:comment>
+    </owl:Class>
+
+    <owl:Class rdf:about="#AssuranceTousRisques">
+        <rdfs:subClassOf rdf:resource="#ContratAssurance"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="#contient"/>
+                <owl:someValuesFrom rdf:resource="#GarantieDommagesTousAccidents"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </owl:Class>
+
+    <!-- Classe definie : inferee par HermiT -->
+    <owl:Class rdf:about="#ContratActif">
+        <owl:equivalentClass>
+            <owl:Class>
+                <owl:intersectionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="#ContratAssurance"/>
+                    <owl:Restriction>
+                        <owl:onProperty rdf:resource="#statutContrat"/>
+                        <owl:hasValue>Actif</owl:hasValue>
+                    </owl:Restriction>
+                </owl:intersectionOf>
+            </owl:Class>
+        </owl:equivalentClass>
+        <rdfs:comment xml:lang="fr">Classe definie : tout contrat dont le statut vaut "Actif".</rdfs:comment>
+    </owl:Class>
+
+    <!-- Garantie -->
+    <owl:Class rdf:about="#Garantie"/>
+    <owl:Class rdf:about="#GarantieResponsabiliteCivile"><rdfs:subClassOf rdf:resource="#Garantie"/></owl:Class>
+    <owl:Class rdf:about="#GarantieVol"><rdfs:subClassOf rdf:resource="#Garantie"/></owl:Class>
+    <owl:Class rdf:about="#GarantieIncendie"><rdfs:subClassOf rdf:resource="#Garantie"/></owl:Class>
+    <owl:Class rdf:about="#GarantieBrisDeGlace"><rdfs:subClassOf rdf:resource="#Garantie"/></owl:Class>
+    <owl:Class rdf:about="#GarantieCatastrophesNaturelles"><rdfs:subClassOf rdf:resource="#Garantie"/></owl:Class>
+    <owl:Class rdf:about="#GarantieDommagesTousAccidents"><rdfs:subClassOf rdf:resource="#Garantie"/></owl:Class>
+
+    <!-- Sinistre -->
+    <owl:Class rdf:about="#Sinistre">
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="#provoque"/>
+                <owl:minQualifiedCardinality rdf:datatype="&xsd;nonNegativeInteger">1</owl:minQualifiedCardinality>
+                <owl:onClass rdf:resource="#Dommage"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="#concerne"/>
+                <owl:qualifiedCardinality rdf:datatype="&xsd;nonNegativeInteger">1</owl:qualifiedCardinality>
+                <owl:onClass rdf:resource="#Vehicule"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </owl:Class>
+    <owl:Class rdf:about="#AccidentCirculation"><rdfs:subClassOf rdf:resource="#Sinistre"/></owl:Class>
+    <owl:Class rdf:about="#VolVehicule"><rdfs:subClassOf rdf:resource="#Sinistre"/></owl:Class>
+    <owl:Class rdf:about="#IncendieVehicule"><rdfs:subClassOf rdf:resource="#Sinistre"/></owl:Class>
+    <owl:Class rdf:about="#BrisDeGlace"><rdfs:subClassOf rdf:resource="#Sinistre"/></owl:Class>
+    <owl:Class rdf:about="#CatastropheNaturelle"><rdfs:subClassOf rdf:resource="#Sinistre"/></owl:Class>
+
+    <!-- Classe definie : sinistre ayant fait l'objet d'une expertise -->
+    <owl:Class rdf:about="#SinistreExpertise">
+        <owl:equivalentClass>
+            <owl:Class>
+                <owl:intersectionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="#Sinistre"/>
+                    <owl:Restriction>
+                        <owl:onProperty rdf:resource="#faitObjetDe"/>
+                        <owl:someValuesFrom rdf:resource="#Expertise"/>
+                    </owl:Restriction>
+                </owl:intersectionOf>
+            </owl:Class>
+        </owl:equivalentClass>
+    </owl:Class>
+
+    <!-- Dommage -->
+    <owl:Class rdf:about="#Dommage"/>
+    <owl:Class rdf:about="#DommageMateriel"><rdfs:subClassOf rdf:resource="#Dommage"/></owl:Class>
+    <owl:Class rdf:about="#DommageCorporel"><rdfs:subClassOf rdf:resource="#Dommage"/></owl:Class>
+    <owl:Class rdf:about="#DommageMoral"><rdfs:subClassOf rdf:resource="#Dommage"/></owl:Class>
+
+    <!-- Expertise -->
+    <owl:Class rdf:about="#Expertise">
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="#realisePar"/>
+                <owl:qualifiedCardinality rdf:datatype="&xsd;nonNegativeInteger">1</owl:qualifiedCardinality>
+                <owl:onClass rdf:resource="#Expert"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </owl:Class>
+
+    <!-- Indemnisation -->
+    <owl:Class rdf:about="#Indemnisation">
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="#appliqueFranchise"/>
+                <owl:maxQualifiedCardinality rdf:datatype="&xsd;nonNegativeInteger">1</owl:maxQualifiedCardinality>
+                <owl:onClass rdf:resource="#Franchise"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="#utiliseBareme"/>
+                <owl:maxQualifiedCardinality rdf:datatype="&xsd;nonNegativeInteger">1</owl:maxQualifiedCardinality>
+                <owl:onClass rdf:resource="#BaremeIndemnisation"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="#verseeA"/>
+                <owl:qualifiedCardinality rdf:datatype="&xsd;nonNegativeInteger">1</owl:qualifiedCardinality>
+                <owl:onClass rdf:resource="#Personne"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </owl:Class>
+
+    <owl:Class rdf:about="#Franchise"/>
+    <owl:Class rdf:about="#Prime"/>
+    <owl:Class rdf:about="#Clause"/>
+    <owl:Class rdf:about="#BaremeIndemnisation"/>
+
+    <!-- Document -->
+    <owl:Class rdf:about="#Document"/>
+    <owl:Class rdf:about="#ContratDocument"><rdfs:subClassOf rdf:resource="#Document"/></owl:Class>
+    <owl:Class rdf:about="#DeclarationSinistre"><rdfs:subClassOf rdf:resource="#Document"/></owl:Class>
+    <owl:Class rdf:about="#RapportExpertise"><rdfs:subClassOf rdf:resource="#Document"/></owl:Class>
+
+
+    <!-- ///////////////////////////////////////////////////////////////
+         // Individus - Acteurs partages
+         /////////////////////////////////////////////////////////////// -->
+
+    <owl:NamedIndividual rdf:about="#AssurancePlus">
+        <rdf:type rdf:resource="#CompagnieAssurance"/>
+        <actors:raisonSociale>Assurance Plus</actors:raisonSociale>
+        <actors:ville>Tunis</actors:ville>
+        <actors:propose rdf:resource="#Contrat_001"/>
+        <actors:propose rdf:resource="#Contrat_002"/>
+        <actors:propose rdf:resource="#Contrat_003"/>
+        <actors:propose rdf:resource="#Contrat_004"/>
+    </owl:NamedIndividual>
+
+    <owl:NamedIndividual rdf:about="#Expert_001">
+        <rdf:type rdf:resource="#Expert"/>
+        <actors:nom>Trabelsi</actors:nom>
+        <actors:prenom>Karim</actors:prenom>
+        <actors:specialite>Expertise automobile - carrosserie</actors:specialite>
+    </owl:NamedIndividual>
+
+    <owl:NamedIndividual rdf:about="#Expert_002">
+        <rdf:type rdf:resource="#Expert"/>
+        <actors:nom>Gharbi</actors:nom>
+        <actors:prenom>Leila</actors:prenom>
+        <actors:specialite>Expertise incendie et electrique</actors:specialite>
+    </owl:NamedIndividual>
+
+    <owl:NamedIndividual rdf:about="#Clause_001">
+        <rdf:type rdf:resource="#Clause"/>
+        <actors:texteClause>Exclusion de garantie en cas de conduite en etat d'ebriete.</actors:texteClause>
+    </owl:NamedIndividual>
+
+    <owl:NamedIndividual rdf:about="#Clause_002">
+        <rdf:type rdf:resource="#Clause"/>
+        <actors:texteClause>Une franchise est deduite de chaque indemnisation pour dommage materiel.</actors:texteClause>
+    </owl:NamedIndividual>
+
+    <owl:NamedIndividual rdf:about="#Clause_003">
+        <rdf:type rdf:resource="#Clause"/>
+        <actors:texteClause>Garantie limitee a la responsabilite civile envers les tiers.</actors:texteClause>
+    </owl:NamedIndividual>
+
+    <owl:NamedIndividual rdf:about="#Bareme_001">
+        <rdf:type rdf:resource="#BaremeIndemnisation"/>
+        <actors:plafondIndemnisation rdf:datatype="&xsd;decimal">10000</actors:plafondIndemnisation>
+        <actors:tauxIndemnisation rdf:datatype="&xsd;decimal">0.9</actors:tauxIndemnisation>
+        <actors:regleCalcul>(coutEstime - franchise) x taux, dans la limite du plafond</actors:regleCalcul>
+    </owl:NamedIndividual>
+
+    <owl:NamedIndividual rdf:about="#Bareme_002">
+        <rdf:type rdf:resource="#BaremeIndemnisation"/>
+        <actors:plafondIndemnisation rdf:datatype="&xsd;decimal">15000</actors:plafondIndemnisation>
+        <actors:tauxIndemnisation rdf:datatype="&xsd;decimal">0.8</actors:tauxIndemnisation>
+        <actors:regleCalcul>(coutEstime - franchise) x taux, dans la limite du plafond</actors:regleCalcul>
+    </owl:NamedIndividual>
+
+    <owl:NamedIndividual rdf:about="#Bareme_003">
+        <rdf:type rdf:resource="#BaremeIndemnisation"/>
+        <actors:plafondIndemnisation rdf:datatype="&xsd;decimal">50000</actors:plafondIndemnisation>
+        <actors:tauxIndemnisation rdf:datatype="&xsd;decimal">1.0</actors:tauxIndemnisation>
+        <actors:regleCalcul>Dommage corporel d'un tiers (RC) : coutEstime x taux, sans franchise</actors:regleCalcul>
+    </owl:NamedIndividual>
+
+    <owl:NamedIndividual rdf:about="#Franchise_001">
+        <rdf:type rdf:resource="#Franchise"/>
+        <actors:montantFranchise rdf:datatype="&xsd;decimal">500</actors:montantFranchise>
+    </owl:NamedIndividual>
+
+    <owl:NamedIndividual rdf:about="#Franchise_002">
+        <rdf:type rdf:resource="#Franchise"/>
+        <actors:montantFranchise rdf:datatype="&xsd;decimal">300</actors:montantFranchise>
+    </owl:NamedIndividual>
+
+
+    <!-- ///////////////////////////////////////////////////////////////
+         // Scenario 1 : accident de la circulation (Tous risques, accepte)
+         /////////////////////////////////////////////////////////////// -->
+
+    <owl:NamedIndividual rdf:about="#AhmedBenAli">
+        <rdf:type rdf:resource="#Assure"/>
+        <rdf:type rdf:resource="#Conducteur"/>
+        <actors:nom>Ben Ali</actors:nom>
+        <actors:prenom>Ahmed</actors:prenom>
+        <actors:dateNaissance rdf:datatype="&xsd;dateTime">1990-05-15T00:00:00</actors:dateNaissance>
+        <actors:numeroPermis>B1234567</actors:numeroPermis>
+        <actors:possede rdf:resource="#Contrat_001"/>
+        <actors:declare rdf:resource="#Sinistre_001"/>
+    </owl:NamedIndividual>
+
+    <owl:NamedIndividual rdf:about="#Voiture_001">
+        <rdf:type rdf:resource="#Voiture"/>
+        <actors:marque>Peugeot</actors:marque>
+        <actors:modele>208</actors:modele>
+        <actors:anneeFabrication rdf:datatype="&xsd;integer">2023</actors:anneeFabrication>
+        <actors:immatriculation>123TN4567</actors:immatriculation>
+        <actors:valeurVehicule rdf:datatype="&xsd;decimal">45000</actors:valeurVehicule>
+        <actors:estConduitPar rdf:resource="#AhmedBenAli"/>
+    </owl:NamedIndividual>
+
+    <owl:NamedIndividual rdf:about="#Prime_001">
+        <rdf:type rdf:resource="#Prime"/>
+        <actors:montantPrime rdf:datatype="&xsd;decimal">900</actors:montantPrime>
+        <actors:frequencePaiement>Annuelle</actors:frequencePaiement>
+    </owl:NamedIndividual>
+
+    <owl:NamedIndividual rdf:about="#GarantieRC_001">
+        <rdf:type rdf:resource="#GarantieResponsabiliteCivile"/>
+        <actors:plafondGarantie rdf:datatype="&xsd;decimal">1000000</actors:plafondGarantie>
+    </owl:NamedIndividual>
+
+    <owl:NamedIndividual rdf:about="#GarantieTousAccidents_001">
+        <rdf:type rdf:resource="#GarantieDommagesTousAccidents"/>
+        <actors:plafondGarantie rdf:datatype="&xsd;decimal">45000</actors:plafondGarantie>
+    </owl:NamedIndividual>
+
+    <owl:NamedIndividual rdf:about="#GarantieVol_001">
+        <rdf:type rdf:resource="#GarantieVol"/>
+        <actors:plafondGarantie rdf:datatype="&xsd;decimal">30000</actors:plafondGarantie>
+    </owl:NamedIndividual>
+
+    <owl:NamedIndividual rdf:about="#GarantieBrisDeGlace_001">
+        <rdf:type rdf:resource="#GarantieBrisDeGlace"/>
+        <actors:plafondGarantie rdf:datatype="&xsd;decimal">2000</actors:plafondGarantie>
+    </owl:NamedIndividual>
+
+    <owl:NamedIndividual rdf:about="#ContratDoc_001">
+        <rdf:type rdf:resource="#ContratDocument"/>
+        <actors:dateDocument rdf:datatype="&xsd;dateTime">2025-12-20T00:00:00</actors:dateDocument>
+    </owl:NamedIndividual>
+
+    <owl:NamedIndividual rdf:about="#Contrat_001">
+        <rdf:type rdf:resource="#AssuranceTousRisques"/>
+        <actors:numeroContrat>C-001</actors:numeroContrat>
+        <actors:dateDebut rdf:datatype="&xsd;dateTime">2026-01-01T00:00:00</actors:dateDebut>
+        <actors:dateFin rdf:datatype="&xsd;dateTime">2027-01-01T00:00:00</actors:dateFin>
+        <actors:statutContrat>Actif</actors:statutContrat>
+        <actors:aPourPrime rdf:resource="#Prime_001"/>
+        <actors:aPourClause rdf:resource="#Clause_001"/>
+        <actors:aPourClause rdf:resource="#Clause_002"/>
+        <actors:aPourDocument rdf:resource="#ContratDoc_001"/>
+        <actors:contient rdf:resource="#GarantieRC_001"/>
+        <actors:contient rdf:resource="#GarantieTousAccidents_001"/>
+        <actors:contient rdf:resource="#GarantieVol_001"/>
+        <actors:contient rdf:resource="#GarantieBrisDeGlace_001"/>
+        <actors:couvre rdf:resource="#Voiture_001"/>
+    </owl:NamedIndividual>
+
+    <owl:NamedIndividual rdf:about="#SamiJaziri">
+        <rdf:type rdf:resource="#Victime"/>
+        <actors:nom>Jaziri</actors:nom>
+        <actors:prenom>Sami</actors:prenom>
+    </owl:NamedIndividual>
+
+    <owl:NamedIndividual rdf:about="#Declaration_001">
+        <rdf:type rdf:resource="#DeclarationSinistre"/>
+        <actors:dateDocument rdf:datatype="&xsd;dateTime">2026-10-02T00:00:00</actors:dateDocument>
+    </owl:NamedIndividual>
+
+    <owl:NamedIndividual rdf:about="#Sinistre_001">
+        <rdf:type rdf:resource="#AccidentCirculation"/>
+        <actors:numeroSinistre>S-001</actors:numeroSinistre>
+        <actors:dateSinistre rdf:datatype="&xsd;dateTime">2026-10-01T00:00:00</actors:dateSinistre>
+        <actors:lieuSinistre>Tunis</actors:lieuSinistre>
+        <actors:descriptionSinistre>Collision avec un pieton a un carrefour, choc sur l'avant du vehicule.</actors:descriptionSinistre>
+        <actors:concerne rdf:resource="#Voiture_001"/>
+        <actors:implique rdf:resource="#AhmedBenAli"/>
+        <actors:rattacheAContrat rdf:resource="#Contrat_001"/>
+        <actors:mobiliseGarantie rdf:resource="#GarantieTousAccidents_001"/>
+        <actors:mobiliseGarantie rdf:resource="#GarantieRC_001"/>
+        <actors:provoque rdf:resource="#Dommage_001"/>
+        <actors:provoque rdf:resource="#Dommage_004"/>
+        <actors:estDocumentePar rdf:resource="#Declaration_001"/>
+        <actors:faitObjetDe rdf:resource="#Expertise_001"/>
+    </owl:NamedIndividual>
+
+    <owl:NamedIndividual rdf:about="#Dommage_001">
+        <rdf:type rdf:resource="#DommageMateriel"/>
+        <actors:description>Pare-choc avant endommage</actors:description>
+        <actors:gravite>Moyenne</actors:gravite>
+        <actors:coutEstime rdf:datatype="&xsd;decimal">5000</actors:coutEstime>
+        <actors:subiPar rdf:resource="#AhmedBenAli"/>
+        <actors:donneLieuA rdf:resource="#Indemnisation_001"/>
+    </owl:NamedIndividual>
+
+    <owl:NamedIndividual rdf:about="#Dommage_004">
+        <rdf:type rdf:resource="#DommageCorporel"/>
+        <actors:description>Entorse cervicale du pieton</actors:description>
+        <actors:gravite>Legere</actors:gravite>
+        <actors:coutEstime rdf:datatype="&xsd;decimal">2000</actors:coutEstime>
+        <actors:subiPar rdf:resource="#SamiJaziri"/>
+        <actors:donneLieuA rdf:resource="#Indemnisation_004"/>
+    </owl:NamedIndividual>
+
+    <owl:NamedIndividual rdf:about="#Expertise_001">
+        <rdf:type rdf:resource="#Expertise"/>
+        <actors:dateExpertise rdf:datatype="&xsd;dateTime">2026-10-05T00:00:00</actors:dateExpertise>
+        <actors:conclusion>Responsabilite de l'assure engagee. Remplacement du pare-choc avant.</actors:conclusion>
+        <actors:realisePar rdf:resource="#Expert_001"/>
+        <actors:evalue rdf:resource="#Dommage_001"/>
+        <actors:evalue rdf:resource="#Dommage_004"/>
+        <actors:produit rdf:resource="#Rapport_001"/>
+    </owl:NamedIndividual>
+
+    <owl:NamedIndividual rdf:about="#Rapport_001">
+        <rdf:type rdf:resource="#RapportExpertise"/>
+        <actors:dateDocument rdf:datatype="&xsd;dateTime">2026-10-06T00:00:00</actors:dateDocument>
+    </owl:NamedIndividual>
+
+    <!-- (5000 - 500) x 0.9 = 4050 -->
+    <owl:NamedIndividual rdf:about="#Indemnisation_001">
+        <rdf:type rdf:resource="#Indemnisation"/>
+        <actors:montantIndemnisation rdf:datatype="&xsd;decimal">4050</actors:montantIndemnisation>
+        <actors:dateIndemnisation rdf:datatype="&xsd;dateTime">2026-10-15T00:00:00</actors:dateIndemnisation>
+        <actors:statutIndemnisation>Acceptee</actors:statutIndemnisation>
+        <actors:motifDecision>Sinistre couvert par la garantie dommages tous accidents.</actors:motifDecision>
+        <actors:appliqueFranchise rdf:resource="#Franchise_001"/>
+        <actors:utiliseBareme rdf:resource="#Bareme_001"/>
+        <actors:verseeA rdf:resource="#AhmedBenAli"/>
+        <actors:verseePar rdf:resource="#AssurancePlus"/>
+    </owl:NamedIndividual>
+
+    <!-- 2000 x 1.0 = 2000, sans franchise (RC envers un tiers) -->
+    <owl:NamedIndividual rdf:about="#Indemnisation_004">
+        <rdf:type rdf:resource="#Indemnisation"/>
+        <actors:montantIndemnisation rdf:datatype="&xsd;decimal">2000</actors:montantIndemnisation>
+        <actors:statutIndemnisation>EnCours</actors:statutIndemnisation>
+        <actors:motifDecision>Indemnisation du tiers victime au titre de la responsabilite civile.</actors:motifDecision>
+        <actors:utiliseBareme rdf:resource="#Bareme_003"/>
+        <actors:verseeA rdf:resource="#SamiJaziri"/>
+        <actors:verseePar rdf:resource="#AssurancePlus"/>
+    </owl:NamedIndividual>
+
+    <owl:NamedIndividual rdf:about="#Garage_001">
+        <rdf:type rdf:resource="#Garage"/>
+        <actors:raisonSociale>Garage El Amen</actors:raisonSociale>
+        <actors:ville>Tunis</actors:ville>
+        <actors:repare rdf:resource="#Voiture_001"/>
+    </owl:NamedIndividual>
+
+
+    <!-- ///////////////////////////////////////////////////////////////
+         // Scenario 2 : vol de vehicule (contrat RC seule, refuse)
+         /////////////////////////////////////////////////////////////// -->
+
+    <owl:NamedIndividual rdf:about="#FatmaTrabelsi">
+        <rdf:type rdf:resource="#Assure"/>
+        <rdf:type rdf:resource="#Conducteur"/>
+        <actors:nom>Trabelsi</actors:nom>
+        <actors:prenom>Fatma</actors:prenom>
+        <actors:dateNaissance rdf:datatype="&xsd;dateTime">1985-11-03T00:00:00</actors:dateNaissance>
+        <actors:numeroPermis>B7654321</actors:numeroPermis>
+        <actors:possede rdf:resource="#Contrat_002"/>
+        <actors:possede rdf:resource="#Contrat_004"/>
+        <actors:declare rdf:resource="#Sinistre_002"/>
+    </owl:NamedIndividual>
+
+    <owl:NamedIndividual rdf:about="#Voiture_002">
+        <rdf:type rdf:resource="#Voiture"/>
+        <actors:marque>Renault</actors:marque>
+        <actors:modele>Clio</actors:modele>
+        <actors:anneeFabrication rdf:datatype="&xsd;integer">2019</actors:anneeFabrication>
+        <actors:immatriculation>245TN8812</actors:immatriculation>
+        <actors:valeurVehicule rdf:datatype="&xsd;decimal">32000</actors:valeurVehicule>
+        <actors:estConduitPar rdf:resource="#FatmaTrabelsi"/>
+    </owl:NamedIndividual>
+
+    <owl:NamedIndividual rdf:about="#Prime_002">
+        <rdf:type rdf:resource="#Prime"/>
+        <actors:montantPrime rdf:datatype="&xsd;decimal">450</actors:montantPrime>
+        <actors:frequencePaiement>Annuelle</actors:frequencePaiement>
+    </owl:NamedIndividual>
+
+    <owl:NamedIndividual rdf:about="#GarantieRC_002">
+        <rdf:type rdf:resource="#GarantieResponsabiliteCivile"/>
+        <actors:plafondGarantie rdf:datatype="&xsd;decimal">1000000</actors:plafondGarantie>
+    </owl:NamedIndividual>
+
+    <owl:NamedIndividual rdf:about="#Contrat_002">
+        <rdf:type rdf:resource="#AssuranceResponsabiliteCivile"/>
+        <actors:numeroContrat>C-002</actors:numeroContrat>
+        <actors:dateDebut rdf:datatype="&xsd;dateTime">2026-03-01T00:00:00</actors:dateDebut>
+        <actors:dateFin rdf:datatype="&xsd;dateTime">2027-03-01T00:00:00</actors:dateFin>
+        <actors:statutContrat>Actif</actors:statutContrat>
+        <actors:aPourPrime rdf:resource="#Prime_002"/>
+        <actors:aPourClause rdf:resource="#Clause_003"/>
+        <actors:contient rdf:resource="#GarantieRC_002"/>
+        <actors:couvre rdf:resource="#Voiture_002"/>
+    </owl:NamedIndividual>
+
+    <!-- Ancien contrat expire (utile pour la requete "contrats actifs") -->
+    <owl:NamedIndividual rdf:about="#Prime_004">
+        <rdf:type rdf:resource="#Prime"/>
+        <actors:montantPrime rdf:datatype="&xsd;decimal">420</actors:montantPrime>
+        <actors:frequencePaiement>Annuelle</actors:frequencePaiement>
+    </owl:NamedIndividual>
+
+    <owl:NamedIndividual rdf:about="#GarantieRC_004">
+        <rdf:type rdf:resource="#GarantieResponsabiliteCivile"/>
+        <actors:plafondGarantie rdf:datatype="&xsd;decimal">1000000</actors:plafondGarantie>
+    </owl:NamedIndividual>
+
+    <owl:NamedIndividual rdf:about="#Contrat_004">
+        <rdf:type rdf:resource="#AssuranceResponsabiliteCivile"/>
+        <actors:numeroContrat>C-004</actors:numeroContrat>
+        <actors:dateDebut rdf:datatype="&xsd;dateTime">2025-03-01T00:00:00</actors:dateDebut>
+        <actors:dateFin rdf:datatype="&xsd;dateTime">2026-03-01T00:00:00</actors:dateFin>
+        <actors:statutContrat>Expire</actors:statutContrat>
+        <actors:aPourPrime rdf:resource="#Prime_004"/>
+        <actors:aPourClause rdf:resource="#Clause_003"/>
+        <actors:contient rdf:resource="#GarantieRC_004"/>
+        <actors:couvre rdf:resource="#Voiture_002"/>
+    </owl:NamedIndividual>
+
+    <owl:NamedIndividual rdf:about="#Declaration_002">
+        <rdf:type rdf:resource="#DeclarationSinistre"/>
+        <actors:dateDocument rdf:datatype="&xsd;dateTime">2026-09-13T00:00:00</actors:dateDocument>
+    </owl:NamedIndividual>
+
+    <owl:NamedIndividual rdf:about="#Sinistre_002">
+        <rdf:type rdf:resource="#VolVehicule"/>
+        <actors:numeroSinistre>S-002</actors:numeroSinistre>
+        <actors:dateSinistre rdf:datatype="&xsd;dateTime">2026-09-12T00:00:00</actors:dateSinistre>
+        <actors:lieuSinistre>Sousse</actors:lieuSinistre>
+        <actors:descriptionSinistre>Vol du vehicule stationne devant le domicile.</actors:descriptionSinistre>
+        <actors:concerne rdf:resource="#Voiture_002"/>
+        <actors:rattacheAContrat rdf:resource="#Contrat_002"/>
+        <actors:provoque rdf:resource="#Dommage_002"/>
+        <actors:estDocumentePar rdf:resource="#Declaration_002"/>
+    </owl:NamedIndividual>
+
+    <owl:NamedIndividual rdf:about="#Dommage_002">
+        <rdf:type rdf:resource="#DommageMateriel"/>
+        <actors:description>Perte totale du vehicule (vol)</actors:description>
+        <actors:gravite>Grave</actors:gravite>
+        <actors:coutEstime rdf:datatype="&xsd;decimal">32000</actors:coutEstime>
+        <actors:subiPar rdf:resource="#FatmaTrabelsi"/>
+        <actors:donneLieuA rdf:resource="#Indemnisation_002"/>
+    </owl:NamedIndividual>
+
+    <owl:NamedIndividual rdf:about="#Indemnisation_002">
+        <rdf:type rdf:resource="#Indemnisation"/>
+        <actors:montantIndemnisation rdf:datatype="&xsd;decimal">0</actors:montantIndemnisation>
+        <actors:dateIndemnisation rdf:datatype="&xsd;dateTime">2026-09-25T00:00:00</actors:dateIndemnisation>
+        <actors:statutIndemnisation>Refusee</actors:statutIndemnisation>
+        <actors:motifDecision>Garantie vol non souscrite : le contrat C-002 couvre uniquement la responsabilite civile.</actors:motifDecision>
+        <actors:verseeA rdf:resource="#FatmaTrabelsi"/>
+        <actors:verseePar rdf:resource="#AssurancePlus"/>
+    </owl:NamedIndividual>
+
+
+    <!-- ///////////////////////////////////////////////////////////////
+         // Scenario 3 : incendie d'une moto (contrat intermediaire, accepte)
+         /////////////////////////////////////////////////////////////// -->
+
+    <owl:NamedIndividual rdf:about="#YoussefHamdi">
+        <rdf:type rdf:resource="#Assure"/>
+        <rdf:type rdf:resource="#Conducteur"/>
+        <actors:nom>Hamdi</actors:nom>
+        <actors:prenom>Youssef</actors:prenom>
+        <actors:dateNaissance rdf:datatype="&xsd;dateTime">1998-02-20T00:00:00</actors:dateNaissance>
+        <actors:numeroPermis>A2345678</actors:numeroPermis>
+        <actors:possede rdf:resource="#Contrat_003"/>
+        <actors:declare rdf:resource="#Sinistre_003"/>
+    </owl:NamedIndividual>
+
+    <owl:NamedIndividual rdf:about="#Moto_001">
+        <rdf:type rdf:resource="#Moto"/>
+        <actors:marque>Yamaha</actors:marque>
+        <actors:modele>MT-07</actors:modele>
+        <actors:anneeFabrication rdf:datatype="&xsd;integer">2022</actors:anneeFabrication>
+        <actors:immatriculation>87TN3321</actors:immatriculation>
+        <actors:valeurVehicule rdf:datatype="&xsd;decimal">28000</actors:valeurVehicule>
+        <actors:estConduitPar rdf:resource="#YoussefHamdi"/>
+    </owl:NamedIndividual>
+
+    <owl:NamedIndividual rdf:about="#Prime_003">
+        <rdf:type rdf:resource="#Prime"/>
+        <actors:montantPrime rdf:datatype="&xsd;decimal">650</actors:montantPrime>
+        <actors:frequencePaiement>Annuelle</actors:frequencePaiement>
+    </owl:NamedIndividual>
+
+    <owl:NamedIndividual rdf:about="#GarantieRC_003">
+        <rdf:type rdf:resource="#GarantieResponsabiliteCivile"/>
+        <actors:plafondGarantie rdf:datatype="&xsd;decimal">1000000</actors:plafondGarantie>
+    </owl:NamedIndividual>
+
+    <owl:NamedIndividual rdf:about="#GarantieIncendie_003">
+        <rdf:type rdf:resource="#GarantieIncendie"/>
+        <actors:plafondGarantie rdf:datatype="&xsd;decimal">25000</actors:plafondGarantie>
+    </owl:NamedIndividual>
+
+    <owl:NamedIndividual rdf:about="#GarantieBrisDeGlace_003">
+        <rdf:type rdf:resource="#GarantieBrisDeGlace"/>
+        <actors:plafondGarantie rdf:datatype="&xsd;decimal">1500</actors:plafondGarantie>
+    </owl:NamedIndividual>
+
+    <owl:NamedIndividual rdf:about="#Contrat_003">
+        <rdf:type rdf:resource="#AssuranceIntermediaire"/>
+        <actors:numeroContrat>C-003</actors:numeroContrat>
+        <actors:dateDebut rdf:datatype="&xsd;dateTime">2026-06-01T00:00:00</actors:dateDebut>
+        <actors:dateFin rdf:datatype="&xsd;dateTime">2027-06-01T00:00:00</actors:dateFin>
+        <actors:statutContrat>Actif</actors:statutContrat>
+        <actors:aPourPrime rdf:resource="#Prime_003"/>
+        <actors:aPourClause rdf:resource="#Clause_001"/>
+        <actors:aPourClause rdf:resource="#Clause_002"/>
+        <actors:contient rdf:resource="#GarantieRC_003"/>
+        <actors:contient rdf:resource="#GarantieIncendie_003"/>
+        <actors:contient rdf:resource="#GarantieBrisDeGlace_003"/>
+        <actors:couvre rdf:resource="#Moto_001"/>
+    </owl:NamedIndividual>
+
+    <owl:NamedIndividual rdf:about="#Declaration_003">
+        <rdf:type rdf:resource="#DeclarationSinistre"/>
+        <actors:dateDocument rdf:datatype="&xsd;dateTime">2026-08-21T00:00:00</actors:dateDocument>
+    </owl:NamedIndividual>
+
+    <owl:NamedIndividual rdf:about="#Sinistre_003">
+        <rdf:type rdf:resource="#IncendieVehicule"/>
+        <actors:numeroSinistre>S-003</actors:numeroSinistre>
+        <actors:dateSinistre rdf:datatype="&xsd;dateTime">2026-08-20T00:00:00</actors:dateSinistre>
+        <actors:lieuSinistre>Sfax</actors:lieuSinistre>
+        <actors:descriptionSinistre>Incendie d'origine electrique pendant le stationnement.</actors:descriptionSinistre>
+        <actors:concerne rdf:resource="#Moto_001"/>
+        <actors:rattacheAContrat rdf:resource="#Contrat_003"/>
+        <actors:mobiliseGarantie rdf:resource="#GarantieIncendie_003"/>
+        <actors:provoque rdf:resource="#Dommage_003"/>
+        <actors:estDocumentePar rdf:resource="#Declaration_003"/>
+        <actors:faitObjetDe rdf:resource="#Expertise_002"/>
+    </owl:NamedIndividual>
+
+    <owl:NamedIndividual rdf:about="#Dommage_003">
+        <rdf:type rdf:resource="#DommageMateriel"/>
+        <actors:description>Faisceau electrique et carenage detruits</actors:description>
+        <actors:gravite>Grave</actors:gravite>
+        <actors:coutEstime rdf:datatype="&xsd;decimal">12000</actors:coutEstime>
+        <actors:subiPar rdf:resource="#YoussefHamdi"/>
+        <actors:donneLieuA rdf:resource="#Indemnisation_003"/>
+    </owl:NamedIndividual>
+
+    <owl:NamedIndividual rdf:about="#Expertise_002">
+        <rdf:type rdf:resource="#Expertise"/>
+        <actors:dateExpertise rdf:datatype="&xsd;dateTime">2026-08-25T00:00:00</actors:dateExpertise>
+        <actors:conclusion>Court-circuit du faisceau electrique. Sinistre couvert par la garantie incendie.</actors:conclusion>
+        <actors:realisePar rdf:resource="#Expert_002"/>
+        <actors:evalue rdf:resource="#Dommage_003"/>
+        <actors:produit rdf:resource="#Rapport_002"/>
+    </owl:NamedIndividual>
+
+    <owl:NamedIndividual rdf:about="#Rapport_002">
+        <rdf:type rdf:resource="#RapportExpertise"/>
+        <actors:dateDocument rdf:datatype="&xsd;dateTime">2026-08-27T00:00:00</actors:dateDocument>
+    </owl:NamedIndividual>
+
+    <!-- (12000 - 300) x 0.8 = 9360 -->
+    <owl:NamedIndividual rdf:about="#Indemnisation_003">
+        <rdf:type rdf:resource="#Indemnisation"/>
+        <actors:montantIndemnisation rdf:datatype="&xsd;decimal">9360</actors:montantIndemnisation>
+        <actors:dateIndemnisation rdf:datatype="&xsd;dateTime">2026-09-05T00:00:00</actors:dateIndemnisation>
+        <actors:statutIndemnisation>Acceptee</actors:statutIndemnisation>
+        <actors:motifDecision>Sinistre couvert par la garantie incendie.</actors:motifDecision>
+        <actors:appliqueFranchise rdf:resource="#Franchise_002"/>
+        <actors:utiliseBareme rdf:resource="#Bareme_002"/>
+        <actors:verseeA rdf:resource="#YoussefHamdi"/>
+        <actors:verseePar rdf:resource="#AssurancePlus"/>
+    </owl:NamedIndividual>
+
+    <owl:NamedIndividual rdf:about="#Garage_002">
+        <rdf:type rdf:resource="#Garage"/>
+        <actors:raisonSociale>Moto Service Sfax</actors:raisonSociale>
+        <actors:ville>Sfax</actors:ville>
+        <actors:repare rdf:resource="#Moto_001"/>
+    </owl:NamedIndividual>
+
+
+    <!-- ///////////////////////////////////////////////////////////////
+         // Axiomes generaux (disjonctions)
+         /////////////////////////////////////////////////////////////// -->
+
+    <rdf:Description>
+        <rdf:type rdf:resource="&owl;AllDisjointClasses"/>
+        <owl:members rdf:parseType="Collection">
+            <rdf:Description rdf:about="#BaremeIndemnisation"/>
+            <rdf:Description rdf:about="#Clause"/>
+            <rdf:Description rdf:about="#ContratAssurance"/>
+            <rdf:Description rdf:about="#Document"/>
+            <rdf:Description rdf:about="#Dommage"/>
+            <rdf:Description rdf:about="#Expertise"/>
+            <rdf:Description rdf:about="#Franchise"/>
+            <rdf:Description rdf:about="#Garantie"/>
+            <rdf:Description rdf:about="#Indemnisation"/>
+            <rdf:Description rdf:about="#Organisation"/>
+            <rdf:Description rdf:about="#Personne"/>
+            <rdf:Description rdf:about="#Prime"/>
+            <rdf:Description rdf:about="#Sinistre"/>
+            <rdf:Description rdf:about="#Vehicule"/>
+        </owl:members>
+    </rdf:Description>
+
+    <rdf:Description>
+        <rdf:type rdf:resource="&owl;AllDisjointClasses"/>
+        <owl:members rdf:parseType="Collection">
+            <rdf:Description rdf:about="#CompagnieAssurance"/>
+            <rdf:Description rdf:about="#Garage"/>
+        </owl:members>
+    </rdf:Description>
+
+    <rdf:Description>
+        <rdf:type rdf:resource="&owl;AllDisjointClasses"/>
+        <owl:members rdf:parseType="Collection">
+            <rdf:Description rdf:about="#Voiture"/>
+            <rdf:Description rdf:about="#Moto"/>
+            <rdf:Description rdf:about="#Camion"/>
+        </owl:members>
+    </rdf:Description>
+
+    <rdf:Description>
+        <rdf:type rdf:resource="&owl;AllDisjointClasses"/>
+        <owl:members rdf:parseType="Collection">
+            <rdf:Description rdf:about="#AssuranceResponsabiliteCivile"/>
+            <rdf:Description rdf:about="#AssuranceIntermediaire"/>
+            <rdf:Description rdf:about="#AssuranceTousRisques"/>
+        </owl:members>
+    </rdf:Description>
+
+    <rdf:Description>
+        <rdf:type rdf:resource="&owl;AllDisjointClasses"/>
+        <owl:members rdf:parseType="Collection">
+            <rdf:Description rdf:about="#GarantieResponsabiliteCivile"/>
+            <rdf:Description rdf:about="#GarantieVol"/>
+            <rdf:Description rdf:about="#GarantieIncendie"/>
+            <rdf:Description rdf:about="#GarantieBrisDeGlace"/>
+            <rdf:Description rdf:about="#GarantieCatastrophesNaturelles"/>
+            <rdf:Description rdf:about="#GarantieDommagesTousAccidents"/>
+        </owl:members>
+    </rdf:Description>
+
+    <rdf:Description>
+        <rdf:type rdf:resource="&owl;AllDisjointClasses"/>
+        <owl:members rdf:parseType="Collection">
+            <rdf:Description rdf:about="#AccidentCirculation"/>
+            <rdf:Description rdf:about="#VolVehicule"/>
+            <rdf:Description rdf:about="#IncendieVehicule"/>
+            <rdf:Description rdf:about="#BrisDeGlace"/>
+            <rdf:Description rdf:about="#CatastropheNaturelle"/>
+        </owl:members>
+    </rdf:Description>
+
+    <rdf:Description>
+        <rdf:type rdf:resource="&owl;AllDisjointClasses"/>
+        <owl:members rdf:parseType="Collection">
+            <rdf:Description rdf:about="#DommageMateriel"/>
+            <rdf:Description rdf:about="#DommageCorporel"/>
+            <rdf:Description rdf:about="#DommageMoral"/>
+        </owl:members>
+    </rdf:Description>
+
+    <rdf:Description>
+        <rdf:type rdf:resource="&owl;AllDisjointClasses"/>
+        <owl:members rdf:parseType="Collection">
+            <rdf:Description rdf:about="#ContratDocument"/>
+            <rdf:Description rdf:about="#DeclarationSinistre"/>
+            <rdf:Description rdf:about="#RapportExpertise"/>
+        </owl:members>
+    </rdf:Description>
+
+</rdf:RDF>

@@ -1,0 +1,37 @@
+@prefix :     <http://www.semanticweb.org/assurance/actors#> .
+@prefix owl:  <http://www.w3.org/2002/07/owl#> .
+@prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd:  <http://www.w3.org/2001/XMLSchema#> .
+
+# ---------------------------------------------------------------------------
+# Extensions CONTROLEES de l'ontologie assurance_auto.xml
+#
+# Ce fichier NE remplace PAS l'ontologie : il s'ajoute a elle au premier
+# demarrage (ontology/assurance_auto.xml reste intact, copie de l'original).
+# Il comble deux lacunes constatees pour l'application web :
+#   1. aucun statut de sinistre  (statutSinistre)
+#   2. aucun contenu de rapport  (contenuDocument)
+# Les axiomes sont compatibles Protégé : on peut ouvrir ce fichier a cote de
+# l'ontologie, ou exporter l'ontologie fusionnee (GET /api/ontology/export).
+# ---------------------------------------------------------------------------
+
+:statutSinistre a owl:DatatypeProperty , owl:FunctionalProperty ;
+    rdfs:label "statut du sinistre"@fr ;
+    rdfs:comment "Extension AutoInsure. Valeurs : Declare, EnExpertise, EnCours, Indemnise, Refuse, Clos."@fr ;
+    rdfs:domain :Sinistre ;
+    rdfs:range xsd:string .
+
+:contenuDocument a owl:DatatypeProperty ;
+    rdfs:label "contenu du document"@fr ;
+    rdfs:comment "Extension AutoInsure. Texte du document (ex. synthese d'un rapport d'expertise)."@fr ;
+    rdfs:domain :Document ;
+    rdfs:range xsd:string .
+
+# Valeurs initiales pour les individus existants (coherentes avec leurs indemnisations)
+:Sinistre_001 :statutSinistre "EnCours" .
+:Sinistre_002 :statutSinistre "Refuse" .
+:Sinistre_003 :statutSinistre "Clos" .
+
+:Rapport_001 :contenuDocument "Choc frontal : remplacement du pare-choc avant, entorse cervicale legere du tiers." .
+:Rapport_002 :contenuDocument "Court-circuit du faisceau electrique : carenage et faisceau detruits." .

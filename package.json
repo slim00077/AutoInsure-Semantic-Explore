@@ -1,0 +1,21 @@
+{
+  "name": "autoinsure-semantic-explorer",
+  "version": "1.0.0",
+  "private": true,
+  "description": "AutoInsure Semantic Explorer — Ontologie pour l'Assurance Automobile et la Gestion des Sinistres",
+  "scripts": {
+    "setup": "npm run setup:python && npm run setup:backend && npm run setup:frontend",
+    "setup:python": "node scripts/setup-python.mjs",
+    "setup:backend": "npm --prefix backend install",
+    "setup:frontend": "npm --prefix frontend install",
+    "dev": "node scripts/dev.mjs",
+    "dev:semantic": "node scripts/run-semantic.mjs",
+    "dev:backend": "npm --prefix backend run dev",
+    "dev:frontend": "npm --prefix frontend run dev",
+    "build": "npm --prefix backend run build && npm --prefix frontend run build",
+    "test": "npm run test:python && npm run test:backend",
+    "test:python": "node scripts/run-semantic.mjs --test",
+    "test:backend": "npm --prefix backend test",
+    "test:frontend": "npm --prefix frontend test"
+  }
+}
