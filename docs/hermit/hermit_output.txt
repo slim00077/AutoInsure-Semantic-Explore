@@ -1,0 +1,168 @@
+HermiT validation — AutoInsure
+Java 21.0.13 / Eclipse Adoptium
+Ontologie : C:\Users\amira\OneDrive\Bureau\projetweb\ontology\assurance_auto.xml
+SHA-256 avant : bb56e6db9e5901f4f90fc23b6b36721d80d5ade1a68440087761140d81600483
+Chargement RDF/XML (DOCTYPE à entités &owl; &xsd;) : OK en 1196 ms
+
+=== A. ONTOLOGIE D'ORIGINE (assurance_auto.xml seul) ===
+Axiomes : 666 (logiques : 487)
+Classes nommées : 45 · ObjectProperties : 29 · DataProperties : 38 · Individus nommés : 56
+Raisonneur : HermiT 1.4.1.513 — initialisé en 1001 ms
+[PASS] L'ontologie est COHÉRENTE (isConsistent) — vérifié en 54 ms
+precomputeInferences (hiérarchie de classes, assertions de classes et de propriétés) : 158 ms
+[PASS] Aucune classe insatisfiable — 0 classe équivalente à owl:Nothing
+
+=== A. Restrictions et axiomes de classes (SubClassOf / Disjoint / Equivalent) ===
+  :AssuranceIntermediaire  ⊑  ObjectSomeValuesFrom(:contient :GarantieIncendie)
+  :AssuranceTousRisques  ⊑  ObjectSomeValuesFrom(:contient :GarantieDommagesTousAccidents)
+  :ContratAssurance  ⊑  ObjectMinCardinality(1 :aPourPrime :Prime)
+  :ContratAssurance  ⊑  ObjectMinCardinality(1 :contient :Garantie)
+  :ContratAssurance  ⊑  ObjectMinCardinality(1 :couvre :Vehicule)
+  :ContratAssurance  ⊑  ObjectSomeValuesFrom(:contient :GarantieResponsabiliteCivile)
+  :Expertise  ⊑  ObjectExactCardinality(1 :realisePar :Expert)
+  :Indemnisation  ⊑  ObjectExactCardinality(1 :verseeA :Personne)
+  :Indemnisation  ⊑  ObjectMaxCardinality(1 :appliqueFranchise :Franchise)
+  :Indemnisation  ⊑  ObjectMaxCardinality(1 :utiliseBareme :BaremeIndemnisation)
+  :Sinistre  ⊑  ObjectExactCardinality(1 :concerne :Vehicule)
+  :Sinistre  ⊑  ObjectMinCardinality(1 :provoque :Dommage)
+  → 12 restrictions de classe
+  → 8 axiome(s) DisjointClasses (39 classes engagées)
+  ≡ EquivalentClasses(:SinistreExpertise ObjectIntersectionOf(:Sinistre ObjectSomeValuesFrom(:faitObjetDe :Expertise)) )
+  ≡ EquivalentClasses(:ContratActif ObjectIntersectionOf(:ContratAssurance DataHasValue(:statutContrat "Actif"^^xsd:string)) )
+
+=== A. Classes définies : ContratActif et SinistreExpertise ===
+ContratActif — instances inférées par HermiT : [Contrat_001, Contrat_002, Contrat_003]
+ContratActif — attendu (ContratAssurance avec statutContrat "Actif" asserté) : [Contrat_001, Contrat_002, Contrat_003]
+[PASS] ContratActif inféré = contrats au statut Actif
+Tous les contrats : [Contrat_001, Contrat_002, Contrat_003, Contrat_004]
+Contrats NON inférés Actif (statut Expire/Resilie…) : [Contrat_004]
+SinistreExpertise — instances inférées par HermiT : [Sinistre_001, Sinistre_003]
+SinistreExpertise — attendu (Sinistre ayant faitObjetDe une Expertise) : [Sinistre_001, Sinistre_003]
+[PASS] SinistreExpertise inféré = sinistres liés à une expertise
+Sinistres NON inférés SinistreExpertise : [Sinistre_002]
+
+=== A. Appartenances de classe inférées (types directs, individus clés) ===
+  Contrat_001 : asserté [AssuranceTousRisques]  |  inféré en plus : [ContratActif, ContratAssurance, http://www.w3.org/2002/07/owl#Thing]
+  Contrat_002 : asserté [AssuranceResponsabiliteCivile]  |  inféré en plus : [ContratActif, ContratAssurance, http://www.w3.org/2002/07/owl#Thing]
+  Contrat_003 : asserté [AssuranceIntermediaire]  |  inféré en plus : [ContratActif, ContratAssurance, http://www.w3.org/2002/07/owl#Thing]
+  Contrat_004 : asserté [AssuranceResponsabiliteCivile]  |  inféré en plus : [ContratAssurance, http://www.w3.org/2002/07/owl#Thing]
+  Sinistre_001 : asserté [AccidentCirculation]  |  inféré en plus : [Sinistre, SinistreExpertise, http://www.w3.org/2002/07/owl#Thing]
+  Sinistre_002 : asserté [VolVehicule]  |  inféré en plus : [Sinistre, http://www.w3.org/2002/07/owl#Thing]
+  Sinistre_003 : asserté [IncendieVehicule]  |  inféré en plus : [Sinistre, SinistreExpertise, http://www.w3.org/2002/07/owl#Thing]
+  Expertise_001 : asserté [Expertise]  |  inféré en plus : [http://www.w3.org/2002/07/owl#Thing]
+  Indemnisation_001 : asserté [Indemnisation]  |  inféré en plus : [http://www.w3.org/2002/07/owl#Thing]
+  AhmedBenAli : asserté [Assure, Conducteur]  |  inféré en plus : [Personne, http://www.w3.org/2002/07/owl#Thing]
+
+=== A. owl:inverseOf — assertions inverses manquantes mais inférées par HermiT ===
+  Assertions de la 1re propriété de chaque paire inverse : 11 ; inverse absente du fichier : 11 ; inférée par HermiT : 11
+[PASS] Toute inverse absente du fichier est bien inférée (owl:inverseOf)
+  (RDFLib/le service matérialise ces triplets au chargement ; HermiT les déduit sans les écrire.)
+
+=== A. Tests de contraintes sur COPIES EN MÉMOIRE (l'ontologie d'origine n'est pas modifiée) ===
+[PASS] Disjonction : un individu GarantieVol ET GarantieIncendie est incohérent — incohérence détectée par HermiT, comme attendu
+[PASS] Disjonction : Moto_001 typé aussi Voiture est incohérent — incohérence détectée par HermiT, comme attendu
+[PASS] Disjonction des grandes classes : Voiture_001 typé aussi Assure est incohérent — incohérence détectée par HermiT, comme attendu
+[PASS] Domaine : Voiture_001 possede Contrat_001 (domaine Assure) est incohérent (Voiture ⊓ Assure disjoints) — incohérence détectée par HermiT, comme attendu
+[PASS] Range : AhmedBenAli possede Voiture_002 (range ContratAssurance) est incohérent — incohérence détectée par HermiT, comme attendu
+[PASS] Fonctionnelle : Sinistre_001 concerne un 2e véhicule DISTINCT est incohérent — incohérence détectée par HermiT, comme attendu
+[PASS] Cardinalité =1 : Expertise_001 réalisée par 2 experts DISTINCTS est incohérent — incohérence détectée par HermiT, comme attendu
+[PASS] Cardinalité ≤1 : Indemnisation_001 avec 2 franchises DISTINCTES est incohérent — incohérence détectée par HermiT, comme attendu
+[PASS] Monde OUVERT : un Sinistre sans dommage ni véhicule reste cohérent (≥1 provoque = existence implicite) — cohérent (monde ouvert OWL : l'information manquante est simplement inconnue)
+[PASS] Monde OUVERT : un ContratAssurance sans prime ni garantie reste cohérent — cohérent (monde ouvert OWL : l'information manquante est simplement inconnue)
+[PASS] Définition : un nouveau contrat au statutContrat "Actif" est inféré ContratActif
+[PASS] Définition : un sinistre lié à une Expertise est inféré SinistreExpertise
+[PASS] Définition (négatif) : un contrat "Expire" n'est PAS inféré ContratActif (monde ouvert : non-appartenance non prouvée mais aucune inférence positive)
+[PASS] Hiérarchie : AssuranceTousRisques ⊑ ContratAssurance inférée
+[PASS] Hiérarchie : ContratActif ⊑ ContratAssurance inférée (classe définie classée sous la classe primitive)
+
+Extensions TTL chargées : 16 axiomes (10 logiques)
+
+=== B. ORIGINE + EXTENSIONS (assurance_auto_extensions.ttl) ===
+Axiomes : 682 (logiques : 497)
+Classes nommées : 45 · ObjectProperties : 29 · DataProperties : 40 · Individus nommés : 56
+Raisonneur : HermiT 1.4.1.513 — initialisé en 45 ms
+[PASS] L'ontologie est COHÉRENTE (isConsistent) — vérifié en 4 ms
+precomputeInferences (hiérarchie de classes, assertions de classes et de propriétés) : 95 ms
+[PASS] Aucune classe insatisfiable — 0 classe équivalente à owl:Nothing
+
+=== B. Restrictions et axiomes de classes (SubClassOf / Disjoint / Equivalent) ===
+  :AssuranceIntermediaire  ⊑  ObjectSomeValuesFrom(:contient :GarantieIncendie)
+  :AssuranceTousRisques  ⊑  ObjectSomeValuesFrom(:contient :GarantieDommagesTousAccidents)
+  :ContratAssurance  ⊑  ObjectMinCardinality(1 :aPourPrime :Prime)
+  :ContratAssurance  ⊑  ObjectMinCardinality(1 :contient :Garantie)
+  :ContratAssurance  ⊑  ObjectMinCardinality(1 :couvre :Vehicule)
+  :ContratAssurance  ⊑  ObjectSomeValuesFrom(:contient :GarantieResponsabiliteCivile)
+  :Expertise  ⊑  ObjectExactCardinality(1 :realisePar :Expert)
+  :Indemnisation  ⊑  ObjectExactCardinality(1 :verseeA :Personne)
+  :Indemnisation  ⊑  ObjectMaxCardinality(1 :appliqueFranchise :Franchise)
+  :Indemnisation  ⊑  ObjectMaxCardinality(1 :utiliseBareme :BaremeIndemnisation)
+  :Sinistre  ⊑  ObjectExactCardinality(1 :concerne :Vehicule)
+  :Sinistre  ⊑  ObjectMinCardinality(1 :provoque :Dommage)
+  → 12 restrictions de classe
+  → 8 axiome(s) DisjointClasses (39 classes engagées)
+  ≡ EquivalentClasses(:SinistreExpertise ObjectIntersectionOf(:Sinistre ObjectSomeValuesFrom(:faitObjetDe :Expertise)) )
+  ≡ EquivalentClasses(:ContratActif ObjectIntersectionOf(:ContratAssurance DataHasValue(:statutContrat "Actif"^^xsd:string)) )
+
+=== B. Classes définies : ContratActif et SinistreExpertise ===
+ContratActif — instances inférées par HermiT : [Contrat_001, Contrat_002, Contrat_003]
+ContratActif — attendu (ContratAssurance avec statutContrat "Actif" asserté) : [Contrat_001, Contrat_002, Contrat_003]
+[PASS] ContratActif inféré = contrats au statut Actif
+Tous les contrats : [Contrat_001, Contrat_002, Contrat_003, Contrat_004]
+Contrats NON inférés Actif (statut Expire/Resilie…) : [Contrat_004]
+SinistreExpertise — instances inférées par HermiT : [Sinistre_001, Sinistre_003]
+SinistreExpertise — attendu (Sinistre ayant faitObjetDe une Expertise) : [Sinistre_001, Sinistre_003]
+[PASS] SinistreExpertise inféré = sinistres liés à une expertise
+Sinistres NON inférés SinistreExpertise : [Sinistre_002]
+
+=== B. Appartenances de classe inférées (types directs, individus clés) ===
+  Contrat_001 : asserté [AssuranceTousRisques]  |  inféré en plus : [ContratActif, ContratAssurance, http://www.w3.org/2002/07/owl#Thing]
+  Contrat_002 : asserté [AssuranceResponsabiliteCivile]  |  inféré en plus : [ContratActif, ContratAssurance, http://www.w3.org/2002/07/owl#Thing]
+  Contrat_003 : asserté [AssuranceIntermediaire]  |  inféré en plus : [ContratActif, ContratAssurance, http://www.w3.org/2002/07/owl#Thing]
+  Contrat_004 : asserté [AssuranceResponsabiliteCivile]  |  inféré en plus : [ContratAssurance, http://www.w3.org/2002/07/owl#Thing]
+  Sinistre_001 : asserté [AccidentCirculation]  |  inféré en plus : [Sinistre, SinistreExpertise, http://www.w3.org/2002/07/owl#Thing]
+  Sinistre_002 : asserté [VolVehicule]  |  inféré en plus : [Sinistre, http://www.w3.org/2002/07/owl#Thing]
+  Sinistre_003 : asserté [IncendieVehicule]  |  inféré en plus : [Sinistre, SinistreExpertise, http://www.w3.org/2002/07/owl#Thing]
+  Expertise_001 : asserté [Expertise]  |  inféré en plus : [http://www.w3.org/2002/07/owl#Thing]
+  Indemnisation_001 : asserté [Indemnisation]  |  inféré en plus : [http://www.w3.org/2002/07/owl#Thing]
+  AhmedBenAli : asserté [Assure, Conducteur]  |  inféré en plus : [Personne, http://www.w3.org/2002/07/owl#Thing]
+
+=== B. owl:inverseOf — assertions inverses manquantes mais inférées par HermiT ===
+  Assertions de la 1re propriété de chaque paire inverse : 11 ; inverse absente du fichier : 11 ; inférée par HermiT : 11
+[PASS] Toute inverse absente du fichier est bien inférée (owl:inverseOf)
+  (RDFLib/le service matérialise ces triplets au chargement ; HermiT les déduit sans les écrire.)
+
+=== B. Tests de contraintes sur COPIES EN MÉMOIRE (l'ontologie d'origine n'est pas modifiée) ===
+[PASS] Disjonction : un individu GarantieVol ET GarantieIncendie est incohérent — incohérence détectée par HermiT, comme attendu
+[PASS] Disjonction : Moto_001 typé aussi Voiture est incohérent — incohérence détectée par HermiT, comme attendu
+[PASS] Disjonction des grandes classes : Voiture_001 typé aussi Assure est incohérent — incohérence détectée par HermiT, comme attendu
+[PASS] Domaine : Voiture_001 possede Contrat_001 (domaine Assure) est incohérent (Voiture ⊓ Assure disjoints) — incohérence détectée par HermiT, comme attendu
+[PASS] Range : AhmedBenAli possede Voiture_002 (range ContratAssurance) est incohérent — incohérence détectée par HermiT, comme attendu
+[PASS] Fonctionnelle : Sinistre_001 concerne un 2e véhicule DISTINCT est incohérent — incohérence détectée par HermiT, comme attendu
+[PASS] Cardinalité =1 : Expertise_001 réalisée par 2 experts DISTINCTS est incohérent — incohérence détectée par HermiT, comme attendu
+[PASS] Cardinalité ≤1 : Indemnisation_001 avec 2 franchises DISTINCTES est incohérent — incohérence détectée par HermiT, comme attendu
+[PASS] Monde OUVERT : un Sinistre sans dommage ni véhicule reste cohérent (≥1 provoque = existence implicite) — cohérent (monde ouvert OWL : l'information manquante est simplement inconnue)
+[PASS] Monde OUVERT : un ContratAssurance sans prime ni garantie reste cohérent — cohérent (monde ouvert OWL : l'information manquante est simplement inconnue)
+[PASS] Définition : un nouveau contrat au statutContrat "Actif" est inféré ContratActif
+[PASS] Définition : un sinistre lié à une Expertise est inféré SinistreExpertise
+[PASS] Définition (négatif) : un contrat "Expire" n'est PAS inféré ContratActif (monde ouvert : non-appartenance non prouvée mais aucune inférence positive)
+[PASS] Hiérarchie : AssuranceTousRisques ⊑ ContratAssurance inférée
+[PASS] Hiérarchie : ContratActif ⊑ ContratAssurance inférée (classe définie classée sous la classe primitive)
+
+=== B. Extensions : statutSinistre (fonctionnelle, domaine Sinistre) et contenuDocument (domaine Document) ===
+[PASS] statutSinistre : valeur asserté pour Sinistre_001..003, ontologie cohérente
+  Sinistre_001 statutSinistre = [EnCours]
+  Sinistre_002 statutSinistre = [Refuse]
+  Sinistre_003 statutSinistre = [Clos]
+[PASS] contenuDocument : Rapport_001 est inféré/typé Document
+[PASS] Rapport_001 est un RapportExpertise (type de l'ontologie d'origine)
+[PASS] statutSinistre FONCTIONNELLE : deux valeurs différentes pour Sinistre_001 sont incohérentes — incohérence détectée par HermiT, comme attendu
+[PASS] Domaine de statutSinistre : un individu portant statutSinistre est inféré Sinistre
+[PASS] Domaine de statutSinistre + disjonction : Voiture_001 avec statutSinistre est incohérent — incohérence détectée par HermiT, comme attendu
+[PASS] Domaine de contenuDocument : un individu portant contenuDocument est inféré Document
+[PASS] Domaine de contenuDocument + disjonction : AhmedBenAli avec contenuDocument est incohérent (Personne ⊓ Document) — incohérence détectée par HermiT, comme attendu
+
+=== Intégrité de l'ontologie d'origine ===
+[PASS] assurance_auto.xml inchangé (SHA-256 identique avant/après) — bb56e6db9e5901f4f90fc23b6b36721d80d5ade1a68440087761140d81600483
+
+=== BILAN ===
+Vérifications réussies : 49 — échecs : 0

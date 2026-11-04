@@ -1,0 +1,65 @@
+{
+  "date": "2026-11-04T19:37:57.075Z",
+  "results": [
+    {
+      "name": "HermiT : l'export de l'application est COHÉRENT (données créées via le CRUD)",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "HermiT : aucune classe insatisfiable",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "HermiT infère ContratActif pour le nouveau contrat Actif",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "HermiT n'infère PAS ContratActif pour le contrat Résilié",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "HermiT infère SinistreExpertise pour le sinistre expertisé",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "HermiT n'infère PAS SinistreExpertise pour le sinistre sans expertise",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Application (SPARQL équivalent) = HermiT pour ContratActif",
+      "ok": true,
+      "detail": "app=Contrat_001,Contrat_002,Contrat_003,Contrat_005 hermit=Contrat_001,Contrat_002,Contrat_003,Contrat_005"
+    },
+    {
+      "name": "Application (SPARQL équivalent) = HermiT pour SinistreExpertise",
+      "ok": true,
+      "detail": "app=Sinistre_001,Sinistre_003,Sinistre_004 hermit=Sinistre_001,Sinistre_003,Sinistre_004"
+    },
+    {
+      "name": "Recherche NLP « Quels contrats sont actifs ? » = ContratActif de HermiT",
+      "ok": true,
+      "detail": "nlp=Contrat_001,Contrat_002,Contrat_003,Contrat_005"
+    },
+    {
+      "name": "Recherche NLP « sinistres ayant fait l'objet d'une expertise » = SinistreExpertise de HermiT",
+      "ok": true,
+      "detail": "nlp=Sinistre_001,Sinistre_003,Sinistre_004"
+    },
+    {
+      "name": "NLP négation « contrats pas actifs » = complémentaire de ContratActif (HermiT)",
+      "ok": true,
+      "detail": "nlp=Contrat_004,Contrat_006"
+    },
+    {
+      "name": "Validation structurelle de l'application : aucune erreur sur ces données",
+      "ok": true,
+      "detail": "0 erreur(s)"
+    }
+  ]
+}

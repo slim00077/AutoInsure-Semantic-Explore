@@ -1,0 +1,135 @@
+{
+  "date": "2026-11-04T19:37:05.489Z",
+  "results": [
+    {
+      "name": "Démarrage : graphe chargé depuis l'ontologie d'origine puis persisté",
+      "ok": true,
+      "detail": "846 triplets, source=original"
+    },
+    {
+      "name": "1. Création d'un assuré de test (HTTP 201)",
+      "ok": true,
+      "detail": "PersistRedemarrage"
+    },
+    {
+      "name": "2. L'individu existe dans le graphe RDF (ASK SPARQL)",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "2. L'individu est écrit dans data/assurance_live.ttl",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "3. Python arrêté : l'API Express répond 503 « degraded » (pas de plantage)",
+      "ok": true,
+      "detail": "degraded"
+    },
+    {
+      "name": "3. Python arrêté : une route métier renvoie une erreur JSON structurée (503)",
+      "ok": true,
+      "detail": "SEMANTIC_SERVICE_UNAVAILABLE"
+    },
+    {
+      "name": "3. Python arrêté : l'interface React affiche un message d'erreur et un bouton Réessayer",
+      "ok": true,
+      "detail": "Le service sémantique (Python/RDFLib) est injoignable. Lancez-le avec « npm run dev:semantic ». Rées"
+    },
+    {
+      "name": "4. Python relancé : le graphe est rechargé depuis le fichier persistant (source=live)",
+      "ok": true,
+      "detail": "source=live"
+    },
+    {
+      "name": "4. Python relancé : même nombre de triplets",
+      "ok": true,
+      "detail": "852 = 852"
+    },
+    {
+      "name": "4. Python relancé : l'individu existe toujours",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "5. Express arrêté : le port de l'API ne répond plus",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "5. Express relancé : /api/health ok et service sémantique joignable",
+      "ok": true,
+      "detail": "triples=852"
+    },
+    {
+      "name": "6. API : GET /api/insured retrouve le même individu après les deux redémarrages",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "7. Interface React : la ligne « Persist Redemarrage » s'affiche avec son permis",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "8. Fichier persistant lisible et inscriptible",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "8. Aucun fichier temporaire d'écriture atomique résiduel (*.tmp)",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "8. Suppression ciblée via SPARQL Update acceptée",
+      "ok": true,
+      "detail": "{\"added\":0,\"removed\":6,\"totalTriples\":846,\"executionMs\":330.88}"
+    },
+    {
+      "name": "8. Une sauvegarde « before_update » a été créée avant la suppression",
+      "ok": true,
+      "detail": "assurance_before_update_20261104-203653-290463.ttl"
+    },
+    {
+      "name": "8. L'individu supprimé n'est plus dans le fichier persistant",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "8. Effacement massif DELETE WHERE { ?s ?p ?o } REFUSÉ (403) et graphe intact",
+      "ok": true,
+      "detail": "HTTP 403"
+    },
+    {
+      "name": "9. Fichier persistant corrompu : le service démarre quand même (récupération)",
+      "ok": true,
+      "detail": "source=recovered:assurance_before_update_20261104-203654-285508.ttl"
+    },
+    {
+      "name": "9. Le fichier corrompu est conservé (assurance_live.corrupt-*.ttl), pas supprimé",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "9. /health expose les détails de la récupération",
+      "ok": true,
+      "detail": "{\"corruptFile\":\"assurance_live.corrupt-20261104-203703.ttl\",\"error\":\"at line 1 of <>:\",\"restoredFrom\":\"assurance_before_update_20261104-203654-285508.ttl\"}"
+    },
+    {
+      "name": "9. Les données de l'ontologie sont de nouveau disponibles",
+      "ok": true,
+      "detail": "851 triplets"
+    },
+    {
+      "name": "10. Réinitialisation : sauvegarde « before_reset » créée",
+      "ok": true,
+      "detail": "assurance_before_reset_20261104-203703.ttl"
+    },
+    {
+      "name": "10. Réinitialisation : retour à l'ontologie d'origine + extensions (846 triplets)",
+      "ok": true,
+      "detail": "846"
+    }
+  ]
+}

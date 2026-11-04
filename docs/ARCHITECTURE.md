@@ -74,7 +74,7 @@ Les DTO d'Express (`backend/src/domain/*.ts`) sont reflétés dans `frontend/src
 
 ## Raisonnement
 
-RDFLib n'est pas un raisonneur OWL. Choix : (a) matérialisation de `owl:inverseOf` ; (b) parcours `rdf:type/rdfs:subClassOf*` dans les requêtes ; (c) axiomes de cardinalité **appliqués par l'API** avant écriture et revérifiés par la validation structurelle ; (d) HermiT dans Protégé pour l'inférence complète.
+RDFLib n'est pas un raisonneur OWL. Choix : (a) matérialisation de `owl:inverseOf` ; (b) parcours `rdf:type/rdfs:subClassOf*` dans les requêtes ; (c) axiomes de cardinalité **appliqués par l'API** avant écriture et revérifiés par la validation structurelle ; (d) **HermiT** (Java, hors runtime) pour l'inférence complète et la validation : `npm run test:hermit` ; la correspondance entre les réponses de l'application et HermiT est prouvée dans [HERMIT_VALIDATION.md](HERMIT_VALIDATION.md) et [OWL_REASONING_INTEGRATION.md](OWL_REASONING_INTEGRATION.md).
 
 ## Performances
 

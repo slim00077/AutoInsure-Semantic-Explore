@@ -54,8 +54,11 @@ def _startup() -> None:
 @app.get("/health")
 def health() -> dict[str, Any]:
     store = get_store()
-    return {"status": "ok", "triples": len(store.graph), "source": store.source, "version": store.version,
-            "ontology": str(config.ONTOLOGY_PATH.name), "livePath": str(config.LIVE_PATH)}
+    out = {"status": "ok", "triples": len(store.graph), "source": store.source, "version": store.version,
+           "ontology": str(config.ONTOLOGY_PATH.name), "livePath": str(config.LIVE_PATH)}
+    if store.recovery:
+        out["recovery"] = store.recovery
+    return out
 
 
 # ----------------------------------------------------------------------------- SPARQL

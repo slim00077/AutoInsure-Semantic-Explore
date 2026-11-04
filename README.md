@@ -44,7 +44,7 @@
 ```
 
 - **Source de vérité = graphe RDF/OWL** (RDFLib). Aucune base MySQL. Seuls l'historique SPARQL/NLP et le journal d'activité sont stockés en JSON (`data/*.json`), à titre secondaire.
-- **Fuseki** n'a pas été retenu : Java n'est pas requis et RDFLib suffit pour 850 triplets. Le service expose la même interface (`/sparql/query`, `/sparql/update`) : migrer vers Fuseki ne toucherait que `backend/src/semantic/client.ts`.
+- **Fuseki** n'a pas été retenu : Java n'est pas requis au runtime et RDFLib suffit pour 850 triplets. Le service expose la même interface (`/sparql/query`, `/sparql/update`) : migrer vers Fuseki ne toucherait que `backend/src/semantic/client.ts`.
 - Détails et diagrammes : [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md).
 
 ## Technologies
@@ -53,10 +53,10 @@
 |---|---|
 | Front-End | React 18, Vite, TypeScript, Tailwind CSS 4, React Router, Axios, Lucide, Recharts, Framer Motion, React Flow + Dagre (ontographe) |
 | Back-End | Node.js, Express 4, TypeScript, Zod (validation), CORS, dotenv |
-| Web sémantique | OWL, RDF, SPARQL 1.1, **RDFLib 7**, Protégé, HermiT (côté Protégé) |
+| Web sémantique | OWL, RDF, SPARQL 1.1, **RDFLib 7**, Protégé, **HermiT 1.4 + OWLAPI 5.1.9 (Java, outil de validation hors runtime)** |
 | NLP/TALN | **spaCy 3.8** (`fr_core_news_md`), **NLTK 3.9** (distance d'édition), règles, dictionnaire de synonymes, templates SPARQL |
 | Service | Python 3.11, FastAPI, Uvicorn |
-| Tests | pytest, Vitest, Supertest |
+| Tests | pytest, Vitest, Supertest, **Playwright** (Chrome), utilitaire Java HermiT |
 
 Rôle de chaque bibliothèque NLP : spaCy → tokenisation, lemmes, POS, dépendances, NER ; NLTK → `edit_distance` pour tolérer les fautes de frappe dans l'appariement des entités ; RDFLib → gazetteer des individus, validation et exécution SPARQL.
 
@@ -72,21 +72,24 @@ projetweb/
 │   ├── app/store.py              Triple store, SPARQL sécurisé, persistance
 │   ├── app/ontology_info.py      Classes, propriétés, graphe, statistiques, validateur
 │   ├── app/nlp/                  lexicon · gazetteer · analyzer · templates · service
-│   └── tests/                    66 tests pytest
+│   ├── tools/nlp_validation_report.py   régénère docs/NLP_VALIDATION_REPORT.md (86 cas, vérité terrain SPARQL)
+│   └── tests/                    188 tests pytest
 ├── backend/                      Express/TypeScript
 │   ├── src/domain/               Logique métier par entité (insured, vehicles, contracts, claims…)
 │   ├── src/semantic/             Client du service, constructeur SPARQL Update sûr, index des individus
 │   ├── src/routes/               Routes REST
-│   └── tests/                    63 tests Vitest/Supertest (service Python de test lancé automatiquement)
+│   └── tests/                    70 tests Vitest/Supertest (service Python de test lancé automatiquement)
 ├── frontend/                     React : pages, composants, hooks, services Axios typés
+├── e2e/                          Playwright (65 tests navigateur) + persistence.mjs (26 vérifications) sur pile isolée
+├── tools/hermit-validator/       Java : OWLAPI + HermiT (validation OWL, recoupement application ↔ HermiT)
 ├── scripts/                      setup, dev, run-semantic (multi-plateforme)
 ├── data/                         Graphe persistant, sauvegardes, journaux (ignoré par Git)
-└── docs/                         Architecture, API, NLP, ontologie, répartition, démo
+└── docs/                         Architecture, API, NLP, ontologie, rapports de validation, répartition, démo
 ```
 
 ## Installation
 
-Prérequis : **Node.js ≥ 20**, **Python 3.10–3.12** (3.11 recommandé : roues spaCy), accès Internet pour le premier téléchargement.
+Prérequis : **Node.js ≥ 20**, **Python 3.10–3.12** (3.11 recommandé : roues spaCy), accès Internet pour le premier téléchargement. *Optionnel* (validation HermiT uniquement) : **JDK 17+** et Maven ; Google Chrome pour les tests Playwright.
 
 ```bash
 npm run setup          # venv Python + dépendances + modèle spaCy fr_core_news_md + npm install (backend, frontend)
@@ -164,7 +167,10 @@ Extensions contrôlées (fichier séparé `ontology/assurance_auto_extensions.tt
 - `statutSinistre` (DatatypeProperty fonctionnelle sur `Sinistre`) — le site doit afficher un statut de sinistre ;
 - `contenuDocument` (DatatypeProperty sur `Document`) — texte des rapports d'expertise.
 
-**Cohérence.** Une validation structurelle RDFLib (domaines, ranges, propriétés fonctionnelles, cardinalités, disjonctions, clés uniques, inverses) est exécutée à la demande et dans les tests ; elle réussit sur l'ontologie. **HermiT n'a pas pu être exécuté ici (Java absent de la machine de développement)** : à lancer dans Protégé sur l'export RDF/XML (`Reasoner → HermiT`).
+**Cohérence.** Deux niveaux, à ne pas confondre :
+
+- **Validation structurelle** (RDFLib, dans l'application, monde fermé) : domaines, ranges, fonctionnelles, cardinalités, disjonctions, clés uniques, inverses — exécutée à la demande et dans les tests.
+- **Raisonnement OWL avec HermiT** (Java, outil de validation, monde ouvert) : **exécuté** sur l'ontologie d'origine → **cohérente**, 0 classe insatisfiable, `ContratActif` = Contrat_001..003 et `SinistreExpertise` = Sinistre_001, _003 inférées ; 49 vérifications + recoupement avec l'application (les ensembles inférés par HermiT sont identiques aux réponses de nos requêtes). `npm run test:hermit` → [docs/HERMIT_VALIDATION.md](docs/HERMIT_VALIDATION.md). **RDFLib ne raisonne pas** : voir [docs/OWL_REASONING_INTEGRATION.md](docs/OWL_REASONING_INTEGRATION.md).
 
 ## Module NLP/TALN
 
@@ -173,11 +179,12 @@ Pipeline : question → prétraitement → spaCy (tokens, lemmes, POS, dépendan
 - **Intentions** : `SEARCH_VEHICLE`, `SEARCH_INSURED`, `SEARCH_CONTRACT`, `SEARCH_GUARANTEE`, `SEARCH_CLAIM`, `SEARCH_DAMAGE`, `SEARCH_EXPERTISE`, `SEARCH_INDEMNIFICATION` + modificateurs `FILTER_BY_AMOUNT`, `FILTER_BY_DATE`, `FILTER_BY_TYPE` (+ `SEARCH_COMPANY`/`SEARCH_GARAGE`).
 - **Synonymes** : voiture = véhicule = automobile ; assuré = client = souscripteur ; remboursement = indemnisation ; couverture = garantie ; etc. (dictionnaire consultable dans l'application).
 - **Sécurité** : aucune chaîne de la question n'est insérée dans le SPARQL ; individus = noms locaux validés (regex + existence dans le graphe), classes vérifiées dans l'ontologie, nombres = `Decimal`, filtres par whitelist. Tests d'injection inclus.
-- **Honnêteté** : hors domaine, entité inconnue, homonyme ambigu, rôle incompatible (ex. « l'expert Ahmed » alors qu'Ahmed est un assuré) → message explicite, **aucune requête exécutée**.
+- **Négation** : analyse linguistique explicite (marqueurs `ne … pas/jamais`, `sans`, `pas de`, `mais pas`, portée, dépendances spaCy) → `FILTER NOT EXISTS` avec variables privées. Ex. « Quels contrats ne couvrent pas le vol ? » = complémentaire exact de « …couvrent le vol ? ». Négation de montant/date et « ne … que » : **refusées**, jamais ignorées.
+- **Honnêteté** : hors domaine, entité inconnue, homonyme ambigu, **rôle incompatible** (« évalués par Ahmed » alors qu'Ahmed est un assuré ; « conduits par l'expert Karim »), **demande d'écriture** (« Supprime… ») → message explicite, **aucune requête exécutée**.
 
-Documentation détaillée (règles, templates, limites) : [docs/NLP_PIPELINE.md](docs/NLP_PIPELINE.md).
+Documentation détaillée (règles, templates, limites) : [docs/NLP_PIPELINE.md](docs/NLP_PIPELINE.md) · résultats vérifiés sur 86 questions : [docs/NLP_VALIDATION_REPORT.md](docs/NLP_VALIDATION_REPORT.md).
 
-Questions fonctionnelles (testées) : « Quels véhicules sont assurés par Ahmed ? » · « Quels contrats couvrent le vol ? » · « Quels sinistres concernent une Peugeot 208 ? » · « Quel est le montant de l'indemnisation du sinistre 001 ? » · « Quels assurés ont déclaré un accident en 2026 ? » · « Quels contrats couvrent les dommages matériels ? » · « Quels véhicules ont subi un accident ? » · « Quels contrats possèdent une garantie tous risques ? » · « Quels sinistres ont une indemnisation supérieure à 3000 euros ? » · « Quels sinistres ont été évalués par l'expert Trabelsi ? ».
+Questions fonctionnelles (testées, résultats comparés à une vérité terrain SPARQL) : « Quels véhicules sont assurés par Ahmed ? » · « Quels contrats couvrent le vol ? » · « Quels sinistres concernent une Peugeot 208 ? » · « Quel est le montant de l'indemnisation du sinistre 001 ? » · « Quels assurés ont déclaré un accident en 2026 ? » · « Quels contrats couvrent les dommages matériels ? » · « Quels véhicules ont subi un accident ? » · « Quels contrats possèdent une garantie tous risques ? » · « Quels sinistres ont une indemnisation supérieure à 3000 euros ? » · « Quels sinistres ont été évalués par l'expert Karim ? » · négation : « Quels contrats ne couvrent pas le vol ? ».
 La question *« …évalués par l'expert Ahmed ? »* est refusée avec explication : aucun expert nommé Ahmed n'existe (Ahmed Ben Ali est un assuré). Elle devient exécutable dès qu'on crée un expert Ahmed (page Expertises).
 
 ## Exemples SPARQL
@@ -201,18 +208,22 @@ SELECT ?i ?montant ?franchise ?taux WHERE {
 SELECT ?type (COUNT(?s) AS ?n) WHERE { ?s a ?type . ?type rdfs:subClassOf actors:Sinistre } GROUP BY ?type
 ```
 
-Les préfixes `actors`, `rdf`, `rdfs`, `owl`, `xsd` sont disponibles sans déclaration. `SERVICE`, `LOAD`, `CLEAR`, `DROP`, `CREATE`, `COPY`, `MOVE` sont refusés.
+Les préfixes `actors`, `rdf`, `rdfs`, `owl`, `xsd` sont disponibles sans déclaration. Sont refusés (403) : `SERVICE`, `LOAD`, `CLEAR`, `DROP`, `CREATE`, `COPY`, `MOVE`, `ADD`, **`FROM` / `USING` / `WITH` / `GRAPH`** (un seul graphe, aucun accès fichier ou réseau) et tout **effacement massif** (`DELETE WHERE { ?s ?p ?o }`). Une sauvegarde est créée avant toute suppression. Détails : [docs/SPARQL_VALIDATION_REPORT.md](docs/SPARQL_VALIDATION_REPORT.md).
 
 ## Tests
 
 ```bash
-npm test                 # pytest (66) + Vitest backend (63)
-npm run test:python      # chargement ontologie, SPARQL, sécurité, persistance, validateur, NLP
-npm run test:backend     # endpoints, CRUD, SPARQL, NLP, erreurs, cas ambigus (démarre son propre service Python sur le port 8101)
-npm run test:frontend    # tests unitaires front
+npm test                 # pytest (188) + Vitest backend (70)
+npm run test:python      # ontologie, SPARQL + sécurité, persistance/récupération, extensions, raisonnement, NLP (+ négation)
+npm run test:backend     # endpoints, CRUD, SPARQL, NLP, erreurs (démarre son propre service Python sur le port 8101)
+npm run test:frontend    # tests unitaires front (6)
+npm run setup:e2e && npm run test:e2e   # Playwright : 65 tests navigateur (CRUD des 7 modules, explorateurs, NLP) sur une pile ISOLÉE
+npm run test:persistence                # redémarrage Python puis Express, interface React, sauvegardes, fichier corrompu (26 vérifications)
+npm run test:hermit                     # HermiT (Java 17+ et Maven requis) ; npm run test:hermit:cross = recoupement application ↔ HermiT
+npm run report:nlp                      # régénère docs/NLP_VALIDATION_REPORT.md (86 questions, vérité terrain SPARQL)
 ```
 
-Les tests CRUD vérifient notamment que le graphe RDF **revient exactement à son nombre de triplets initial** après création puis suppression de toutes les entités, et que la persistance survit à un « redémarrage » du store.
+Les tests CRUD (API et navigateur) vérifient que le graphe RDF **revient exactement à son nombre initial de triplets** après création puis suppression de toutes les entités, et que la persistance survit à un redémarrage. Les tests navigateur et de persistance tournent sur des **ports et un dossier de données dédiés** : ils ne touchent jamais `data/`. Rapports : [CRUD navigateur](docs/MANUAL_CRUD_TEST_REPORT.md) · [persistance](docs/PERSISTENCE_VALIDATION.md) · [bilan final](docs/FINAL_PROJECT_AUDIT.md).
 
 ## Répartition du travail (5 étudiants)
 
@@ -228,8 +239,15 @@ Branches Git suggérées : `feat/ontologie`, `feat/backend-rdf`, `feat/frontend-
 
 ## Limites et points ouverts
 
-- **HermiT non exécuté** dans cet environnement (pas de Java) ; validation structurelle RDFLib à la place. Les classes définies (`ContratActif`, `SinistreExpertise`) ne sont pas inférées côté RDFLib : l'application utilise des filtres équivalents (`statutContrat "Actif"`, `faitObjetDe`).
-- Raisonnement léger : seul `owl:inverseOf` est matérialisé (un `DELETE` SPARQL brut peut laisser une inverse orpheline).
-- NLP : français uniquement ; recherches (pas de négation ni de raisonnement multi-étapes) ; « accident » = `AccidentCirculation` ; la relation Garantie ↔ type de Dommage n'existe pas dans l'ontologie (« contrats couvrant les dommages matériels » = contrats rattachés à un sinistre ayant provoqué un dommage matériel) ; montants sans devise.
+- **HermiT est un outil de validation hors runtime** (Java). L'application elle-même (RDFLib) **ne raisonne pas** : `ContratActif` et `SinistreExpertise` ne sont pas typés dans le graphe ; l'application utilise des filtres équivalents (`statutContrat "Actif"`, `faitObjetDe` une `Expertise`) dont l'égalité avec HermiT est vérifiée. Seul `owl:inverseOf` est matérialisé (et supprimé symétriquement).
+- OWL est en monde ouvert, nos contrôles (contrat sans véhicule refusé…) sont une validation en monde fermé : voir [docs/OWL_REASONING_INTEGRATION.md](docs/OWL_REASONING_INTEGRATION.md). Un `INSERT DATA` brut n'est pas bloqué par les axiomes (détecté a posteriori par la validation et HermiT).
+- NLP : français uniquement, une question à la fois ; négation limitée aux types / statuts / entités / existences (pas aux montants et dates : refusée) ; « accident » = `AccidentCirculation` ; la relation Garantie ↔ type de Dommage n'existe pas dans l'ontologie (« contrats couvrant les dommages matériels » = contrats rattachés à un sinistre ayant provoqué un dommage matériel) ; montants sans devise.
+- SPARQL Explorer : pas de délai maximal d'exécution (une requête très coûteuse peut occuper le service).
 - Pas d'authentification (hors périmètre du sujet) ; l'API n'est pas conçue pour être exposée telle quelle sur Internet.
-- Le graphe est chargé en mémoire (adapté à des milliers de triplets, pas à des millions) ; le front principal pèse ~250 ko gzip.
+- Le graphe est chargé en mémoire (adapté à des milliers de triplets, pas à des millions) ; un seul processus Python par dossier de données.
+- Le projet est dans OneDrive : pour la démo, placer `DATA_DIR` hors OneDrive ou suspendre la synchronisation (conflits possibles sur `assurance_live.ttl` ; un fichier illisible est désormais récupéré automatiquement).
+- Tests navigateur : Chrome uniquement.
+
+## Documentation
+
+[ARCHITECTURE](docs/ARCHITECTURE.md) · [API](docs/API.md) · [ONTOLOGIE](docs/ONTOLOGIE.md) · [NLP_PIPELINE](docs/NLP_PIPELINE.md) · [GUIDE_DEMO](docs/GUIDE_DEMO.md) · [REPARTITION_TRAVAIL](docs/REPARTITION_TRAVAIL.md) — validations : [HERMIT](docs/HERMIT_VALIDATION.md) · [Extensions](docs/ONTOLOGY_EXTENSION_VALIDATION.md) · [Raisonnement OWL](docs/OWL_REASONING_INTEGRATION.md) · [CRUD navigateur](docs/MANUAL_CRUD_TEST_REPORT.md) · [NLP](docs/NLP_VALIDATION_REPORT.md) · [SPARQL](docs/SPARQL_VALIDATION_REPORT.md) · [Persistance](docs/PERSISTENCE_VALIDATION.md) · [Audit final](docs/FINAL_PROJECT_AUDIT.md).

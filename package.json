@@ -16,6 +16,12 @@
     "test": "npm run test:python && npm run test:backend",
     "test:python": "node scripts/run-semantic.mjs --test",
     "test:backend": "npm --prefix backend test",
-    "test:frontend": "npm --prefix frontend test"
+    "test:frontend": "npm --prefix frontend test",
+    "setup:e2e": "npm --prefix e2e install",
+    "test:e2e": "npm --prefix e2e test",
+    "test:persistence": "node e2e/persistence.mjs",
+    "test:hermit": "node tools/hermit-validator/run.mjs",
+    "test:hermit:cross": "node tools/hermit-validator/run.mjs --cross",
+    "report:nlp": "node scripts/run-semantic.mjs --nlp-report"
   }
 }

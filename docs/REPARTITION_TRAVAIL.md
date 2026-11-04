@@ -21,21 +21,31 @@ Le projet est découpé en modules à **contrats stables** (API REST, `frontend/
 
 ## Workflow Git
 
+Le dépôt **existe déjà** (branche `main`, remote `origin` = `slim00077/AutoInsure-Semantic-Explore`) : **ne pas refaire `git init`**.
+
 ```bash
-git init && git add . && git commit -m "Base du projet"      # une seule fois (le dépôt n'est pas encore initialisé)
-git checkout -b feat/<module>                                # une branche par étudiant
+git fetch origin && git status                    # toujours vérifier l'état avant de travailler
+git checkout -b feat/<module>                     # une branche par étudiant (voir tableau)
 # … travail, puis :
-npm test                                                     # doit rester vert avant toute fusion
-git rebase main && git push && ouvrir une Pull Request
+npm test                                          # pytest + Vitest : doit rester vert avant toute fusion
+git add <fichiers précis> && git commit
+git fetch origin && git rebase origin/main        # intégrer le travail des autres SANS le réécrire
+git push -u origin feat/<module>                  # jamais de --force ; ouvrir une Pull Request
 ```
+
+Règles : ne jamais committer `.env`, `data/`, `node_modules/`, `.venv/` (ils sont ignorés) ; ne pas modifier `ontology/assurance_auto.xml` (original) ; toute évolution d'ontologie passe par `ontology/assurance_auto_extensions.ttl` + mise à jour de `templates.COLUMNS/EDGES` et des DTO.
 
 Ordre d'intégration conseillé : 1 (ontologie) → 2 (back) → 4 (NLP) → 3 (front gestion) → 5 (explorateurs, intégration).
 Conflits probables : `frontend/src/lib/{types,services}.ts` et `components/layout/AppLayout.tsx` (ajouter des lignes, ne pas réordonner).
 
 ## Checklist par étudiant avant la soutenance
 
-1. Ontologie : exécuter HermiT, capturer l'inférence (`ContratActif`, `SinistreExpertise`), proposer l'inverse de `possede`.
-2. Back : présenter un cycle CRUD complet dans le SPARQL Explorer (avant/après), les garde-fous et la persistance après redémarrage.
-3. Front : parcours Dashboard → CRUD → mise à jour immédiate des statistiques.
-4. NLP : expliquer chaque étape du pipeline, les limites, démontrer l'absence d'API LLM (`llm:false`, aucune clé, aucun appel réseau sortant).
-5. Explorateurs : ontographe, requêtes SPARQL, recherche NLP, plan de démonstration.
+| # | À savoir et à pouvoir montrer | Commande / fichier |
+|---|---|---|
+| 1 — Ontologie | Expliquer **HermiT** : ontologie cohérente, 0 classe insatisfiable, `ContratActif` = C-001..003, `SinistreExpertise` = S-001/S-003 ; la différence **monde ouvert / monde fermé** ; les 2 extensions et pourquoi l'original est intact ; propositions d'amélioration (`estPossedePar`, `statutContrat` fonctionnelle) | `npm run test:hermit` · `docs/HERMIT_VALIDATION.md` · `docs/ONTOLOGY_EXTENSION_VALIDATION.md` · `docs/OWL_REASONING_INTEGRATION.md` |
+| 2 — Back / RDF | Cycle CRUD avant/après dans le SPARQL Explorer ; **garde-fous** (SERVICE, LOAD, FROM, USING, GRAPH refusés ; effacement massif refusé ; sauvegarde avant suppression) ; **persistance** après redémarrage et **récupération** d'un fichier corrompu ; le bug `USING <file://>` trouvé à l'audit | `docs/SPARQL_VALIDATION_REPORT.md` · `docs/PERSISTENCE_VALIDATION.md` · `npm run test:persistence` |
+| 3 — Front gestion | Parcours Dashboard → CRUD → compteurs mis à jour ; messages d'erreur par champ, états de chargement/erreur ; résultats des 42 tests navigateur | `docs/MANUAL_CRUD_TEST_REPORT.md` · `npm run test:e2e` |
+| 4 — NLP | Chaque étape du pipeline ; **négation** (marqueur, portée, `FILTER NOT EXISTS`, refus des cas non sûrs) ; rôles incompatibles ; absence d'API LLM (`llm:false`) ; limites | `docs/NLP_PIPELINE.md` · `docs/NLP_VALIDATION_REPORT.md` · `npm run report:nlp` |
+| 5 — Explorateurs / intégration | Ontographe, SPARQL Explorer, recherche NLP, déroulé de 12 minutes ; lancer la pile complète et l'ensemble des tests | `docs/GUIDE_DEMO.md` · `docs/FINAL_PROJECT_AUDIT.md` |
+
+Tous : savoir répondre à « RDFLib raisonne-t-il ? » (non — voir `OWL_REASONING_INTEGRATION.md`) et « pourquoi pas de LLM ? » (contrainte du professeur, module maison).

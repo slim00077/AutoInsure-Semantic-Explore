@@ -1,0 +1,457 @@
+[
+ [
+  "crud.spec.ts",
+  "/1. Assurés",
+  "EMPTY FORM : champs obligatoires signalés, rien n'est créé",
+  "passed",
+  7.2
+ ],
+ [
+  "crud.spec.ts",
+  "/1. Assurés",
+  "INVALID DATA : permis invalide refusé avec message par champ",
+  "passed",
+  4.6
+ ],
+ [
+  "crud.spec.ts",
+  "/1. Assurés",
+  "CREATE + success notification + READ",
+  "passed",
+  6.9
+ ],
+ [
+  "crud.spec.ts",
+  "/1. Assurés",
+  "DUPLICATE : même permis refusé (message d'erreur)",
+  "passed",
+  4.4
+ ],
+ [
+  "crud.spec.ts",
+  "/1. Assurés",
+  "UPDATE : modification du prénom et du permis",
+  "passed",
+  5.8
+ ],
+ [
+  "crud.spec.ts",
+  "/2. Véhicules",
+  "EMPTY + INVALID : champs obligatoires et année invalide",
+  "passed",
+  6.3
+ ],
+ [
+  "crud.spec.ts",
+  "/2. Véhicules",
+  "CREATE (relié au conducteur) + READ",
+  "passed",
+  6.5
+ ],
+ [
+  "crud.spec.ts",
+  "/2. Véhicules",
+  "DUPLICATE : immatriculation déjà utilisée refusée",
+  "passed",
+  4.8
+ ],
+ [
+  "crud.spec.ts",
+  "/2. Véhicules",
+  "UPDATE : valeur du véhicule",
+  "passed",
+  6.0
+ ],
+ [
+  "crud.spec.ts",
+  "/3. Contrats",
+  "EMPTY + règle d'axiome : sans assuré / véhicule le contrat est refusé",
+  "passed",
+  5.3
+ ],
+ [
+  "crud.spec.ts",
+  "/3. Contrats",
+  "CREATE (RC) : garantie exigée ajoutée automatiquement + READ",
+  "passed",
+  9.4
+ ],
+ [
+  "crud.spec.ts",
+  "/3. Contrats",
+  "DUPLICATE : numéro de contrat déjà utilisé refusé",
+  "passed",
+  5.9
+ ],
+ [
+  "crud.spec.ts",
+  "/3. Contrats",
+  "UPDATE : prime et statut",
+  "passed",
+  6.5
+ ],
+ [
+  "crud.spec.ts",
+  "/4. Garanties",
+  "CREATE (garantie Vol sur le contrat de test) + READ",
+  "passed",
+  5.9
+ ],
+ [
+  "crud.spec.ts",
+  "/4. Garanties",
+  "DUPLICATE : la même garantie ne peut pas être ajoutée deux fois",
+  "passed",
+  4.4
+ ],
+ [
+  "crud.spec.ts",
+  "/4. Garanties",
+  "UPDATE : plafond",
+  "passed",
+  5.1
+ ],
+ [
+  "crud.spec.ts",
+  "/5. Sinistres",
+  "EMPTY : les champs obligatoires sont signalés",
+  "passed",
+  4.8
+ ],
+ [
+  "crud.spec.ts",
+  "/5. Sinistres",
+  "INCORRECT RELATIONSHIP : le contrat proposé est limité à celui de l'assuré choisi",
+  "passed",
+  4.1
+ ],
+ [
+  "crud.spec.ts",
+  "/5. Sinistres",
+  "CREATE (avec un dommage) + READ",
+  "passed",
+  6.3
+ ],
+ [
+  "crud.spec.ts",
+  "/5. Sinistres",
+  "UPDATE : statut du sinistre (extension statutSinistre)",
+  "passed",
+  5.8
+ ],
+ [
+  "crud.spec.ts",
+  "/6. Expertises",
+  "EMPTY : expertise sans sinistre ni expert refusée",
+  "passed",
+  4.6
+ ],
+ [
+  "crud.spec.ts",
+  "/6. Expertises",
+  "CREATE expert + READ",
+  "passed",
+  5.8
+ ],
+ [
+  "crud.spec.ts",
+  "/6. Expertises",
+  "CREATE expertise (avec rapport) + READ",
+  "passed",
+  6.4
+ ],
+ [
+  "crud.spec.ts",
+  "/6. Expertises",
+  "UPDATE : conclusion de l'expertise",
+  "passed",
+  5.1
+ ],
+ [
+  "crud.spec.ts",
+  "/7. Indemnisations",
+  "EMPTY : sans dommage choisi, refus",
+  "passed",
+  4.7
+ ],
+ [
+  "crud.spec.ts",
+  "/7. Indemnisations",
+  "CREATE (calcul par barème) + READ",
+  "passed",
+  6.0
+ ],
+ [
+  "crud.spec.ts",
+  "/7. Indemnisations",
+  "DUPLICATE : le dommage déjà indemnisé n'est plus proposé",
+  "passed",
+  3.8
+ ],
+ [
+  "crud.spec.ts",
+  "/7. Indemnisations",
+  "UPDATE : statut Acceptée",
+  "passed",
+  6.6
+ ],
+ [
+  "crud.spec.ts",
+  "/8. Intégrité, chargement, erreurs",
+  "INCORRECT RELATIONSHIP (UI) : supprimer l'assuré encore référencé est refusé (409) avec message",
+  "passed",
+  4.4
+ ],
+ [
+  "crud.spec.ts",
+  "/8. Intégrité, chargement, erreurs",
+  "INCORRECT RELATIONSHIP (API) : conducteur non-Conducteur, contrat sans véhicule, sinistre sans dommage → 4xx",
+  "passed",
+  0.1
+ ],
+ [
+  "crud.spec.ts",
+  "/8. Intégrité, chargement, erreurs",
+  "LOADING STATE : indicateur de chargement visible pendant une requête lente",
+  "passed",
+  6.2
+ ],
+ [
+  "crud.spec.ts",
+  "/8. Intégrité, chargement, erreurs",
+  "ERROR STATE : API injoignable → message d'erreur et bouton Réessayer qui fonctionne",
+  "passed",
+  3.1
+ ],
+ [
+  "crud.spec.ts",
+  "/8. Intégrité, chargement, erreurs",
+  "SERVER ERROR : erreur 500 de l'API affichée proprement",
+  "passed",
+  2.5
+ ],
+ [
+  "crud.spec.ts",
+  "/8. Intégrité, chargement, erreurs",
+  "Le dashboard reflète les enregistrements créés (compteurs calculés par SPARQL)",
+  "passed",
+  2.9
+ ],
+ [
+  "crud.spec.ts",
+  "/9. Suppression des seuls enregistrements de test (ordre inverse)",
+  "indemnisation",
+  "passed",
+  4.8
+ ],
+ [
+  "crud.spec.ts",
+  "/9. Suppression des seuls enregistrements de test (ordre inverse)",
+  "expertise puis expert",
+  "passed",
+  8.8
+ ],
+ [
+  "crud.spec.ts",
+  "/9. Suppression des seuls enregistrements de test (ordre inverse)",
+  "sinistre (et son dommage)",
+  "passed",
+  4.8
+ ],
+ [
+  "crud.spec.ts",
+  "/9. Suppression des seuls enregistrements de test (ordre inverse)",
+  "garantie Vol",
+  "passed",
+  6.3
+ ],
+ [
+  "crud.spec.ts",
+  "/9. Suppression des seuls enregistrements de test (ordre inverse)",
+  "contrat",
+  "passed",
+  5.3
+ ],
+ [
+  "crud.spec.ts",
+  "/9. Suppression des seuls enregistrements de test (ordre inverse)",
+  "véhicule",
+  "passed",
+  5.0
+ ],
+ [
+  "crud.spec.ts",
+  "/9. Suppression des seuls enregistrements de test (ordre inverse)",
+  "assuré",
+  "passed",
+  4.4
+ ],
+ [
+  "crud.spec.ts",
+  "/9. Suppression des seuls enregistrements de test (ordre inverse)",
+  "le graphe RDF est revenu EXACTEMENT à son nombre initial de triplets",
+  "passed",
+  0.1
+ ],
+ [
+  "explorers.spec.ts",
+  "/SPARQL Explorer",
+  "SELECT + FILTER + OPTIONAL + ORDER BY + LIMIT : résultats affichés",
+  "passed",
+  3.6
+ ],
+ [
+  "explorers.spec.ts",
+  "/SPARQL Explorer",
+  "ASK, CONSTRUCT et DESCRIBE sont acceptés",
+  "passed",
+  2.9
+ ],
+ [
+  "explorers.spec.ts",
+  "/SPARQL Explorer",
+  "requête invalide : message d'erreur expliqué (400)",
+  "passed",
+  3.4
+ ],
+ [
+  "explorers.spec.ts",
+  "/SPARQL Explorer",
+  "requête vide : exécution refusée sans plantage",
+  "passed",
+  3.0
+ ],
+ [
+  "explorers.spec.ts",
+  "/SPARQL Explorer",
+  "opération dangereuse refusée : SERVICE (SSRF)",
+  "passed",
+  2.9
+ ],
+ [
+  "explorers.spec.ts",
+  "/SPARQL Explorer",
+  "opération dangereuse refusée : FROM <file://…> (lecture de fichier)",
+  "passed",
+  2.9
+ ],
+ [
+  "explorers.spec.ts",
+  "/SPARQL Explorer",
+  "opération dangereuse refusée : USING <file://…> (lecture de fichier via Update)",
+  "passed",
+  3.6
+ ],
+ [
+  "explorers.spec.ts",
+  "/SPARQL Explorer",
+  "opération dangereuse refusée : CLEAR ALL",
+  "passed",
+  3.9
+ ],
+ [
+  "explorers.spec.ts",
+  "/SPARQL Explorer",
+  "opération dangereuse refusée : DROP ALL",
+  "passed",
+  3.7
+ ],
+ [
+  "explorers.spec.ts",
+  "/SPARQL Explorer",
+  "opération dangereuse refusée : LOAD",
+  "passed",
+  3.9
+ ],
+ [
+  "explorers.spec.ts",
+  "/SPARQL Explorer",
+  "opération dangereuse refusée : effacement massif DELETE WHERE { ?s ?p ?o }",
+  "passed",
+  4.0
+ ],
+ [
+  "explorers.spec.ts",
+  "/SPARQL Explorer",
+  "INSERT DATA puis DELETE DATA : modification réelle et réversible",
+  "passed",
+  6.5
+ ],
+ [
+  "explorers.spec.ts",
+  "/Recherche NLP (démonstration)",
+  "« Quels véhicules sont assurés par Ahmed ? » : pipeline complet visible",
+  "passed",
+  4.6
+ ],
+ [
+  "explorers.spec.ts",
+  "/Recherche NLP (démonstration)",
+  "négation : « Quels contrats ne couvrent pas le vol ? » → analyse de la portée + NOT EXISTS",
+  "passed",
+  4.4
+ ],
+ [
+  "explorers.spec.ts",
+  "/Recherche NLP (démonstration)",
+  "rôle incompatible : aucune requête exécutée, message clair",
+  "passed",
+  3.8
+ ],
+ [
+  "explorers.spec.ts",
+  "/Recherche NLP (démonstration)",
+  "demande d'écriture : refusée (lecture seule)",
+  "passed",
+  3.1
+ ],
+ [
+  "explorers.spec.ts",
+  "/Recherche NLP (démonstration)",
+  "hors domaine : « Je n'ai pas compris », aucune requête",
+  "passed",
+  3.2
+ ],
+ [
+  "explorers.spec.ts",
+  "/Recherche NLP (démonstration)",
+  "entité ambiguë : clarification demandée",
+  "passed",
+  3.6
+ ],
+ [
+  "explorers.spec.ts",
+  "/Recherche NLP (démonstration)",
+  "question 8 de l'énoncé : l'expert Karim est trouvé",
+  "passed",
+  3.4
+ ],
+ [
+  "explorers.spec.ts",
+  "/Recherche NLP (démonstration)",
+  "Dictionnaire & intentions : synonymes et intentions consultables",
+  "passed",
+  3.4
+ ],
+ [
+  "explorers.spec.ts",
+  "/Ontology Explorer et dashboard",
+  "le dashboard affiche des KPI calculés et l'état de cohérence",
+  "passed",
+  5.3
+ ],
+ [
+  "explorers.spec.ts",
+  "/Ontology Explorer et dashboard",
+  "Ontology Explorer : hiérarchie des classes et ontographe",
+  "passed",
+  6.7
+ ],
+ [
+  "smoke.spec.ts",
+  "",
+  "la pile isolée démarre et le dashboard s'affiche",
+  "passed",
+  3.8
+ ]
+]

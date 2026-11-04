@@ -11,3 +11,15 @@ backend/dist/
 frontend/dist/
 *.log
 .DS_Store
+
+# Tests de bout en bout (Playwright) : sorties régénérées à chaque exécution
+e2e/test-results/
+e2e/playwright-report/
+e2e/results.json
+e2e/.stack.json
+e2e/screenshots/
+# Utilitaire HermiT : JAR Maven et classes compilées (régénérés par tools/hermit-validator/run.mjs)
+tools/hermit-validator/target/
+# Fichiers persistants corrompus mis de côté / sauvegardes éventuellement copiées hors de data/
+*.corrupt-*.ttl
+

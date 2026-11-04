@@ -20,5 +20,10 @@ BACKUP_DIR = DATA_DIR / "backups"
 
 SPACY_MODEL = os.environ.get("SPACY_MODEL", "fr_core_news_md")
 MAX_RESULT_ROWS = int(os.environ.get("MAX_RESULT_ROWS", "5000"))
+# Garde-fou anti-effacement : un SPARQL Update qui supprimerait plus de triplets que
+# max(MAX_DELETE_MIN, MAX_DELETE_FRACTION x taille du graphe) est annule.
+MAX_DELETE_MIN = int(os.environ.get("MAX_DELETE_MIN", "150"))
+MAX_DELETE_FRACTION = float(os.environ.get("MAX_DELETE_FRACTION", "0.2"))
+KEEP_UPDATE_BACKUPS = int(os.environ.get("KEEP_UPDATE_BACKUPS", "30"))
 
 ONTOLOGY_NS = "http://www.semanticweb.org/assurance/actors#"

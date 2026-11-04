@@ -175,3 +175,47 @@ describe("Module NLP : question en français -> SPARQL -> résultats", () => {
     expect(h[0]).toHaveProperty("question");
   });
 });
+
+describe("Module NLP : négation, rôles incompatibles et écriture (via l'API)", () => {
+  const ids = (b: { result: { rows: { x: { local: string } }[] } }) => [...new Set(b.result.rows.map((r) => r.x.local))].sort();
+
+  it("« Quels contrats ne couvrent pas le vol ? » renvoie le COMPLÉMENT de la version affirmative", async () => {
+    const yes = (await api.post("/api/nlp/search").send({ question: "Quels contrats couvrent le vol ?" })).body;
+    const no = (await api.post("/api/nlp/search").send({ question: "Quels contrats ne couvrent pas le vol ?" })).body;
+    expect(no.status).toBe("ok");
+    expect(no.sparql).toContain("NOT EXISTS");
+    expect(no.negations[0].cue).toBe("ne … pas");
+    expect(ids(yes)).toEqual(["Contrat_001"]);
+    expect(ids(no)).toEqual(["Contrat_002", "Contrat_003", "Contrat_004"]);
+  });
+
+  it("refuse plutôt qu'ignorer une négation non sûre (montant, ne … que)", async () => {
+    for (const question of ["Quels contrats ne couvrent que le vol ?", "Quels sinistres n'ont pas une indemnisation supérieure à 3000 euros ?"]) {
+      const r = (await api.post("/api/nlp/search").send({ question })).body;
+      expect(r.status).toBe("unsupported");
+      expect(r.executed).toBe(false);
+      expect(r.sparql).toBeNull();
+    }
+  });
+
+  it("refuse les demandes d'écriture et les rôles incompatibles sans exécuter de requête", async () => {
+    for (const [question, status] of [
+      ["Supprime tous les contrats", "unsupported"],
+      ["Quels sinistres ont été évalués par Ahmed ?", "entity_not_found"],
+      ["Quels véhicules sont conduits par l'expert Karim ?", "entity_not_found"],
+    ]) {
+      const r = (await api.post("/api/nlp/search").send({ question })).body;
+      expect(r.status).toBe(status);
+      expect(r.executed).toBe(false);
+    }
+  });
+
+  it("« Qui a déclaré un sinistre ? » renvoie des personnes, et l'expert Karim existe (question 8 de l'énoncé)", async () => {
+    const who = (await api.post("/api/nlp/search").send({ question: "Qui a déclaré un sinistre ?" })).body;
+    expect(who.intent).toBe("SEARCH_INSURED");
+    const karim = (await api.post("/api/nlp/search").send({ question: "Quels sinistres ont été évalués par l'expert Karim ?" })).body;
+    expect(karim.status).toBe("ok");
+    expect(ids(karim)).toEqual(["Sinistre_001"]);
+  });
+});
+

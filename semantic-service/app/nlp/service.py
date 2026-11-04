@@ -98,6 +98,7 @@ class NlpService:
             "constraints": [{"kind": c.kind, "node": c.node, "description": c.description, "source": c.source} for c in a.frame.constraints],
             "unrecognized": a.unrecognized,
             "issues": a.issues,
+            "negations": a.negations,
         }
 
     # ------------------------------------------------------------------ traduction
@@ -129,6 +130,10 @@ class NlpService:
             return base
 
         codes = {i["code"] for i in a.issues}
+        if "write_request" in codes:
+            return finish("unsupported", " ".join(i["message"] for i in a.issues if i["code"] == "write_request"))
+        if "unsupported_negation" in codes:
+            return finish("unsupported", " ".join(i["message"] for i in a.issues if i["code"] == "unsupported_negation"))
         if not a.frame.focus:
             if any(i.get("ref") for i in a.issues):
                 return finish("entity_not_found", " ".join(i["message"] for i in a.issues if i.get("ref"))
@@ -139,7 +144,9 @@ class NlpService:
                           "expertises, indemnisations...)." + unk + " Pouvez-vous reformuler ?")
         if codes & {"role_mismatch", "unknown_entity"}:
             msgs = [i["message"] for i in a.issues if i["code"] in {"role_mismatch", "unknown_entity"}]
-            return finish("entity_not_found", " ".join(msgs) + " Je n'exécute pas de requête sur une entité introuvable.")
+            tail = (" Je n'exécute pas de requête avec un rôle incompatible." if "role_mismatch" in codes
+                    else " Je n'exécute pas de requête sur une entité introuvable.")
+            return finish("entity_not_found", " ".join(msgs) + tail)
         if "ambiguous_entity" in codes:
             return finish("clarification_needed", " ".join(i["message"] for i in a.issues if i["code"] == "ambiguous_entity"))
         if a.confidence < 0.5:

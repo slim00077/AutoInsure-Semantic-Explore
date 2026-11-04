@@ -11,7 +11,7 @@ Base : `http://localhost:4000/api` · JSON · CORS configurable. Le service Pyth
 | Code HTTP | `code` | Signification |
 |---|---|---|
 | 400 | `BAD_REQUEST`, `BAD_JSON`, `SPARQL_ERROR` | requête mal formée, JSON invalide, syntaxe SPARQL |
-| 403 | `SPARQL_FORBIDDEN` | opération interdite (SERVICE, CLEAR…) |
+| 403 | `SPARQL_FORBIDDEN` | opération interdite : `SERVICE`, `LOAD/CLEAR/DROP/CREATE/COPY/MOVE/ADD`, `FROM`/`FROM NAMED`/`USING`/`WITH`/`GRAPH` (un seul graphe, aucun accès fichier/réseau) ; **effacement massif** (> max(150, 20 % du graphe) triplets) |
 | 404 | `NOT_FOUND` | ressource ou route inconnue |
 | 409 | `CONFLICT` | doublon (immatriculation, permis, n° contrat…) ou suppression qui briserait des relations |
 | 422 | `VALIDATION_ERROR` | champ invalide, domaine/range OWL non respecté, axiome violé |
@@ -19,7 +19,7 @@ Base : `http://localhost:4000/api` · JSON · CORS configurable. Le service Pyth
 
 ## Santé
 
-`GET /api/health` → `{ status, api, semantic: { triples, source, version } }`
+`GET /api/health` → `{ status, api, semantic: { triples, source, version, recovery? } }` — `source` vaut `original`, `live` ou `recovered:<sauvegarde>` ; `recovery { corruptFile, restoredFrom, error }` n'apparaît que si le fichier persistant était illisible au démarrage (voir [PERSISTENCE_VALIDATION.md](PERSISTENCE_VALIDATION.md)).
 
 ## Ontologie
 
@@ -80,7 +80,7 @@ Compagnies, garages, experts, assurés, conducteurs, barèmes, franchises, claus
 | Route | Corps | Réponse |
 |---|---|---|
 | `POST /sparql/query` | `{ query, limit? }` | SELECT : `{ variables, rows[{var:{type,value,local,datatype}}], count, truncated, executionMs }` ; ASK : `{ boolean }` ; CONSTRUCT/DESCRIBE : `{ triples }` |
-| `POST /sparql/update` | `{ update }` | `{ added, removed, totalTriples, executionMs }` |
+| `POST /sparql/update` | `{ update }` | `{ added, removed, totalTriples, executionMs }` — `INSERT DATA`, `DELETE DATA`, `DELETE/INSERT WHERE` uniquement ; une suppression supprime **aussi l'inverse** (`owl:inverseOf`) ; sauvegarde automatique avant toute suppression |
 | `GET /sparql/history` · `DELETE /sparql/history` | | 50 dernières exécutions |
 | `GET /sparql/examples` | | 13 exemples |
 
@@ -93,7 +93,7 @@ Compagnies, garages, experts, assurés, conducteurs, barèmes, franchises, claus
 | `GET /nlp/module` | | Bibliothèques (versions), intentions, dictionnaire, pipeline, `llm:false` |
 | `GET /nlp/history` | | Historique |
 
-Champs principaux de la réponse : `status` (`ok`, `clarification_needed`, `entity_not_found`, `unsupported`), `intent`, `modifiers`, `questionType`, `focusClass`, `confidence`, `tokens[{text,lemma,pos,dep}]`, `spacyEntities`, `concepts`, `entities[{resolved:[{id,label}]}]`, `constraints`, `sparql`, `valid`, `template`, `fragments`, `steps[{name,ms,detail}]`, `translationMs`, `executionMs`, `explanation`, `libraries`.
+Champs principaux de la réponse : `status` (`ok`, `clarification_needed`, `entity_not_found`, `unsupported` — aussi pour une négation non sûre ou une demande d'écriture —, `empty`, `too_long`), `intent`, `modifiers`, `questionType`, `focusClass`, `confidence`, `tokens[{text,lemma,pos,dep}]`, `spacyEntities`, `concepts`, `entities[{resolved:[{id,label}]}]`, `constraints`, **`negations[{cue,kind,scope,head,dep,negated[{kind,text}],status}]`** (négation détectée : marqueur, portée, critères niés), `sparql`, `valid`, `template`, `fragments`, `steps[{name,ms,detail}]`, `translationMs`, `executionMs`, `explanation`, `libraries`.
 
 Exemple :
 

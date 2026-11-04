@@ -1,0 +1,2693 @@
+[
+  {
+    "category": "Questions de l'énoncé",
+    "question": "Quels véhicules sont assurés par Ahmed ?",
+    "ok": true,
+    "status": "ok",
+    "wantStatus": "ok",
+    "intent": "SEARCH_VEHICLE",
+    "modifiers": [],
+    "wantIntent": "SEARCH_VEHICLE",
+    "entities": [
+      [
+        "Ahmed",
+        [
+          "AhmedBenAli"
+        ]
+      ]
+    ],
+    "constraints": [
+      "assuré Ahmed Ben Ali"
+    ],
+    "negations": [],
+    "sparql": "PREFIX actors: <http://www.semanticweb.org/assurance/actors#>\nPREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\n# Généré par le module NLP (règles + templates) — intention SEARCH_VEHICLE\nSELECT DISTINCT ?x ?marque ?modele ?immatriculation ?annee ?valeur ?typeVehicule\nWHERE {\n  ?x a/rdfs:subClassOf* actors:Vehicule .\n  ?contract actors:couvre ?x .\n  ?insured actors:possede ?contract .\n  VALUES ?insured { actors:AhmedBenAli }\n  OPTIONAL { ?x actors:marque ?marque }\n  OPTIONAL { ?x actors:modele ?modele }\n  OPTIONAL { ?x actors:immatriculation ?immatriculation }\n  OPTIONAL { ?x actors:anneeFabrication ?annee }\n  OPTIONAL { ?x actors:valeurVehicule ?valeur }\n  OPTIONAL { ?x a ?typeVehicule . ?typeVehicule rdfs:subClassOf actors:Vehicule }\n}\nORDER BY ?x",
+    "executed": true,
+    "ids": [
+      "Voiture_001"
+    ],
+    "count": null,
+    "expectedIds": [
+      "Voiture_001"
+    ],
+    "message": "Question traduite en SPARQL.",
+    "explanation": "1 véhicule trouvé (assuré Ahmed Ben Ali) : Peugeot 208 (123TN4567).",
+    "confidence": 1.0,
+    "ms": 15207.2
+  },
+  {
+    "category": "Questions de l'énoncé",
+    "question": "Quels contrats couvrent le vol ?",
+    "ok": true,
+    "status": "ok",
+    "wantStatus": "ok",
+    "intent": "SEARCH_CONTRACT",
+    "modifiers": [
+      "FILTER_BY_TYPE"
+    ],
+    "wantIntent": "SEARCH_CONTRACT",
+    "entities": [],
+    "constraints": [
+      "type « vol » (GarantieVol)"
+    ],
+    "negations": [],
+    "sparql": "PREFIX actors: <http://www.semanticweb.org/assurance/actors#>\nPREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\n# Généré par le module NLP (règles + templates) — intention SEARCH_CONTRACT\nSELECT DISTINCT ?x ?numero ?statut ?debut ?fin ?typeContrat ?prime\nWHERE {\n  ?x a/rdfs:subClassOf* actors:ContratAssurance .\n  ?x actors:contient ?guarantee .\n  ?guarantee a/rdfs:subClassOf* actors:GarantieVol .\n  OPTIONAL { ?x actors:numeroContrat ?numero }\n  OPTIONAL { ?x actors:statutContrat ?statut }\n  OPTIONAL { ?x actors:dateDebut ?debut }\n  OPTIONAL { ?x actors:dateFin ?fin }\n  OPTIONAL { ?x a ?typeContrat . ?typeContrat rdfs:subClassOf actors:ContratAssurance }\n  OPTIONAL { ?x actors:aPourPrime/actors:montantPrime ?prime }\n}\nORDER BY ?x",
+    "executed": true,
+    "ids": [
+      "Contrat_001"
+    ],
+    "count": null,
+    "expectedIds": [
+      "Contrat_001"
+    ],
+    "message": "Question traduite en SPARQL.",
+    "explanation": "1 contrat trouvé (type « vol » (GarantieVol)) : C-001 (AssuranceTousRisques, Actif).",
+    "confidence": 1.0,
+    "ms": 101.36
+  },
+  {
+    "category": "Questions de l'énoncé",
+    "question": "Quels sinistres concernent une Peugeot 208 ?",
+    "ok": true,
+    "status": "ok",
+    "wantStatus": "ok",
+    "intent": "SEARCH_CLAIM",
+    "modifiers": [],
+    "wantIntent": "SEARCH_CLAIM",
+    "entities": [
+      [
+        "Peugeot 208",
+        [
+          "Voiture_001"
+        ]
+      ]
+    ],
+    "constraints": [
+      "véhicule Peugeot 208 (123TN4567)"
+    ],
+    "negations": [],
+    "sparql": "PREFIX actors: <http://www.semanticweb.org/assurance/actors#>\nPREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\n# Généré par le module NLP (règles + templates) — intention SEARCH_CLAIM\nSELECT DISTINCT ?x ?numero ?date ?lieu ?description ?statut ?typeSinistre\nWHERE {\n  ?x a/rdfs:subClassOf* actors:Sinistre .\n  ?x actors:concerne ?vehicle .\n  VALUES ?vehicle { actors:Voiture_001 }\n  OPTIONAL { ?x actors:numeroSinistre ?numero }\n  OPTIONAL { ?x actors:dateSinistre ?date }\n  OPTIONAL { ?x actors:lieuSinistre ?lieu }\n  OPTIONAL { ?x actors:descriptionSinistre ?description }\n  OPTIONAL { ?x actors:statutSinistre ?statut }\n  OPTIONAL { ?x a ?typeSinistre . ?typeSinistre rdfs:subClassOf actors:Sinistre }\n}\nORDER BY ?x",
+    "executed": true,
+    "ids": [
+      "Sinistre_001"
+    ],
+    "count": null,
+    "expectedIds": [
+      "Sinistre_001"
+    ],
+    "message": "Question traduite en SPARQL.",
+    "explanation": "1 sinistre trouvé (véhicule Peugeot 208 (123TN4567)) : S-001 (AccidentCirculation, Tunis).",
+    "confidence": 1.0,
+    "ms": 140.61
+  },
+  {
+    "category": "Questions de l'énoncé",
+    "question": "Quel est le montant de l'indemnisation du sinistre 001 ?",
+    "ok": true,
+    "status": "ok",
+    "wantStatus": "ok",
+    "intent": "SEARCH_INDEMNIFICATION",
+    "modifiers": [],
+    "wantIntent": "SEARCH_INDEMNIFICATION",
+    "entities": [
+      [
+        "sinistre 001",
+        [
+          "Sinistre_001"
+        ]
+      ]
+    ],
+    "constraints": [
+      "sinistre S-001"
+    ],
+    "negations": [],
+    "sparql": "PREFIX actors: <http://www.semanticweb.org/assurance/actors#>\nPREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\n# Généré par le module NLP (règles + templates) — intention SEARCH_INDEMNIFICATION\nSELECT DISTINCT ?x ?montant ?date ?statut ?motif ?beneficiaire\nWHERE {\n  ?x a/rdfs:subClassOf* actors:Indemnisation .\n  ?damage actors:donneLieuA ?x .\n  ?claim actors:provoque ?damage .\n  VALUES ?claim { actors:Sinistre_001 }\n  OPTIONAL { ?x actors:montantIndemnisation ?montant }\n  OPTIONAL { ?x actors:dateIndemnisation ?date }\n  OPTIONAL { ?x actors:statutIndemnisation ?statut }\n  OPTIONAL { ?x actors:motifDecision ?motif }\n  OPTIONAL { ?x actors:verseeA ?b . ?b actors:prenom ?bp . ?b actors:nom ?bn . BIND(CONCAT(?bp, \" \", ?bn) AS ?beneficiaire) }\n}\nORDER BY ?x",
+    "executed": true,
+    "ids": [
+      "Indemnisation_001",
+      "Indemnisation_004"
+    ],
+    "count": null,
+    "expectedIds": [
+      "Indemnisation_001",
+      "Indemnisation_004"
+    ],
+    "message": "Question traduite en SPARQL.",
+    "explanation": "Montant d'indemnisation (sinistre S-001) : 4050 (versé à Ahmed Ben Ali), 2000 (versé à Sami Jaziri).",
+    "confidence": 1.0,
+    "ms": 204.56
+  },
+  {
+    "category": "Questions de l'énoncé",
+    "question": "Quels assurés ont déclaré un accident en 2026 ?",
+    "ok": true,
+    "status": "ok",
+    "wantStatus": "ok",
+    "intent": "SEARCH_INSURED",
+    "modifiers": [
+      "FILTER_BY_TYPE",
+      "FILTER_BY_DATE"
+    ],
+    "wantIntent": "SEARCH_INSURED",
+    "entities": [],
+    "constraints": [
+      "type « accident de la circulation » (AccidentCirculation)",
+      "en 2026"
+    ],
+    "negations": [],
+    "sparql": "PREFIX actors: <http://www.semanticweb.org/assurance/actors#>\nPREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\n# Généré par le module NLP (règles + templates) — intention SEARCH_INSURED\nSELECT DISTINCT ?x ?prenom ?nom ?permis\nWHERE {\n  ?x a/rdfs:subClassOf* actors:Assure .\n  ?x actors:declare ?claim .\n  ?claim a/rdfs:subClassOf* actors:AccidentCirculation .\n  ?claim actors:dateSinistre ?date1 .\n  FILTER(?date1 >= \"2026-01-01T00:00:00\"^^xsd:dateTime && ?date1 < \"2027-01-01T00:00:00\"^^xsd:dateTime)\n  OPTIONAL { ?x actors:prenom ?prenom }\n  OPTIONAL { ?x actors:nom ?nom }\n  OPTIONAL { ?x actors:numeroPermis ?permis }\n}\nORDER BY ?x",
+    "executed": true,
+    "ids": [
+      "AhmedBenAli"
+    ],
+    "count": null,
+    "expectedIds": [
+      "AhmedBenAli"
+    ],
+    "message": "Question traduite en SPARQL.",
+    "explanation": "1 assuré trouvé (type « accident de la circulation » (AccidentCirculation); en 2026) : Ahmed Ben Ali.",
+    "confidence": 1.0,
+    "ms": 160.11
+  },
+  {
+    "category": "Questions de l'énoncé",
+    "question": "Quels contrats couvrent les dommages matériels ?",
+    "ok": true,
+    "status": "ok",
+    "wantStatus": "ok",
+    "intent": "SEARCH_CONTRACT",
+    "modifiers": [
+      "FILTER_BY_TYPE"
+    ],
+    "wantIntent": "SEARCH_CONTRACT",
+    "entities": [],
+    "constraints": [
+      "type « dommage matériel » (DommageMateriel)"
+    ],
+    "negations": [],
+    "sparql": "PREFIX actors: <http://www.semanticweb.org/assurance/actors#>\nPREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\n# Généré par le module NLP (règles + templates) — intention SEARCH_CONTRACT\nSELECT DISTINCT ?x ?numero ?statut ?debut ?fin ?typeContrat ?prime\nWHERE {\n  ?x a/rdfs:subClassOf* actors:ContratAssurance .\n  ?claim actors:rattacheAContrat ?x .\n  ?claim actors:provoque ?damage .\n  ?damage a/rdfs:subClassOf* actors:DommageMateriel .\n  OPTIONAL { ?x actors:numeroContrat ?numero }\n  OPTIONAL { ?x actors:statutContrat ?statut }\n  OPTIONAL { ?x actors:dateDebut ?debut }\n  OPTIONAL { ?x actors:dateFin ?fin }\n  OPTIONAL { ?x a ?typeContrat . ?typeContrat rdfs:subClassOf actors:ContratAssurance }\n  OPTIONAL { ?x actors:aPourPrime/actors:montantPrime ?prime }\n}\nORDER BY ?x",
+    "executed": true,
+    "ids": [
+      "Contrat_001",
+      "Contrat_002",
+      "Contrat_003"
+    ],
+    "count": null,
+    "expectedIds": [
+      "Contrat_001",
+      "Contrat_002",
+      "Contrat_003"
+    ],
+    "message": "Question traduite en SPARQL.",
+    "explanation": "3 contrats trouvés (type « dommage matériel » (DommageMateriel)) : C-001 (AssuranceTousRisques, Actif); C-002 (AssuranceResponsabiliteCivile, Actif); C-003 (AssuranceIntermediaire, Actif).",
+    "confidence": 1.0,
+    "ms": 122.71000000000001
+  },
+  {
+    "category": "Questions de l'énoncé",
+    "question": "Quels véhicules ont subi un accident ?",
+    "ok": true,
+    "status": "ok",
+    "wantStatus": "ok",
+    "intent": "SEARCH_VEHICLE",
+    "modifiers": [
+      "FILTER_BY_TYPE"
+    ],
+    "wantIntent": "SEARCH_VEHICLE",
+    "entities": [],
+    "constraints": [
+      "type « accident de la circulation » (AccidentCirculation)"
+    ],
+    "negations": [],
+    "sparql": "PREFIX actors: <http://www.semanticweb.org/assurance/actors#>\nPREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\n# Généré par le module NLP (règles + templates) — intention SEARCH_VEHICLE\nSELECT DISTINCT ?x ?marque ?modele ?immatriculation ?annee ?valeur ?typeVehicule\nWHERE {\n  ?x a/rdfs:subClassOf* actors:Vehicule .\n  ?claim actors:concerne ?x .\n  ?claim a/rdfs:subClassOf* actors:AccidentCirculation .\n  OPTIONAL { ?x actors:marque ?marque }\n  OPTIONAL { ?x actors:modele ?modele }\n  OPTIONAL { ?x actors:immatriculation ?immatriculation }\n  OPTIONAL { ?x actors:anneeFabrication ?annee }\n  OPTIONAL { ?x actors:valeurVehicule ?valeur }\n  OPTIONAL { ?x a ?typeVehicule . ?typeVehicule rdfs:subClassOf actors:Vehicule }\n}\nORDER BY ?x",
+    "executed": true,
+    "ids": [
+      "Voiture_001"
+    ],
+    "count": null,
+    "expectedIds": [
+      "Voiture_001"
+    ],
+    "message": "Question traduite en SPARQL.",
+    "explanation": "1 véhicule trouvé (type « accident de la circulation » (AccidentCirculation)) : Peugeot 208 (123TN4567).",
+    "confidence": 1.0,
+    "ms": 113.28999999999999
+  },
+  {
+    "category": "Questions de l'énoncé",
+    "question": "Quels sinistres ont été évalués par l'expert Karim ?",
+    "ok": true,
+    "status": "ok",
+    "wantStatus": "ok",
+    "intent": "SEARCH_CLAIM",
+    "modifiers": [],
+    "wantIntent": "SEARCH_CLAIM",
+    "entities": [
+      [
+        "Karim",
+        [
+          "Expert_001"
+        ]
+      ]
+    ],
+    "constraints": [
+      "expert Karim Trabelsi"
+    ],
+    "negations": [],
+    "sparql": "PREFIX actors: <http://www.semanticweb.org/assurance/actors#>\nPREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\n# Généré par le module NLP (règles + templates) — intention SEARCH_CLAIM\nSELECT DISTINCT ?x ?numero ?date ?lieu ?description ?statut ?typeSinistre\nWHERE {\n  ?x a/rdfs:subClassOf* actors:Sinistre .\n  ?x actors:faitObjetDe ?expertise .\n  ?expertise actors:realisePar ?expert .\n  VALUES ?expert { actors:Expert_001 }\n  OPTIONAL { ?x actors:numeroSinistre ?numero }\n  OPTIONAL { ?x actors:dateSinistre ?date }\n  OPTIONAL { ?x actors:lieuSinistre ?lieu }\n  OPTIONAL { ?x actors:descriptionSinistre ?description }\n  OPTIONAL { ?x actors:statutSinistre ?statut }\n  OPTIONAL { ?x a ?typeSinistre . ?typeSinistre rdfs:subClassOf actors:Sinistre }\n}\nORDER BY ?x",
+    "executed": true,
+    "ids": [
+      "Sinistre_001"
+    ],
+    "count": null,
+    "expectedIds": [
+      "Sinistre_001"
+    ],
+    "message": "Question traduite en SPARQL.",
+    "explanation": "1 sinistre trouvé (expert Karim Trabelsi) : S-001 (AccidentCirculation, Tunis).",
+    "confidence": 1.0,
+    "ms": 143.26
+  },
+  {
+    "category": "Questions de l'énoncé",
+    "question": "Quels contrats possèdent une garantie tous risques ?",
+    "ok": true,
+    "status": "ok",
+    "wantStatus": "ok",
+    "intent": "SEARCH_CONTRACT",
+    "modifiers": [
+      "FILTER_BY_TYPE"
+    ],
+    "wantIntent": "SEARCH_CONTRACT",
+    "entities": [],
+    "constraints": [
+      "type « tous risques » (GarantieDommagesTousAccidents)"
+    ],
+    "negations": [],
+    "sparql": "PREFIX actors: <http://www.semanticweb.org/assurance/actors#>\nPREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\n# Généré par le module NLP (règles + templates) — intention SEARCH_CONTRACT\nSELECT DISTINCT ?x ?numero ?statut ?debut ?fin ?typeContrat ?prime\nWHERE {\n  ?x a/rdfs:subClassOf* actors:ContratAssurance .\n  ?x actors:contient ?guarantee .\n  ?guarantee a/rdfs:subClassOf* actors:GarantieDommagesTousAccidents .\n  OPTIONAL { ?x actors:numeroContrat ?numero }\n  OPTIONAL { ?x actors:statutContrat ?statut }\n  OPTIONAL { ?x actors:dateDebut ?debut }\n  OPTIONAL { ?x actors:dateFin ?fin }\n  OPTIONAL { ?x a ?typeContrat . ?typeContrat rdfs:subClassOf actors:ContratAssurance }\n  OPTIONAL { ?x actors:aPourPrime/actors:montantPrime ?prime }\n}\nORDER BY ?x",
+    "executed": true,
+    "ids": [
+      "Contrat_001"
+    ],
+    "count": null,
+    "expectedIds": [
+      "Contrat_001"
+    ],
+    "message": "Question traduite en SPARQL.",
+    "explanation": "1 contrat trouvé (type « tous risques » (GarantieDommagesTousAccidents)) : C-001 (AssuranceTousRisques, Actif).",
+    "confidence": 1.0,
+    "ms": 126.15
+  },
+  {
+    "category": "Questions de l'énoncé",
+    "question": "Quels sinistres ont une indemnisation supérieure à 3000 euros ?",
+    "ok": true,
+    "status": "ok",
+    "wantStatus": "ok",
+    "intent": "SEARCH_CLAIM",
+    "modifiers": [
+      "FILTER_BY_AMOUNT"
+    ],
+    "wantIntent": "SEARCH_CLAIM",
+    "entities": [],
+    "constraints": [
+      "montant d'indemnisation supérieur à 3000"
+    ],
+    "negations": [],
+    "sparql": "PREFIX actors: <http://www.semanticweb.org/assurance/actors#>\nPREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\n# Généré par le module NLP (règles + templates) — intention SEARCH_CLAIM\nSELECT DISTINCT ?x ?numero ?date ?lieu ?description ?statut ?typeSinistre\nWHERE {\n  ?x a/rdfs:subClassOf* actors:Sinistre .\n  ?x actors:provoque ?damage .\n  ?damage actors:donneLieuA ?indemnification .\n  ?indemnification actors:montantIndemnisation ?montant1 .\n  FILTER(?montant1 > 3000.0)\n  OPTIONAL { ?x actors:numeroSinistre ?numero }\n  OPTIONAL { ?x actors:dateSinistre ?date }\n  OPTIONAL { ?x actors:lieuSinistre ?lieu }\n  OPTIONAL { ?x actors:descriptionSinistre ?description }\n  OPTIONAL { ?x actors:statutSinistre ?statut }\n  OPTIONAL { ?x a ?typeSinistre . ?typeSinistre rdfs:subClassOf actors:Sinistre }\n}\nORDER BY ?x",
+    "executed": true,
+    "ids": [
+      "Sinistre_001",
+      "Sinistre_003"
+    ],
+    "count": null,
+    "expectedIds": [
+      "Sinistre_001",
+      "Sinistre_003"
+    ],
+    "message": "Question traduite en SPARQL.",
+    "explanation": "2 sinistres trouvés (montant d'indemnisation supérieur à 3000) : S-001 (AccidentCirculation, Tunis); S-003 (IncendieVehicule, Sfax).",
+    "confidence": 1.0,
+    "ms": 150.14
+  },
+  {
+    "category": "Synonymes",
+    "question": "Quelles voitures sont assurées par Fatma ?",
+    "ok": true,
+    "status": "ok",
+    "wantStatus": "ok",
+    "intent": "SEARCH_VEHICLE",
+    "modifiers": [],
+    "wantIntent": "SEARCH_VEHICLE",
+    "entities": [
+      [
+        "Fatma",
+        [
+          "FatmaTrabelsi"
+        ]
+      ]
+    ],
+    "constraints": [
+      "assuré Fatma Trabelsi"
+    ],
+    "negations": [],
+    "sparql": "PREFIX actors: <http://www.semanticweb.org/assurance/actors#>\nPREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\n# Généré par le module NLP (règles + templates) — intention SEARCH_VEHICLE\nSELECT DISTINCT ?x ?marque ?modele ?immatriculation ?annee ?valeur ?typeVehicule\nWHERE {\n  ?x a/rdfs:subClassOf* actors:Vehicule .\n  ?contract actors:couvre ?x .\n  ?insured actors:possede ?contract .\n  VALUES ?insured { actors:FatmaTrabelsi }\n  OPTIONAL { ?x actors:marque ?marque }\n  OPTIONAL { ?x actors:modele ?modele }\n  OPTIONAL { ?x actors:immatriculation ?immatriculation }\n  OPTIONAL { ?x actors:anneeFabrication ?annee }\n  OPTIONAL { ?x actors:valeurVehicule ?valeur }\n  OPTIONAL { ?x a ?typeVehicule . ?typeVehicule rdfs:subClassOf actors:Vehicule }\n}\nORDER BY ?x",
+    "executed": true,
+    "ids": [
+      "Voiture_002"
+    ],
+    "count": null,
+    "expectedIds": [
+      "Voiture_002"
+    ],
+    "message": "Question traduite en SPARQL.",
+    "explanation": "1 véhicule trouvé (assuré Fatma Trabelsi) : Renault Clio (245TN8812).",
+    "confidence": 1.0,
+    "ms": 156.81
+  },
+  {
+    "category": "Synonymes",
+    "question": "Quelles automobiles ont subi un accident ?",
+    "ok": true,
+    "status": "ok",
+    "wantStatus": "ok",
+    "intent": "SEARCH_VEHICLE",
+    "modifiers": [
+      "FILTER_BY_TYPE"
+    ],
+    "wantIntent": "SEARCH_VEHICLE",
+    "entities": [],
+    "constraints": [
+      "type « accident de la circulation » (AccidentCirculation)"
+    ],
+    "negations": [],
+    "sparql": "PREFIX actors: <http://www.semanticweb.org/assurance/actors#>\nPREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\n# Généré par le module NLP (règles + templates) — intention SEARCH_VEHICLE\nSELECT DISTINCT ?x ?marque ?modele ?immatriculation ?annee ?valeur ?typeVehicule\nWHERE {\n  ?x a/rdfs:subClassOf* actors:Vehicule .\n  ?claim actors:concerne ?x .\n  ?claim a/rdfs:subClassOf* actors:AccidentCirculation .\n  OPTIONAL { ?x actors:marque ?marque }\n  OPTIONAL { ?x actors:modele ?modele }\n  OPTIONAL { ?x actors:immatriculation ?immatriculation }\n  OPTIONAL { ?x actors:anneeFabrication ?annee }\n  OPTIONAL { ?x actors:valeurVehicule ?valeur }\n  OPTIONAL { ?x a ?typeVehicule . ?typeVehicule rdfs:subClassOf actors:Vehicule }\n}\nORDER BY ?x",
+    "executed": true,
+    "ids": [
+      "Voiture_001"
+    ],
+    "count": null,
+    "expectedIds": [
+      "Voiture_001"
+    ],
+    "message": "Question traduite en SPARQL.",
+    "explanation": "1 véhicule trouvé (type « accident de la circulation » (AccidentCirculation)) : Peugeot 208 (123TN4567).",
+    "confidence": 1.0,
+    "ms": 130.82
+  },
+  {
+    "category": "Synonymes",
+    "question": "Quels clients ont déclaré un sinistre ?",
+    "ok": true,
+    "status": "ok",
+    "wantStatus": "ok",
+    "intent": "SEARCH_INSURED",
+    "modifiers": [],
+    "wantIntent": "SEARCH_INSURED",
+    "entities": [],
+    "constraints": [
+      "avec sinistre"
+    ],
+    "negations": [],
+    "sparql": "PREFIX actors: <http://www.semanticweb.org/assurance/actors#>\nPREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\n# Généré par le module NLP (règles + templates) — intention SEARCH_INSURED\nSELECT DISTINCT ?x ?prenom ?nom ?permis\nWHERE {\n  ?x a/rdfs:subClassOf* actors:Assure .\n  ?x actors:declare ?claim .\n  OPTIONAL { ?x actors:prenom ?prenom }\n  OPTIONAL { ?x actors:nom ?nom }\n  OPTIONAL { ?x actors:numeroPermis ?permis }\n}\nORDER BY ?x",
+    "executed": true,
+    "ids": [
+      "AhmedBenAli",
+      "FatmaTrabelsi",
+      "YoussefHamdi"
+    ],
+    "count": null,
+    "expectedIds": [
+      "AhmedBenAli",
+      "FatmaTrabelsi",
+      "YoussefHamdi"
+    ],
+    "message": "Question traduite en SPARQL.",
+    "explanation": "3 assurés trouvés (avec sinistre) : Ahmed Ben Ali; Fatma Trabelsi; Youssef Hamdi.",
+    "confidence": 1.0,
+    "ms": 81.83
+  },
+  {
+    "category": "Synonymes",
+    "question": "Quels souscripteurs ont un contrat actif ?",
+    "ok": true,
+    "status": "ok",
+    "wantStatus": "ok",
+    "intent": "SEARCH_INSURED",
+    "modifiers": [],
+    "wantIntent": "SEARCH_INSURED",
+    "entities": [],
+    "constraints": [
+      "statut « actif »"
+    ],
+    "negations": [],
+    "sparql": "PREFIX actors: <http://www.semanticweb.org/assurance/actors#>\nPREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\n# Généré par le module NLP (règles + templates) — intention SEARCH_INSURED\nSELECT DISTINCT ?x ?prenom ?nom ?permis\nWHERE {\n  ?x a/rdfs:subClassOf* actors:Assure .\n  ?x actors:possede ?contract .\n  ?contract actors:statutContrat \"Actif\" .\n  OPTIONAL { ?x actors:prenom ?prenom }\n  OPTIONAL { ?x actors:nom ?nom }\n  OPTIONAL { ?x actors:numeroPermis ?permis }\n}\nORDER BY ?x",
+    "executed": true,
+    "ids": [
+      "AhmedBenAli",
+      "FatmaTrabelsi",
+      "YoussefHamdi"
+    ],
+    "count": null,
+    "expectedIds": [
+      "AhmedBenAli",
+      "FatmaTrabelsi",
+      "YoussefHamdi"
+    ],
+    "message": "Question traduite en SPARQL.",
+    "explanation": "3 assurés trouvés (statut « actif ») : Ahmed Ben Ali; Fatma Trabelsi; Youssef Hamdi.",
+    "confidence": 1.0,
+    "ms": 101.50999999999999
+  },
+  {
+    "category": "Synonymes",
+    "question": "Montre les remboursements refusés",
+    "ok": true,
+    "status": "ok",
+    "wantStatus": "ok",
+    "intent": "SEARCH_INDEMNIFICATION",
+    "modifiers": [],
+    "wantIntent": "SEARCH_INDEMNIFICATION",
+    "entities": [],
+    "constraints": [
+      "statut « refusée »"
+    ],
+    "negations": [],
+    "sparql": "PREFIX actors: <http://www.semanticweb.org/assurance/actors#>\nPREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\n# Généré par le module NLP (règles + templates) — intention SEARCH_INDEMNIFICATION\nSELECT DISTINCT ?x ?montant ?date ?statut ?motif ?beneficiaire\nWHERE {\n  ?x a/rdfs:subClassOf* actors:Indemnisation .\n  ?x actors:statutIndemnisation \"Refusee\" .\n  OPTIONAL { ?x actors:montantIndemnisation ?montant }\n  OPTIONAL { ?x actors:dateIndemnisation ?date }\n  OPTIONAL { ?x actors:statutIndemnisation ?statut }\n  OPTIONAL { ?x actors:motifDecision ?motif }\n  OPTIONAL { ?x actors:verseeA ?b . ?b actors:prenom ?bp . ?b actors:nom ?bn . BIND(CONCAT(?bp, \" \", ?bn) AS ?beneficiaire) }\n}\nORDER BY ?x",
+    "executed": true,
+    "ids": [
+      "Indemnisation_002"
+    ],
+    "count": null,
+    "expectedIds": [
+      "Indemnisation_002"
+    ],
+    "message": "Question traduite en SPARQL.",
+    "explanation": "1 indemnisation trouvée (statut « refusée ») : Indemnisation_002 : 0 (Refusee).",
+    "confidence": 0.87,
+    "ms": 135.45
+  },
+  {
+    "category": "Synonymes",
+    "question": "Quelles couvertures incendie existent ?",
+    "ok": true,
+    "status": "ok",
+    "wantStatus": "ok",
+    "intent": "SEARCH_GUARANTEE",
+    "modifiers": [
+      "FILTER_BY_TYPE"
+    ],
+    "wantIntent": "SEARCH_GUARANTEE",
+    "entities": [],
+    "constraints": [
+      "type « incendie » (GarantieIncendie)"
+    ],
+    "negations": [],
+    "sparql": "PREFIX actors: <http://www.semanticweb.org/assurance/actors#>\nPREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\n# Généré par le module NLP (règles + templates) — intention SEARCH_GUARANTEE\nSELECT DISTINCT ?x ?plafond ?typeGarantie\nWHERE {\n  ?x a/rdfs:subClassOf* actors:Garantie .\n  ?x a/rdfs:subClassOf* actors:GarantieIncendie .\n  OPTIONAL { ?x actors:plafondGarantie ?plafond }\n  OPTIONAL { ?x a ?typeGarantie . ?typeGarantie rdfs:subClassOf actors:Garantie }\n}\nORDER BY ?x",
+    "executed": true,
+    "ids": [
+      "GarantieIncendie_003"
+    ],
+    "count": null,
+    "expectedIds": [
+      "GarantieIncendie_003"
+    ],
+    "message": "Question traduite en SPARQL.",
+    "explanation": "1 garantie trouvée (type « incendie » (GarantieIncendie)) : GarantieIncendie_003 (GarantieIncendie, plafond 25000).",
+    "confidence": 1.0,
+    "ms": 82.06
+  },
+  {
+    "category": "Synonymes",
+    "question": "Quelles polices sont actives ?",
+    "ok": true,
+    "status": "ok",
+    "wantStatus": "ok",
+    "intent": "SEARCH_CONTRACT",
+    "modifiers": [],
+    "wantIntent": "SEARCH_CONTRACT",
+    "entities": [],
+    "constraints": [
+      "statut « actif »"
+    ],
+    "negations": [],
+    "sparql": "PREFIX actors: <http://www.semanticweb.org/assurance/actors#>\nPREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\n# Généré par le module NLP (règles + templates) — intention SEARCH_CONTRACT\nSELECT DISTINCT ?x ?numero ?statut ?debut ?fin ?typeContrat ?prime\nWHERE {\n  ?x a/rdfs:subClassOf* actors:ContratAssurance .\n  ?x actors:statutContrat \"Actif\" .\n  OPTIONAL { ?x actors:numeroContrat ?numero }\n  OPTIONAL { ?x actors:statutContrat ?statut }\n  OPTIONAL { ?x actors:dateDebut ?debut }\n  OPTIONAL { ?x actors:dateFin ?fin }\n  OPTIONAL { ?x a ?typeContrat . ?typeContrat rdfs:subClassOf actors:ContratAssurance }\n  OPTIONAL { ?x actors:aPourPrime/actors:montantPrime ?prime }\n}\nORDER BY ?x",
+    "executed": true,
+    "ids": [
+      "Contrat_001",
+      "Contrat_002",
+      "Contrat_003"
+    ],
+    "count": null,
+    "expectedIds": [
+      "Contrat_001",
+      "Contrat_002",
+      "Contrat_003"
+    ],
+    "message": "Question traduite en SPARQL.",
+    "explanation": "3 contrats trouvés (statut « actif ») : C-001 (AssuranceTousRisques, Actif); C-002 (AssuranceResponsabiliteCivile, Actif); C-003 (AssuranceIntermediaire, Actif).",
+    "confidence": 1.0,
+    "ms": 124.74
+  },
+  {
+    "category": "Synonymes",
+    "question": "Quels dégâts matériels ?",
+    "ok": true,
+    "status": "ok",
+    "wantStatus": "ok",
+    "intent": "SEARCH_DAMAGE",
+    "modifiers": [
+      "FILTER_BY_TYPE"
+    ],
+    "wantIntent": "SEARCH_DAMAGE",
+    "entities": [],
+    "constraints": [
+      "type « dommage matériel » (DommageMateriel)"
+    ],
+    "negations": [],
+    "sparql": "PREFIX actors: <http://www.semanticweb.org/assurance/actors#>\nPREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\n# Généré par le module NLP (règles + templates) — intention SEARCH_DAMAGE\nSELECT DISTINCT ?x ?description ?gravite ?cout ?typeDommage\nWHERE {\n  ?x a/rdfs:subClassOf* actors:Dommage .\n  ?x a/rdfs:subClassOf* actors:DommageMateriel .\n  OPTIONAL { ?x actors:description ?description }\n  OPTIONAL { ?x actors:gravite ?gravite }\n  OPTIONAL { ?x actors:coutEstime ?cout }\n  OPTIONAL { ?x a ?typeDommage . ?typeDommage rdfs:subClassOf actors:Dommage }\n}\nORDER BY ?x",
+    "executed": true,
+    "ids": [
+      "Dommage_001",
+      "Dommage_002",
+      "Dommage_003"
+    ],
+    "count": null,
+    "expectedIds": [
+      "Dommage_001",
+      "Dommage_002",
+      "Dommage_003"
+    ],
+    "message": "Question traduite en SPARQL.",
+    "explanation": "3 dommages trouvés (type « dommage matériel » (DommageMateriel)) : Dommage_001 : Pare-choc avant endommage (coût 5000); Dommage_002 : Perte totale du vehicule (vol) (coût 32000); Dommage_003 : Faisceau electrique et carenage detruits (coût 12000).",
+    "confidence": 1.0,
+    "ms": 69.0
+  },
+  {
+    "category": "Accents, casse, fautes",
+    "question": "Quels vehicules sont assures par Ahmed",
+    "ok": true,
+    "status": "ok",
+    "wantStatus": "ok",
+    "intent": "SEARCH_VEHICLE",
+    "modifiers": [],
+    "wantIntent": "SEARCH_VEHICLE",
+    "entities": [
+      [
+        "Ahmed",
+        [
+          "AhmedBenAli"
+        ]
+      ]
+    ],
+    "constraints": [
+      "assuré Ahmed Ben Ali"
+    ],
+    "negations": [],
+    "sparql": "PREFIX actors: <http://www.semanticweb.org/assurance/actors#>\nPREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\n# Généré par le module NLP (règles + templates) — intention SEARCH_VEHICLE\nSELECT DISTINCT ?x ?marque ?modele ?immatriculation ?annee ?valeur ?typeVehicule\nWHERE {\n  ?x a/rdfs:subClassOf* actors:Vehicule .\n  ?contract actors:couvre ?x .\n  ?insured actors:possede ?contract .\n  VALUES ?insured { actors:AhmedBenAli }\n  OPTIONAL { ?x actors:marque ?marque }\n  OPTIONAL { ?x actors:modele ?modele }\n  OPTIONAL { ?x actors:immatriculation ?immatriculation }\n  OPTIONAL { ?x actors:anneeFabrication ?annee }\n  OPTIONAL { ?x actors:valeurVehicule ?valeur }\n  OPTIONAL { ?x a ?typeVehicule . ?typeVehicule rdfs:subClassOf actors:Vehicule }\n}\nORDER BY ?x",
+    "executed": true,
+    "ids": [
+      "Voiture_001"
+    ],
+    "count": null,
+    "expectedIds": [
+      "Voiture_001"
+    ],
+    "message": "Question traduite en SPARQL.",
+    "explanation": "1 véhicule trouvé (assuré Ahmed Ben Ali) : Peugeot 208 (123TN4567).",
+    "confidence": 1.0,
+    "ms": 65.01
+  },
+  {
+    "category": "Accents, casse, fautes",
+    "question": "QUELS CONTRATS COUVRENT LE VOL",
+    "ok": true,
+    "status": "ok",
+    "wantStatus": "ok",
+    "intent": "SEARCH_CONTRACT",
+    "modifiers": [
+      "FILTER_BY_TYPE"
+    ],
+    "wantIntent": "SEARCH_CONTRACT",
+    "entities": [],
+    "constraints": [
+      "type « vol » (GarantieVol)"
+    ],
+    "negations": [],
+    "sparql": "PREFIX actors: <http://www.semanticweb.org/assurance/actors#>\nPREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\n# Généré par le module NLP (règles + templates) — intention SEARCH_CONTRACT\nSELECT DISTINCT ?x ?numero ?statut ?debut ?fin ?typeContrat ?prime\nWHERE {\n  ?x a/rdfs:subClassOf* actors:ContratAssurance .\n  ?x actors:contient ?guarantee .\n  ?guarantee a/rdfs:subClassOf* actors:GarantieVol .\n  OPTIONAL { ?x actors:numeroContrat ?numero }\n  OPTIONAL { ?x actors:statutContrat ?statut }\n  OPTIONAL { ?x actors:dateDebut ?debut }\n  OPTIONAL { ?x actors:dateFin ?fin }\n  OPTIONAL { ?x a ?typeContrat . ?typeContrat rdfs:subClassOf actors:ContratAssurance }\n  OPTIONAL { ?x actors:aPourPrime/actors:montantPrime ?prime }\n}\nORDER BY ?x",
+    "executed": true,
+    "ids": [
+      "Contrat_001"
+    ],
+    "count": null,
+    "expectedIds": [
+      "Contrat_001"
+    ],
+    "message": "Question traduite en SPARQL.",
+    "explanation": "1 contrat trouvé (type « vol » (GarantieVol)) : C-001 (AssuranceTousRisques, Actif).",
+    "confidence": 1.0,
+    "ms": 119.33
+  },
+  {
+    "category": "Accents, casse, fautes",
+    "question": "quelles voitures sont couvertes par un contrat tous risque",
+    "ok": true,
+    "status": "ok",
+    "wantStatus": "ok",
+    "intent": "SEARCH_VEHICLE",
+    "modifiers": [
+      "FILTER_BY_TYPE"
+    ],
+    "wantIntent": "SEARCH_VEHICLE",
+    "entities": [],
+    "constraints": [
+      "type « tous risques » (AssuranceTousRisques)"
+    ],
+    "negations": [],
+    "sparql": "PREFIX actors: <http://www.semanticweb.org/assurance/actors#>\nPREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\n# Généré par le module NLP (règles + templates) — intention SEARCH_VEHICLE\nSELECT DISTINCT ?x ?marque ?modele ?immatriculation ?annee ?valeur ?typeVehicule\nWHERE {\n  ?x a/rdfs:subClassOf* actors:Vehicule .\n  ?contract actors:couvre ?x .\n  ?contract a/rdfs:subClassOf* actors:AssuranceTousRisques .\n  OPTIONAL { ?x actors:marque ?marque }\n  OPTIONAL { ?x actors:modele ?modele }\n  OPTIONAL { ?x actors:immatriculation ?immatriculation }\n  OPTIONAL { ?x actors:anneeFabrication ?annee }\n  OPTIONAL { ?x actors:valeurVehicule ?valeur }\n  OPTIONAL { ?x a ?typeVehicule . ?typeVehicule rdfs:subClassOf actors:Vehicule }\n}\nORDER BY ?x",
+    "executed": true,
+    "ids": [
+      "Voiture_001"
+    ],
+    "count": null,
+    "expectedIds": [
+      "Voiture_001"
+    ],
+    "message": "Question traduite en SPARQL.",
+    "explanation": "1 véhicule trouvé (type « tous risques » (AssuranceTousRisques)) : Peugeot 208 (123TN4567).",
+    "confidence": 1.0,
+    "ms": 97.81
+  },
+  {
+    "category": "Accents, casse, fautes",
+    "question": "Quelles voitures peugot ont subi un accident ?",
+    "ok": true,
+    "status": "ok",
+    "wantStatus": "ok",
+    "intent": "SEARCH_VEHICLE",
+    "modifiers": [
+      "FILTER_BY_TYPE"
+    ],
+    "wantIntent": "SEARCH_VEHICLE",
+    "entities": [
+      [
+        "peugot",
+        [
+          "Voiture_001"
+        ]
+      ]
+    ],
+    "constraints": [
+      "véhicule Peugeot 208 (123TN4567)",
+      "type « accident de la circulation » (AccidentCirculation)"
+    ],
+    "negations": [],
+    "sparql": "PREFIX actors: <http://www.semanticweb.org/assurance/actors#>\nPREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\n# Généré par le module NLP (règles + templates) — intention SEARCH_VEHICLE\nSELECT DISTINCT ?x ?marque ?modele ?immatriculation ?annee ?valeur ?typeVehicule\nWHERE {\n  ?x a/rdfs:subClassOf* actors:Vehicule .\n  VALUES ?x { actors:Voiture_001 }\n  ?claim actors:concerne ?x .\n  ?claim a/rdfs:subClassOf* actors:AccidentCirculation .\n  OPTIONAL { ?x actors:marque ?marque }\n  OPTIONAL { ?x actors:modele ?modele }\n  OPTIONAL { ?x actors:immatriculation ?immatriculation }\n  OPTIONAL { ?x actors:anneeFabrication ?annee }\n  OPTIONAL { ?x actors:valeurVehicule ?valeur }\n  OPTIONAL { ?x a ?typeVehicule . ?typeVehicule rdfs:subClassOf actors:Vehicule }\n}\nORDER BY ?x",
+    "executed": true,
+    "ids": [
+      "Voiture_001"
+    ],
+    "count": null,
+    "expectedIds": [
+      "Voiture_001"
+    ],
+    "message": "Question traduite en SPARQL.",
+    "explanation": "1 véhicule trouvé (véhicule Peugeot 208 (123TN4567); type « accident de la circulation » (AccidentCirculation)) : Peugeot 208 (123TN4567).",
+    "confidence": 1.0,
+    "ms": 84.55
+  },
+  {
+    "category": "Accents, casse, fautes",
+    "question": "Quels sinistres ont été expertisés par l'expert Karim",
+    "ok": true,
+    "status": "ok",
+    "wantStatus": "ok",
+    "intent": "SEARCH_CLAIM",
+    "modifiers": [],
+    "wantIntent": "SEARCH_CLAIM",
+    "entities": [
+      [
+        "Karim",
+        [
+          "Expert_001"
+        ]
+      ]
+    ],
+    "constraints": [
+      "expert Karim Trabelsi"
+    ],
+    "negations": [],
+    "sparql": "PREFIX actors: <http://www.semanticweb.org/assurance/actors#>\nPREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\n# Généré par le module NLP (règles + templates) — intention SEARCH_CLAIM\nSELECT DISTINCT ?x ?numero ?date ?lieu ?description ?statut ?typeSinistre\nWHERE {\n  ?x a/rdfs:subClassOf* actors:Sinistre .\n  ?x actors:faitObjetDe ?expertise .\n  ?expertise actors:realisePar ?expert .\n  VALUES ?expert { actors:Expert_001 }\n  OPTIONAL { ?x actors:numeroSinistre ?numero }\n  OPTIONAL { ?x actors:dateSinistre ?date }\n  OPTIONAL { ?x actors:lieuSinistre ?lieu }\n  OPTIONAL { ?x actors:descriptionSinistre ?description }\n  OPTIONAL { ?x actors:statutSinistre ?statut }\n  OPTIONAL { ?x a ?typeSinistre . ?typeSinistre rdfs:subClassOf actors:Sinistre }\n}\nORDER BY ?x",
+    "executed": true,
+    "ids": [
+      "Sinistre_001"
+    ],
+    "count": null,
+    "expectedIds": [
+      "Sinistre_001"
+    ],
+    "message": "Question traduite en SPARQL.",
+    "explanation": "1 sinistre trouvé (expert Karim Trabelsi) : S-001 (AccidentCirculation, Tunis).",
+    "confidence": 1.0,
+    "ms": 154.2
+  },
+  {
+    "category": "Structures de phrase",
+    "question": "Donne-moi la liste des contrats qui incluent la garantie vol",
+    "ok": true,
+    "status": "ok",
+    "wantStatus": "ok",
+    "intent": "SEARCH_CONTRACT",
+    "modifiers": [
+      "FILTER_BY_TYPE"
+    ],
+    "wantIntent": "SEARCH_CONTRACT",
+    "entities": [],
+    "constraints": [
+      "type « vol » (GarantieVol)"
+    ],
+    "negations": [],
+    "sparql": "PREFIX actors: <http://www.semanticweb.org/assurance/actors#>\nPREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\n# Généré par le module NLP (règles + templates) — intention SEARCH_CONTRACT\nSELECT DISTINCT ?x ?numero ?statut ?debut ?fin ?typeContrat ?prime\nWHERE {\n  ?x a/rdfs:subClassOf* actors:ContratAssurance .\n  ?x actors:contient ?guarantee .\n  ?guarantee a/rdfs:subClassOf* actors:GarantieVol .\n  OPTIONAL { ?x actors:numeroContrat ?numero }\n  OPTIONAL { ?x actors:statutContrat ?statut }\n  OPTIONAL { ?x actors:dateDebut ?debut }\n  OPTIONAL { ?x actors:dateFin ?fin }\n  OPTIONAL { ?x a ?typeContrat . ?typeContrat rdfs:subClassOf actors:ContratAssurance }\n  OPTIONAL { ?x actors:aPourPrime/actors:montantPrime ?prime }\n}\nORDER BY ?x",
+    "executed": true,
+    "ids": [
+      "Contrat_001"
+    ],
+    "count": null,
+    "expectedIds": [
+      "Contrat_001"
+    ],
+    "message": "Question traduite en SPARQL.",
+    "explanation": "1 contrat trouvé (type « vol » (GarantieVol)) : C-001 (AssuranceTousRisques, Actif).",
+    "confidence": 1.0,
+    "ms": 121.25
+  },
+  {
+    "category": "Structures de phrase",
+    "question": "Je voudrais savoir quelles voitures sont protégées contre le vol",
+    "ok": true,
+    "status": "ok",
+    "wantStatus": "ok",
+    "intent": "SEARCH_VEHICLE",
+    "modifiers": [
+      "FILTER_BY_TYPE"
+    ],
+    "wantIntent": "SEARCH_VEHICLE",
+    "entities": [],
+    "constraints": [
+      "type « vol » (GarantieVol)"
+    ],
+    "negations": [],
+    "sparql": "PREFIX actors: <http://www.semanticweb.org/assurance/actors#>\nPREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\n# Généré par le module NLP (règles + templates) — intention SEARCH_VEHICLE\nSELECT DISTINCT ?x ?marque ?modele ?immatriculation ?annee ?valeur ?typeVehicule\nWHERE {\n  ?x a/rdfs:subClassOf* actors:Vehicule .\n  ?contract actors:couvre ?x .\n  ?contract actors:contient ?guarantee .\n  ?guarantee a/rdfs:subClassOf* actors:GarantieVol .\n  OPTIONAL { ?x actors:marque ?marque }\n  OPTIONAL { ?x actors:modele ?modele }\n  OPTIONAL { ?x actors:immatriculation ?immatriculation }\n  OPTIONAL { ?x actors:anneeFabrication ?annee }\n  OPTIONAL { ?x actors:valeurVehicule ?valeur }\n  OPTIONAL { ?x a ?typeVehicule . ?typeVehicule rdfs:subClassOf actors:Vehicule }\n}\nORDER BY ?x",
+    "executed": true,
+    "ids": [
+      "Voiture_001"
+    ],
+    "count": null,
+    "expectedIds": [
+      "Voiture_001"
+    ],
+    "message": "Question traduite en SPARQL.",
+    "explanation": "1 véhicule trouvé (type « vol » (GarantieVol)) : Peugeot 208 (123TN4567).",
+    "confidence": 0.84,
+    "ms": 121.53
+  },
+  {
+    "category": "Structures de phrase",
+    "question": "Liste des véhicules",
+    "ok": true,
+    "status": "ok",
+    "wantStatus": "ok",
+    "intent": "SEARCH_VEHICLE",
+    "modifiers": [],
+    "wantIntent": "SEARCH_VEHICLE",
+    "entities": [],
+    "constraints": [],
+    "negations": [],
+    "sparql": "PREFIX actors: <http://www.semanticweb.org/assurance/actors#>\nPREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\n# Généré par le module NLP (règles + templates) — intention SEARCH_VEHICLE\nSELECT DISTINCT ?x ?marque ?modele ?immatriculation ?annee ?valeur ?typeVehicule\nWHERE {\n  ?x a/rdfs:subClassOf* actors:Vehicule .\n  OPTIONAL { ?x actors:marque ?marque }\n  OPTIONAL { ?x actors:modele ?modele }\n  OPTIONAL { ?x actors:immatriculation ?immatriculation }\n  OPTIONAL { ?x actors:anneeFabrication ?annee }\n  OPTIONAL { ?x actors:valeurVehicule ?valeur }\n  OPTIONAL { ?x a ?typeVehicule . ?typeVehicule rdfs:subClassOf actors:Vehicule }\n}\nORDER BY ?x",
+    "executed": true,
+    "ids": [
+      "Moto_001",
+      "Voiture_001",
+      "Voiture_002"
+    ],
+    "count": null,
+    "expectedIds": [
+      "Moto_001",
+      "Voiture_001",
+      "Voiture_002"
+    ],
+    "message": "Question traduite en SPARQL.",
+    "explanation": "3 véhicules trouvés : Yamaha MT-07 (87TN3321); Peugeot 208 (123TN4567); Renault Clio (245TN8812).",
+    "confidence": 0.85,
+    "ms": 111.15
+  },
+  {
+    "category": "Structures de phrase",
+    "question": "Montant indemnisation sinistre 001",
+    "ok": true,
+    "status": "ok",
+    "wantStatus": "ok",
+    "intent": "SEARCH_INDEMNIFICATION",
+    "modifiers": [],
+    "wantIntent": "SEARCH_INDEMNIFICATION",
+    "entities": [
+      [
+        "sinistre 001",
+        [
+          "Sinistre_001"
+        ]
+      ]
+    ],
+    "constraints": [
+      "sinistre S-001"
+    ],
+    "negations": [],
+    "sparql": "PREFIX actors: <http://www.semanticweb.org/assurance/actors#>\nPREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\n# Généré par le module NLP (règles + templates) — intention SEARCH_INDEMNIFICATION\nSELECT DISTINCT ?x ?montant ?date ?statut ?motif ?beneficiaire\nWHERE {\n  ?x a/rdfs:subClassOf* actors:Indemnisation .\n  ?damage actors:donneLieuA ?x .\n  ?claim actors:provoque ?damage .\n  VALUES ?claim { actors:Sinistre_001 }\n  OPTIONAL { ?x actors:montantIndemnisation ?montant }\n  OPTIONAL { ?x actors:dateIndemnisation ?date }\n  OPTIONAL { ?x actors:statutIndemnisation ?statut }\n  OPTIONAL { ?x actors:motifDecision ?motif }\n  OPTIONAL { ?x actors:verseeA ?b . ?b actors:prenom ?bp . ?b actors:nom ?bn . BIND(CONCAT(?bp, \" \", ?bn) AS ?beneficiaire) }\n}\nORDER BY ?x",
+    "executed": true,
+    "ids": [
+      "Indemnisation_001",
+      "Indemnisation_004"
+    ],
+    "count": null,
+    "expectedIds": [
+      "Indemnisation_001",
+      "Indemnisation_004"
+    ],
+    "message": "Question traduite en SPARQL.",
+    "explanation": "Montant d'indemnisation (sinistre S-001) : 4050 (versé à Ahmed Ben Ali), 2000 (versé à Sami Jaziri).",
+    "confidence": 1.0,
+    "ms": 164.3
+  },
+  {
+    "category": "Structures de phrase",
+    "question": "Qui a déclaré un sinistre ?",
+    "ok": true,
+    "status": "ok",
+    "wantStatus": "ok",
+    "intent": "SEARCH_INSURED",
+    "modifiers": [],
+    "wantIntent": "SEARCH_INSURED",
+    "entities": [],
+    "constraints": [
+      "avec sinistre"
+    ],
+    "negations": [],
+    "sparql": "PREFIX actors: <http://www.semanticweb.org/assurance/actors#>\nPREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\n# Généré par le module NLP (règles + templates) — intention SEARCH_INSURED\nSELECT DISTINCT ?x ?prenom ?nom ?permis\nWHERE {\n  ?x a/rdfs:subClassOf* actors:Assure .\n  ?x actors:declare ?claim .\n  OPTIONAL { ?x actors:prenom ?prenom }\n  OPTIONAL { ?x actors:nom ?nom }\n  OPTIONAL { ?x actors:numeroPermis ?permis }\n}\nORDER BY ?x",
+    "executed": true,
+    "ids": [
+      "AhmedBenAli",
+      "FatmaTrabelsi",
+      "YoussefHamdi"
+    ],
+    "count": null,
+    "expectedIds": [
+      "AhmedBenAli",
+      "FatmaTrabelsi",
+      "YoussefHamdi"
+    ],
+    "message": "Question traduite en SPARQL.",
+    "explanation": "3 assurés trouvés (avec sinistre) : Ahmed Ben Ali; Fatma Trabelsi; Youssef Hamdi.",
+    "confidence": 1.0,
+    "ms": 109.44
+  },
+  {
+    "category": "Structures de phrase",
+    "question": "Y a-t-il des sinistres liés à un incendie ?",
+    "ok": true,
+    "status": "ok",
+    "wantStatus": "ok",
+    "intent": "SEARCH_CLAIM",
+    "modifiers": [
+      "FILTER_BY_TYPE"
+    ],
+    "wantIntent": "SEARCH_CLAIM",
+    "entities": [],
+    "constraints": [
+      "type « incendie » (IncendieVehicule)"
+    ],
+    "negations": [],
+    "sparql": "PREFIX actors: <http://www.semanticweb.org/assurance/actors#>\nPREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\n# Généré par le module NLP (règles + templates) — intention SEARCH_CLAIM\nSELECT DISTINCT ?x ?numero ?date ?lieu ?description ?statut ?typeSinistre\nWHERE {\n  ?x a/rdfs:subClassOf* actors:Sinistre .\n  ?x a/rdfs:subClassOf* actors:IncendieVehicule .\n  OPTIONAL { ?x actors:numeroSinistre ?numero }\n  OPTIONAL { ?x actors:dateSinistre ?date }\n  OPTIONAL { ?x actors:lieuSinistre ?lieu }\n  OPTIONAL { ?x actors:descriptionSinistre ?description }\n  OPTIONAL { ?x actors:statutSinistre ?statut }\n  OPTIONAL { ?x a ?typeSinistre . ?typeSinistre rdfs:subClassOf actors:Sinistre }\n}\nORDER BY ?x",
+    "executed": true,
+    "ids": [
+      "Sinistre_003"
+    ],
+    "count": null,
+    "expectedIds": [
+      "Sinistre_003"
+    ],
+    "message": "Question traduite en SPARQL.",
+    "explanation": "1 sinistre trouvé (type « incendie » (IncendieVehicule)) : S-003 (IncendieVehicule, Sfax).",
+    "confidence": 0.87,
+    "ms": 128.39
+  },
+  {
+    "category": "Structures de phrase",
+    "question": "Quelles sont les garanties du contrat C-001 ?",
+    "ok": true,
+    "status": "ok",
+    "wantStatus": "ok",
+    "intent": "SEARCH_GUARANTEE",
+    "modifiers": [],
+    "wantIntent": "SEARCH_GUARANTEE",
+    "entities": [
+      [
+        "contrat C-001",
+        [
+          "Contrat_001"
+        ]
+      ]
+    ],
+    "constraints": [
+      "contrat C-001"
+    ],
+    "negations": [],
+    "sparql": "PREFIX actors: <http://www.semanticweb.org/assurance/actors#>\nPREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\n# Généré par le module NLP (règles + templates) — intention SEARCH_GUARANTEE\nSELECT DISTINCT ?x ?plafond ?typeGarantie\nWHERE {\n  ?x a/rdfs:subClassOf* actors:Garantie .\n  ?contract actors:contient ?x .\n  VALUES ?contract { actors:Contrat_001 }\n  OPTIONAL { ?x actors:plafondGarantie ?plafond }\n  OPTIONAL { ?x a ?typeGarantie . ?typeGarantie rdfs:subClassOf actors:Garantie }\n}\nORDER BY ?x",
+    "executed": true,
+    "ids": [
+      "GarantieBrisDeGlace_001",
+      "GarantieRC_001",
+      "GarantieTousAccidents_001",
+      "GarantieVol_001"
+    ],
+    "count": null,
+    "expectedIds": [
+      "GarantieBrisDeGlace_001",
+      "GarantieRC_001",
+      "GarantieTousAccidents_001",
+      "GarantieVol_001"
+    ],
+    "message": "Question traduite en SPARQL.",
+    "explanation": "4 garanties trouvées (contrat C-001) : GarantieBrisDeGlace_001 (GarantieBrisDeGlace, plafond 2000); GarantieRC_001 (GarantieResponsabiliteCivile, plafond 1000000); GarantieTousAccidents_001 (GarantieDommagesTousAccidents, plafond 45000); GarantieVol_001 (GarantieVol, plafond 30000).",
+    "confidence": 1.0,
+    "ms": 89.22999999999999
+  },
+  {
+    "category": "Structures de phrase",
+    "question": "Quelles garanties couvre le contrat C-003 ?",
+    "ok": true,
+    "status": "ok",
+    "wantStatus": "ok",
+    "intent": "SEARCH_GUARANTEE",
+    "modifiers": [],
+    "wantIntent": "SEARCH_GUARANTEE",
+    "entities": [
+      [
+        "contrat C-003",
+        [
+          "Contrat_003"
+        ]
+      ]
+    ],
+    "constraints": [
+      "contrat C-003"
+    ],
+    "negations": [],
+    "sparql": "PREFIX actors: <http://www.semanticweb.org/assurance/actors#>\nPREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\n# Généré par le module NLP (règles + templates) — intention SEARCH_GUARANTEE\nSELECT DISTINCT ?x ?plafond ?typeGarantie\nWHERE {\n  ?x a/rdfs:subClassOf* actors:Garantie .\n  ?contract actors:contient ?x .\n  VALUES ?contract { actors:Contrat_003 }\n  OPTIONAL { ?x actors:plafondGarantie ?plafond }\n  OPTIONAL { ?x a ?typeGarantie . ?typeGarantie rdfs:subClassOf actors:Garantie }\n}\nORDER BY ?x",
+    "executed": true,
+    "ids": [
+      "GarantieBrisDeGlace_003",
+      "GarantieIncendie_003",
+      "GarantieRC_003"
+    ],
+    "count": null,
+    "expectedIds": [
+      "GarantieBrisDeGlace_003",
+      "GarantieIncendie_003",
+      "GarantieRC_003"
+    ],
+    "message": "Question traduite en SPARQL.",
+    "explanation": "3 garanties trouvées (contrat C-003) : GarantieBrisDeGlace_003 (GarantieBrisDeGlace, plafond 1500); GarantieIncendie_003 (GarantieIncendie, plafond 25000); GarantieRC_003 (GarantieResponsabiliteCivile, plafond 1000000).",
+    "confidence": 1.0,
+    "ms": 91.69999999999999
+  },
+  {
+    "category": "Structures de phrase",
+    "question": "Quels véhicules sont réparés par un garage ?",
+    "ok": true,
+    "status": "ok",
+    "wantStatus": "ok",
+    "intent": "SEARCH_VEHICLE",
+    "modifiers": [],
+    "wantIntent": "SEARCH_VEHICLE",
+    "entities": [],
+    "constraints": [
+      "avec garage"
+    ],
+    "negations": [],
+    "sparql": "PREFIX actors: <http://www.semanticweb.org/assurance/actors#>\nPREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\n# Généré par le module NLP (règles + templates) — intention SEARCH_VEHICLE\nSELECT DISTINCT ?x ?marque ?modele ?immatriculation ?annee ?valeur ?typeVehicule\nWHERE {\n  ?x a/rdfs:subClassOf* actors:Vehicule .\n  ?garage actors:repare ?x .\n  OPTIONAL { ?x actors:marque ?marque }\n  OPTIONAL { ?x actors:modele ?modele }\n  OPTIONAL { ?x actors:immatriculation ?immatriculation }\n  OPTIONAL { ?x actors:anneeFabrication ?annee }\n  OPTIONAL { ?x actors:valeurVehicule ?valeur }\n  OPTIONAL { ?x a ?typeVehicule . ?typeVehicule rdfs:subClassOf actors:Vehicule }\n}\nORDER BY ?x",
+    "executed": true,
+    "ids": [
+      "Moto_001",
+      "Voiture_001"
+    ],
+    "count": null,
+    "expectedIds": [
+      "Moto_001",
+      "Voiture_001"
+    ],
+    "message": "Question traduite en SPARQL.",
+    "explanation": "2 véhicules trouvés (avec garage) : Yamaha MT-07 (87TN3321); Peugeot 208 (123TN4567).",
+    "confidence": 1.0,
+    "ms": 149.76
+  },
+  {
+    "category": "Structures de phrase",
+    "question": "Quels assurés ont une moto ?",
+    "ok": true,
+    "status": "ok",
+    "wantStatus": "ok",
+    "intent": "SEARCH_INSURED",
+    "modifiers": [
+      "FILTER_BY_TYPE"
+    ],
+    "wantIntent": "SEARCH_INSURED",
+    "entities": [],
+    "constraints": [
+      "type « moto » (Moto)"
+    ],
+    "negations": [],
+    "sparql": "PREFIX actors: <http://www.semanticweb.org/assurance/actors#>\nPREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\n# Généré par le module NLP (règles + templates) — intention SEARCH_INSURED\nSELECT DISTINCT ?x ?prenom ?nom ?permis\nWHERE {\n  ?x a/rdfs:subClassOf* actors:Assure .\n  ?x actors:possede ?contract .\n  ?contract actors:couvre ?vehicle .\n  ?vehicle a/rdfs:subClassOf* actors:Moto .\n  OPTIONAL { ?x actors:prenom ?prenom }\n  OPTIONAL { ?x actors:nom ?nom }\n  OPTIONAL { ?x actors:numeroPermis ?permis }\n}\nORDER BY ?x",
+    "executed": true,
+    "ids": [
+      "YoussefHamdi"
+    ],
+    "count": null,
+    "expectedIds": [
+      "YoussefHamdi"
+    ],
+    "message": "Question traduite en SPARQL.",
+    "explanation": "1 assuré trouvé (type « moto » (Moto)) : Youssef Hamdi.",
+    "confidence": 1.0,
+    "ms": 120.27000000000001
+  },
+  {
+    "category": "Structures de phrase",
+    "question": "Quels experts ont évalué un dommage corporel ?",
+    "ok": true,
+    "status": "ok",
+    "wantStatus": "ok",
+    "intent": "SEARCH_EXPERTISE",
+    "modifiers": [
+      "FILTER_BY_TYPE"
+    ],
+    "wantIntent": "SEARCH_EXPERTISE",
+    "entities": [],
+    "constraints": [
+      "type « dommage corporel » (DommageCorporel)"
+    ],
+    "negations": [],
+    "sparql": "PREFIX actors: <http://www.semanticweb.org/assurance/actors#>\nPREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\n# Généré par le module NLP (règles + templates) — intention SEARCH_EXPERTISE\nSELECT DISTINCT ?x ?prenom ?nom ?specialite\nWHERE {\n  ?x a/rdfs:subClassOf* actors:Expert .\n  ?expertise actors:realisePar ?x .\n  ?expertise actors:evalue ?damage .\n  ?damage a/rdfs:subClassOf* actors:DommageCorporel .\n  OPTIONAL { ?x actors:prenom ?prenom }\n  OPTIONAL { ?x actors:nom ?nom }\n  OPTIONAL { ?x actors:specialite ?specialite }\n}\nORDER BY ?x",
+    "executed": true,
+    "ids": [
+      "Expert_001"
+    ],
+    "count": null,
+    "expectedIds": [
+      "Expert_001"
+    ],
+    "message": "Question traduite en SPARQL.",
+    "explanation": "1 expert trouvé (type « dommage corporel » (DommageCorporel)) : Karim Trabelsi.",
+    "confidence": 1.0,
+    "ms": 81.82
+  },
+  {
+    "category": "Comptage, montants, dates",
+    "question": "Combien de contrats couvrent le vol ?",
+    "ok": true,
+    "status": "ok",
+    "wantStatus": "ok",
+    "intent": "SEARCH_CONTRACT",
+    "modifiers": [
+      "FILTER_BY_TYPE"
+    ],
+    "wantIntent": "SEARCH_CONTRACT",
+    "entities": [],
+    "constraints": [
+      "type « vol » (GarantieVol)"
+    ],
+    "negations": [],
+    "sparql": "PREFIX actors: <http://www.semanticweb.org/assurance/actors#>\nPREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\n# Généré par le module NLP (règles + templates) — intention SEARCH_CONTRACT\nSELECT (COUNT(DISTINCT ?x) AS ?nombre)\nWHERE {\n  ?x a/rdfs:subClassOf* actors:ContratAssurance .\n  ?x actors:contient ?guarantee .\n  ?guarantee a/rdfs:subClassOf* actors:GarantieVol .\n}",
+    "executed": true,
+    "ids": null,
+    "count": "1",
+    "expectedIds": null,
+    "message": "Question traduite en SPARQL.",
+    "explanation": "Il y a 1 contrat (type « vol » (GarantieVol)).",
+    "confidence": 1.0,
+    "ms": 23.759999999999998
+  },
+  {
+    "category": "Comptage, montants, dates",
+    "question": "Combien de sinistres a déclaré Fatma Trabelsi ?",
+    "ok": true,
+    "status": "ok",
+    "wantStatus": "ok",
+    "intent": "SEARCH_CLAIM",
+    "modifiers": [],
+    "wantIntent": "SEARCH_CLAIM",
+    "entities": [
+      [
+        "Fatma Trabelsi",
+        [
+          "FatmaTrabelsi"
+        ]
+      ]
+    ],
+    "constraints": [
+      "assuré Fatma Trabelsi"
+    ],
+    "negations": [],
+    "sparql": "PREFIX actors: <http://www.semanticweb.org/assurance/actors#>\nPREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\n# Généré par le module NLP (règles + templates) — intention SEARCH_CLAIM\nSELECT (COUNT(DISTINCT ?x) AS ?nombre)\nWHERE {\n  ?x a/rdfs:subClassOf* actors:Sinistre .\n  ?insured actors:declare ?x .\n  VALUES ?insured { actors:FatmaTrabelsi }\n}",
+    "executed": true,
+    "ids": null,
+    "count": "1",
+    "expectedIds": null,
+    "message": "Question traduite en SPARQL.",
+    "explanation": "Il y a 1 sinistre (assuré Fatma Trabelsi).",
+    "confidence": 1.0,
+    "ms": 28.1
+  },
+  {
+    "category": "Comptage, montants, dates",
+    "question": "Quelles indemnisations dépassent 4000 euros ?",
+    "ok": true,
+    "status": "ok",
+    "wantStatus": "ok",
+    "intent": "SEARCH_INDEMNIFICATION",
+    "modifiers": [
+      "FILTER_BY_AMOUNT"
+    ],
+    "wantIntent": "SEARCH_INDEMNIFICATION",
+    "entities": [],
+    "constraints": [
+      "montant d'indemnisation supérieur à 4000"
+    ],
+    "negations": [],
+    "sparql": "PREFIX actors: <http://www.semanticweb.org/assurance/actors#>\nPREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\n# Généré par le module NLP (règles + templates) — intention SEARCH_INDEMNIFICATION\nSELECT DISTINCT ?x ?montant ?date ?statut ?motif ?beneficiaire\nWHERE {\n  ?x a/rdfs:subClassOf* actors:Indemnisation .\n  ?x actors:montantIndemnisation ?montant1 .\n  FILTER(?montant1 > 4000.0)\n  OPTIONAL { ?x actors:montantIndemnisation ?montant }\n  OPTIONAL { ?x actors:dateIndemnisation ?date }\n  OPTIONAL { ?x actors:statutIndemnisation ?statut }\n  OPTIONAL { ?x actors:motifDecision ?motif }\n  OPTIONAL { ?x actors:verseeA ?b . ?b actors:prenom ?bp . ?b actors:nom ?bn . BIND(CONCAT(?bp, \" \", ?bn) AS ?beneficiaire) }\n}\nORDER BY ?x",
+    "executed": true,
+    "ids": [
+      "Indemnisation_001",
+      "Indemnisation_003"
+    ],
+    "count": null,
+    "expectedIds": [
+      "Indemnisation_001",
+      "Indemnisation_003"
+    ],
+    "message": "Question traduite en SPARQL.",
+    "explanation": "2 indemnisations trouvées (montant d'indemnisation supérieur à 4000) : Indemnisation_001 : 4050 (Acceptee); Indemnisation_003 : 9360 (Acceptee).",
+    "confidence": 1.0,
+    "ms": 116.96000000000001
+  },
+  {
+    "category": "Comptage, montants, dates",
+    "question": "Quelles indemnisations sont comprises entre 2000 et 5000 euros ?",
+    "ok": true,
+    "status": "ok",
+    "wantStatus": "ok",
+    "intent": "SEARCH_INDEMNIFICATION",
+    "modifiers": [
+      "FILTER_BY_AMOUNT"
+    ],
+    "wantIntent": "SEARCH_INDEMNIFICATION",
+    "entities": [],
+    "constraints": [
+      "montant d'indemnisation entre 2000 et 5000"
+    ],
+    "negations": [],
+    "sparql": "PREFIX actors: <http://www.semanticweb.org/assurance/actors#>\nPREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\n# Généré par le module NLP (règles + templates) — intention SEARCH_INDEMNIFICATION\nSELECT DISTINCT ?x ?montant ?date ?statut ?motif ?beneficiaire\nWHERE {\n  ?x a/rdfs:subClassOf* actors:Indemnisation .\n  ?x actors:montantIndemnisation ?montant1 .\n  FILTER(?montant1 >= 2000.0 && ?montant1 <= 5000.0)\n  OPTIONAL { ?x actors:montantIndemnisation ?montant }\n  OPTIONAL { ?x actors:dateIndemnisation ?date }\n  OPTIONAL { ?x actors:statutIndemnisation ?statut }\n  OPTIONAL { ?x actors:motifDecision ?motif }\n  OPTIONAL { ?x actors:verseeA ?b . ?b actors:prenom ?bp . ?b actors:nom ?bn . BIND(CONCAT(?bp, \" \", ?bn) AS ?beneficiaire) }\n}\nORDER BY ?x",
+    "executed": true,
+    "ids": [
+      "Indemnisation_001",
+      "Indemnisation_004"
+    ],
+    "count": null,
+    "expectedIds": [
+      "Indemnisation_001",
+      "Indemnisation_004"
+    ],
+    "message": "Question traduite en SPARQL.",
+    "explanation": "2 indemnisations trouvées (montant d'indemnisation entre 2000 et 5000) : Indemnisation_001 : 4050 (Acceptee); Indemnisation_004 : 2000 (EnCours).",
+    "confidence": 1.0,
+    "ms": 108.31
+  },
+  {
+    "category": "Comptage, montants, dates",
+    "question": "Quels sinistres en octobre 2026 ?",
+    "ok": true,
+    "status": "ok",
+    "wantStatus": "ok",
+    "intent": "SEARCH_CLAIM",
+    "modifiers": [
+      "FILTER_BY_DATE"
+    ],
+    "wantIntent": "SEARCH_CLAIM",
+    "entities": [],
+    "constraints": [
+      "en octobre 2026"
+    ],
+    "negations": [],
+    "sparql": "PREFIX actors: <http://www.semanticweb.org/assurance/actors#>\nPREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\n# Généré par le module NLP (règles + templates) — intention SEARCH_CLAIM\nSELECT DISTINCT ?x ?numero ?date ?lieu ?description ?statut ?typeSinistre\nWHERE {\n  ?x a/rdfs:subClassOf* actors:Sinistre .\n  ?x actors:dateSinistre ?date1 .\n  FILTER(?date1 >= \"2026-10-01T00:00:00\"^^xsd:dateTime && ?date1 < \"2026-11-01T00:00:00\"^^xsd:dateTime)\n  OPTIONAL { ?x actors:numeroSinistre ?numero }\n  OPTIONAL { ?x actors:dateSinistre ?date }\n  OPTIONAL { ?x actors:lieuSinistre ?lieu }\n  OPTIONAL { ?x actors:descriptionSinistre ?description }\n  OPTIONAL { ?x actors:statutSinistre ?statut }\n  OPTIONAL { ?x a ?typeSinistre . ?typeSinistre rdfs:subClassOf actors:Sinistre }\n}\nORDER BY ?x",
+    "executed": true,
+    "ids": [
+      "Sinistre_001"
+    ],
+    "count": null,
+    "expectedIds": [
+      "Sinistre_001"
+    ],
+    "message": "Question traduite en SPARQL.",
+    "explanation": "1 sinistre trouvé (en octobre 2026) : S-001 (AccidentCirculation, Tunis).",
+    "confidence": 1.0,
+    "ms": 93.88
+  },
+  {
+    "category": "Comptage, montants, dates",
+    "question": "Quels sinistres avant 2026 ?",
+    "ok": true,
+    "status": "ok",
+    "wantStatus": "ok",
+    "intent": "SEARCH_CLAIM",
+    "modifiers": [
+      "FILTER_BY_DATE"
+    ],
+    "wantIntent": "SEARCH_CLAIM",
+    "entities": [],
+    "constraints": [
+      "avant 2026"
+    ],
+    "negations": [],
+    "sparql": "PREFIX actors: <http://www.semanticweb.org/assurance/actors#>\nPREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\n# Généré par le module NLP (règles + templates) — intention SEARCH_CLAIM\nSELECT DISTINCT ?x ?numero ?date ?lieu ?description ?statut ?typeSinistre\nWHERE {\n  ?x a/rdfs:subClassOf* actors:Sinistre .\n  ?x actors:dateSinistre ?date1 .\n  FILTER(?date1 < \"2026-01-01T00:00:00\"^^xsd:dateTime)\n  OPTIONAL { ?x actors:numeroSinistre ?numero }\n  OPTIONAL { ?x actors:dateSinistre ?date }\n  OPTIONAL { ?x actors:lieuSinistre ?lieu }\n  OPTIONAL { ?x actors:descriptionSinistre ?description }\n  OPTIONAL { ?x actors:statutSinistre ?statut }\n  OPTIONAL { ?x a ?typeSinistre . ?typeSinistre rdfs:subClassOf actors:Sinistre }\n}\nORDER BY ?x",
+    "executed": true,
+    "ids": [],
+    "count": null,
+    "expectedIds": [],
+    "message": "Question traduite en SPARQL.",
+    "explanation": "Aucun sinistre ne correspond à la question (avant 2026). Aucune donnée de l'ontologie ne satisfait ces conditions.",
+    "confidence": 1.0,
+    "ms": 150.38
+  },
+  {
+    "category": "Comptage, montants, dates",
+    "question": "Quels sinistres ont eu lieu à Sfax ?",
+    "ok": true,
+    "status": "ok",
+    "wantStatus": "ok",
+    "intent": "SEARCH_CLAIM",
+    "modifiers": [],
+    "wantIntent": "SEARCH_CLAIM",
+    "entities": [
+      [
+        "Sfax",
+        [
+          "Sfax"
+        ]
+      ]
+    ],
+    "constraints": [
+      "lieu « Sfax »"
+    ],
+    "negations": [],
+    "sparql": "PREFIX actors: <http://www.semanticweb.org/assurance/actors#>\nPREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\n# Généré par le module NLP (règles + templates) — intention SEARCH_CLAIM\nSELECT DISTINCT ?x ?numero ?date ?lieu ?description ?statut ?typeSinistre\nWHERE {\n  ?x a/rdfs:subClassOf* actors:Sinistre .\n  ?x actors:lieuSinistre ?lieu1 .\n  FILTER(LCASE(STR(?lieu1)) = \"sfax\")\n  OPTIONAL { ?x actors:numeroSinistre ?numero }\n  OPTIONAL { ?x actors:dateSinistre ?date }\n  OPTIONAL { ?x actors:lieuSinistre ?lieu }\n  OPTIONAL { ?x actors:descriptionSinistre ?description }\n  OPTIONAL { ?x actors:statutSinistre ?statut }\n  OPTIONAL { ?x a ?typeSinistre . ?typeSinistre rdfs:subClassOf actors:Sinistre }\n}\nORDER BY ?x",
+    "executed": true,
+    "ids": [
+      "Sinistre_003"
+    ],
+    "count": null,
+    "expectedIds": [
+      "Sinistre_003"
+    ],
+    "message": "Question traduite en SPARQL.",
+    "explanation": "1 sinistre trouvé (lieu « Sfax ») : S-003 (IncendieVehicule, Sfax).",
+    "confidence": 1.0,
+    "ms": 145.86
+  },
+  {
+    "category": "Comptage, montants, dates",
+    "question": "Quels contrats ont une prime supérieure à 500 ?",
+    "ok": true,
+    "status": "ok",
+    "wantStatus": "ok",
+    "intent": "SEARCH_CONTRACT",
+    "modifiers": [
+      "FILTER_BY_AMOUNT"
+    ],
+    "wantIntent": "SEARCH_CONTRACT",
+    "entities": [],
+    "constraints": [
+      "prime du contrat supérieur à 500"
+    ],
+    "negations": [],
+    "sparql": "PREFIX actors: <http://www.semanticweb.org/assurance/actors#>\nPREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\n# Généré par le module NLP (règles + templates) — intention SEARCH_CONTRACT\nSELECT DISTINCT ?x ?numero ?statut ?debut ?fin ?typeContrat ?prime\nWHERE {\n  ?x a/rdfs:subClassOf* actors:ContratAssurance .\n  ?x actors:aPourPrime/actors:montantPrime ?montant1 .\n  FILTER(?montant1 > 500.0)\n  OPTIONAL { ?x actors:numeroContrat ?numero }\n  OPTIONAL { ?x actors:statutContrat ?statut }\n  OPTIONAL { ?x actors:dateDebut ?debut }\n  OPTIONAL { ?x actors:dateFin ?fin }\n  OPTIONAL { ?x a ?typeContrat . ?typeContrat rdfs:subClassOf actors:ContratAssurance }\n  OPTIONAL { ?x actors:aPourPrime/actors:montantPrime ?prime }\n}\nORDER BY ?x",
+    "executed": true,
+    "ids": [
+      "Contrat_001",
+      "Contrat_003"
+    ],
+    "count": null,
+    "expectedIds": [
+      "Contrat_001",
+      "Contrat_003"
+    ],
+    "message": "Question traduite en SPARQL.",
+    "explanation": "2 contrats trouvés (prime du contrat supérieur à 500) : C-001 (AssuranceTousRisques, Actif); C-003 (AssuranceIntermediaire, Actif).",
+    "confidence": 1.0,
+    "ms": 139.21
+  },
+  {
+    "category": "Négation",
+    "question": "Quels contrats ne couvrent pas le vol ?",
+    "ok": true,
+    "status": "ok",
+    "wantStatus": "ok",
+    "intent": "SEARCH_CONTRACT",
+    "modifiers": [
+      "FILTER_BY_TYPE"
+    ],
+    "wantIntent": "SEARCH_CONTRACT",
+    "entities": [],
+    "constraints": [
+      "pas de type « vol » (GarantieVol)"
+    ],
+    "negations": [
+      [
+        "ne … pas",
+        "ne couvrent pas le vol",
+        "ok"
+      ]
+    ],
+    "sparql": "PREFIX actors: <http://www.semanticweb.org/assurance/actors#>\nPREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\n# Généré par le module NLP (règles + templates) — intention SEARCH_CONTRACT\nSELECT DISTINCT ?x ?numero ?statut ?debut ?fin ?typeContrat ?prime\nWHERE {\n  ?x a/rdfs:subClassOf* actors:ContratAssurance .\n  FILTER NOT EXISTS { ?x actors:contient ?n1_guarantee . ?n1_guarantee a/rdfs:subClassOf* actors:GarantieVol . }\n  OPTIONAL { ?x actors:numeroContrat ?numero }\n  OPTIONAL { ?x actors:statutContrat ?statut }\n  OPTIONAL { ?x actors:dateDebut ?debut }\n  OPTIONAL { ?x actors:dateFin ?fin }\n  OPTIONAL { ?x a ?typeContrat . ?typeContrat rdfs:subClassOf actors:ContratAssurance }\n  OPTIONAL { ?x actors:aPourPrime/actors:montantPrime ?prime }\n}\nORDER BY ?x",
+    "executed": true,
+    "ids": [
+      "Contrat_002",
+      "Contrat_003",
+      "Contrat_004"
+    ],
+    "count": null,
+    "expectedIds": [
+      "Contrat_002",
+      "Contrat_003",
+      "Contrat_004"
+    ],
+    "message": "Question traduite en SPARQL.",
+    "explanation": "3 contrats trouvés (pas de type « vol » (GarantieVol)) : C-002 (AssuranceResponsabiliteCivile, Actif); C-003 (AssuranceIntermediaire, Actif); C-004 (AssuranceResponsabiliteCivile, Expire).",
+    "confidence": 1.0,
+    "ms": 159.26
+  },
+  {
+    "category": "Négation",
+    "question": "Quels contrats ne possèdent pas de garantie incendie ?",
+    "ok": true,
+    "status": "ok",
+    "wantStatus": "ok",
+    "intent": "SEARCH_CONTRACT",
+    "modifiers": [
+      "FILTER_BY_TYPE"
+    ],
+    "wantIntent": "SEARCH_CONTRACT",
+    "entities": [],
+    "constraints": [
+      "pas de type « incendie » (GarantieIncendie)"
+    ],
+    "negations": [
+      [
+        "ne … pas",
+        "ne possèdent pas de garantie incendie",
+        "ok"
+      ]
+    ],
+    "sparql": "PREFIX actors: <http://www.semanticweb.org/assurance/actors#>\nPREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\n# Généré par le module NLP (règles + templates) — intention SEARCH_CONTRACT\nSELECT DISTINCT ?x ?numero ?statut ?debut ?fin ?typeContrat ?prime\nWHERE {\n  ?x a/rdfs:subClassOf* actors:ContratAssurance .\n  FILTER NOT EXISTS { ?x actors:contient ?n1_guarantee . ?n1_guarantee a/rdfs:subClassOf* actors:GarantieIncendie . }\n  OPTIONAL { ?x actors:numeroContrat ?numero }\n  OPTIONAL { ?x actors:statutContrat ?statut }\n  OPTIONAL { ?x actors:dateDebut ?debut }\n  OPTIONAL { ?x actors:dateFin ?fin }\n  OPTIONAL { ?x a ?typeContrat . ?typeContrat rdfs:subClassOf actors:ContratAssurance }\n  OPTIONAL { ?x actors:aPourPrime/actors:montantPrime ?prime }\n}\nORDER BY ?x",
+    "executed": true,
+    "ids": [
+      "Contrat_001",
+      "Contrat_002",
+      "Contrat_004"
+    ],
+    "count": null,
+    "expectedIds": [
+      "Contrat_001",
+      "Contrat_002",
+      "Contrat_004"
+    ],
+    "message": "Question traduite en SPARQL.",
+    "explanation": "3 contrats trouvés (pas de type « incendie » (GarantieIncendie)) : C-001 (AssuranceTousRisques, Actif); C-002 (AssuranceResponsabiliteCivile, Actif); C-004 (AssuranceResponsabiliteCivile, Expire).",
+    "confidence": 1.0,
+    "ms": 156.64000000000001
+  },
+  {
+    "category": "Négation",
+    "question": "Quels contrats sont sans garantie vol ?",
+    "ok": true,
+    "status": "ok",
+    "wantStatus": "ok",
+    "intent": "SEARCH_CONTRACT",
+    "modifiers": [
+      "FILTER_BY_TYPE"
+    ],
+    "wantIntent": "SEARCH_CONTRACT",
+    "entities": [],
+    "constraints": [
+      "pas de type « vol » (GarantieVol)"
+    ],
+    "negations": [
+      [
+        "sans",
+        "sans garantie vol",
+        "ok"
+      ]
+    ],
+    "sparql": "PREFIX actors: <http://www.semanticweb.org/assurance/actors#>\nPREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\n# Généré par le module NLP (règles + templates) — intention SEARCH_CONTRACT\nSELECT DISTINCT ?x ?numero ?statut ?debut ?fin ?typeContrat ?prime\nWHERE {\n  ?x a/rdfs:subClassOf* actors:ContratAssurance .\n  FILTER NOT EXISTS { ?x actors:contient ?n1_guarantee . ?n1_guarantee a/rdfs:subClassOf* actors:GarantieVol . }\n  OPTIONAL { ?x actors:numeroContrat ?numero }\n  OPTIONAL { ?x actors:statutContrat ?statut }\n  OPTIONAL { ?x actors:dateDebut ?debut }\n  OPTIONAL { ?x actors:dateFin ?fin }\n  OPTIONAL { ?x a ?typeContrat . ?typeContrat rdfs:subClassOf actors:ContratAssurance }\n  OPTIONAL { ?x actors:aPourPrime/actors:montantPrime ?prime }\n}\nORDER BY ?x",
+    "executed": true,
+    "ids": [
+      "Contrat_002",
+      "Contrat_003",
+      "Contrat_004"
+    ],
+    "count": null,
+    "expectedIds": [
+      "Contrat_002",
+      "Contrat_003",
+      "Contrat_004"
+    ],
+    "message": "Question traduite en SPARQL.",
+    "explanation": "3 contrats trouvés (pas de type « vol » (GarantieVol)) : C-002 (AssuranceResponsabiliteCivile, Actif); C-003 (AssuranceIntermediaire, Actif); C-004 (AssuranceResponsabiliteCivile, Expire).",
+    "confidence": 1.0,
+    "ms": 134.13
+  },
+  {
+    "category": "Négation",
+    "question": "Quels contrats n'ont jamais couvert le vol ?",
+    "ok": true,
+    "status": "ok",
+    "wantStatus": "ok",
+    "intent": "SEARCH_CONTRACT",
+    "modifiers": [
+      "FILTER_BY_TYPE"
+    ],
+    "wantIntent": "SEARCH_CONTRACT",
+    "entities": [],
+    "constraints": [
+      "pas de type « vol » (GarantieVol)"
+    ],
+    "negations": [
+      [
+        "n' … jamais",
+        "n' ont jamais couvert le vol",
+        "ok"
+      ]
+    ],
+    "sparql": "PREFIX actors: <http://www.semanticweb.org/assurance/actors#>\nPREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\n# Généré par le module NLP (règles + templates) — intention SEARCH_CONTRACT\nSELECT DISTINCT ?x ?numero ?statut ?debut ?fin ?typeContrat ?prime\nWHERE {\n  ?x a/rdfs:subClassOf* actors:ContratAssurance .\n  FILTER NOT EXISTS { ?x actors:contient ?n1_guarantee . ?n1_guarantee a/rdfs:subClassOf* actors:GarantieVol . }\n  OPTIONAL { ?x actors:numeroContrat ?numero }\n  OPTIONAL { ?x actors:statutContrat ?statut }\n  OPTIONAL { ?x actors:dateDebut ?debut }\n  OPTIONAL { ?x actors:dateFin ?fin }\n  OPTIONAL { ?x a ?typeContrat . ?typeContrat rdfs:subClassOf actors:ContratAssurance }\n  OPTIONAL { ?x actors:aPourPrime/actors:montantPrime ?prime }\n}\nORDER BY ?x",
+    "executed": true,
+    "ids": [
+      "Contrat_002",
+      "Contrat_003",
+      "Contrat_004"
+    ],
+    "count": null,
+    "expectedIds": [
+      "Contrat_002",
+      "Contrat_003",
+      "Contrat_004"
+    ],
+    "message": "Question traduite en SPARQL.",
+    "explanation": "3 contrats trouvés (pas de type « vol » (GarantieVol)) : C-002 (AssuranceResponsabiliteCivile, Actif); C-003 (AssuranceIntermediaire, Actif); C-004 (AssuranceResponsabiliteCivile, Expire).",
+    "confidence": 1.0,
+    "ms": 132.37
+  },
+  {
+    "category": "Négation",
+    "question": "Quels contrats ne couvrent pas le vol et l'incendie ?",
+    "ok": true,
+    "status": "ok",
+    "wantStatus": "ok",
+    "intent": "SEARCH_CONTRACT",
+    "modifiers": [
+      "FILTER_BY_TYPE"
+    ],
+    "wantIntent": "SEARCH_CONTRACT",
+    "entities": [],
+    "constraints": [
+      "pas de type « vol » (GarantieVol)",
+      "pas de type « incendie » (GarantieIncendie)"
+    ],
+    "negations": [
+      [
+        "ne … pas",
+        "ne couvrent pas le vol et l' incendie",
+        "ok"
+      ]
+    ],
+    "sparql": "PREFIX actors: <http://www.semanticweb.org/assurance/actors#>\nPREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\n# Généré par le module NLP (règles + templates) — intention SEARCH_CONTRACT\nSELECT DISTINCT ?x ?numero ?statut ?debut ?fin ?typeContrat ?prime\nWHERE {\n  ?x a/rdfs:subClassOf* actors:ContratAssurance .\n  FILTER NOT EXISTS { ?x actors:contient ?n1_guarantee . ?n1_guarantee a/rdfs:subClassOf* actors:GarantieVol . }\n  FILTER NOT EXISTS { ?x actors:contient ?n2_guarantee . ?n2_guarantee a/rdfs:subClassOf* actors:GarantieIncendie . }\n  OPTIONAL { ?x actors:numeroContrat ?numero }\n  OPTIONAL { ?x actors:statutContrat ?statut }\n  OPTIONAL { ?x actors:dateDebut ?debut }\n  OPTIONAL { ?x actors:dateFin ?fin }\n  OPTIONAL { ?x a ?typeContrat . ?typeContrat rdfs:subClassOf actors:ContratAssurance }\n  OPTIONAL { ?x actors:aPourPrime/actors:montantPrime ?prime }\n}\nORDER BY ?x",
+    "executed": true,
+    "ids": [
+      "Contrat_002",
+      "Contrat_004"
+    ],
+    "count": null,
+    "expectedIds": [
+      "Contrat_002",
+      "Contrat_004"
+    ],
+    "message": "Question traduite en SPARQL.",
+    "explanation": "2 contrats trouvés (pas de type « vol » (GarantieVol); pas de type « incendie » (GarantieIncendie)) : C-002 (AssuranceResponsabiliteCivile, Actif); C-004 (AssuranceResponsabiliteCivile, Expire).",
+    "confidence": 1.0,
+    "ms": 183.49
+  },
+  {
+    "category": "Négation",
+    "question": "Quels contrats couvrent le vol mais pas l'incendie ?",
+    "ok": true,
+    "status": "ok",
+    "wantStatus": "ok",
+    "intent": "SEARCH_CONTRACT",
+    "modifiers": [
+      "FILTER_BY_TYPE"
+    ],
+    "wantIntent": "SEARCH_CONTRACT",
+    "entities": [],
+    "constraints": [
+      "type « vol » (GarantieVol)",
+      "pas de type « incendie » (GarantieIncendie)"
+    ],
+    "negations": [
+      [
+        "pas",
+        "pas l' incendie",
+        "ok"
+      ]
+    ],
+    "sparql": "PREFIX actors: <http://www.semanticweb.org/assurance/actors#>\nPREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\n# Généré par le module NLP (règles + templates) — intention SEARCH_CONTRACT\nSELECT DISTINCT ?x ?numero ?statut ?debut ?fin ?typeContrat ?prime\nWHERE {\n  ?x a/rdfs:subClassOf* actors:ContratAssurance .\n  ?x actors:contient ?guarantee .\n  ?guarantee a/rdfs:subClassOf* actors:GarantieVol .\n  FILTER NOT EXISTS { ?x actors:contient ?n1_guarantee . ?n1_guarantee a/rdfs:subClassOf* actors:GarantieIncendie . }\n  OPTIONAL { ?x actors:numeroContrat ?numero }\n  OPTIONAL { ?x actors:statutContrat ?statut }\n  OPTIONAL { ?x actors:dateDebut ?debut }\n  OPTIONAL { ?x actors:dateFin ?fin }\n  OPTIONAL { ?x a ?typeContrat . ?typeContrat rdfs:subClassOf actors:ContratAssurance }\n  OPTIONAL { ?x actors:aPourPrime/actors:montantPrime ?prime }\n}\nORDER BY ?x",
+    "executed": true,
+    "ids": [
+      "Contrat_001"
+    ],
+    "count": null,
+    "expectedIds": [
+      "Contrat_001"
+    ],
+    "message": "Question traduite en SPARQL.",
+    "explanation": "1 contrat trouvé (type « vol » (GarantieVol); pas de type « incendie » (GarantieIncendie)) : C-001 (AssuranceTousRisques, Actif).",
+    "confidence": 1.0,
+    "ms": 159.97
+  },
+  {
+    "category": "Négation",
+    "question": "Quels contrats ne sont pas actifs ?",
+    "ok": true,
+    "status": "ok",
+    "wantStatus": "ok",
+    "intent": "SEARCH_CONTRACT",
+    "modifiers": [],
+    "wantIntent": "SEARCH_CONTRACT",
+    "entities": [],
+    "constraints": [
+      "pas statut « actif »"
+    ],
+    "negations": [
+      [
+        "ne … pas",
+        "ne sont pas actifs",
+        "ok"
+      ]
+    ],
+    "sparql": "PREFIX actors: <http://www.semanticweb.org/assurance/actors#>\nPREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\n# Généré par le module NLP (règles + templates) — intention SEARCH_CONTRACT\nSELECT DISTINCT ?x ?numero ?statut ?debut ?fin ?typeContrat ?prime\nWHERE {\n  ?x a/rdfs:subClassOf* actors:ContratAssurance .\n  FILTER NOT EXISTS { ?x actors:statutContrat \"Actif\" . }\n  OPTIONAL { ?x actors:numeroContrat ?numero }\n  OPTIONAL { ?x actors:statutContrat ?statut }\n  OPTIONAL { ?x actors:dateDebut ?debut }\n  OPTIONAL { ?x actors:dateFin ?fin }\n  OPTIONAL { ?x a ?typeContrat . ?typeContrat rdfs:subClassOf actors:ContratAssurance }\n  OPTIONAL { ?x actors:aPourPrime/actors:montantPrime ?prime }\n}\nORDER BY ?x",
+    "executed": true,
+    "ids": [
+      "Contrat_004"
+    ],
+    "count": null,
+    "expectedIds": [
+      "Contrat_004"
+    ],
+    "message": "Question traduite en SPARQL.",
+    "explanation": "1 contrat trouvé (pas statut « actif ») : C-004 (AssuranceResponsabiliteCivile, Expire).",
+    "confidence": 1.0,
+    "ms": 128.1
+  },
+  {
+    "category": "Négation",
+    "question": "Combien de contrats ne couvrent pas le vol ?",
+    "ok": true,
+    "status": "ok",
+    "wantStatus": "ok",
+    "intent": "SEARCH_CONTRACT",
+    "modifiers": [
+      "FILTER_BY_TYPE"
+    ],
+    "wantIntent": "SEARCH_CONTRACT",
+    "entities": [],
+    "constraints": [
+      "pas de type « vol » (GarantieVol)"
+    ],
+    "negations": [
+      [
+        "ne … pas",
+        "ne couvrent pas le vol",
+        "ok"
+      ]
+    ],
+    "sparql": "PREFIX actors: <http://www.semanticweb.org/assurance/actors#>\nPREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\n# Généré par le module NLP (règles + templates) — intention SEARCH_CONTRACT\nSELECT (COUNT(DISTINCT ?x) AS ?nombre)\nWHERE {\n  ?x a/rdfs:subClassOf* actors:ContratAssurance .\n  FILTER NOT EXISTS { ?x actors:contient ?n1_guarantee . ?n1_guarantee a/rdfs:subClassOf* actors:GarantieVol . }\n}",
+    "executed": true,
+    "ids": null,
+    "count": "3",
+    "expectedIds": null,
+    "message": "Question traduite en SPARQL.",
+    "explanation": "Il y a 3 contrats (pas de type « vol » (GarantieVol)).",
+    "confidence": 1.0,
+    "ms": 72.43
+  },
+  {
+    "category": "Négation",
+    "question": "Quels véhicules ne sont pas assurés par Ahmed ?",
+    "ok": true,
+    "status": "ok",
+    "wantStatus": "ok",
+    "intent": "SEARCH_VEHICLE",
+    "modifiers": [],
+    "wantIntent": "SEARCH_VEHICLE",
+    "entities": [
+      [
+        "Ahmed",
+        [
+          "AhmedBenAli"
+        ]
+      ]
+    ],
+    "constraints": [
+      "pas de assuré Ahmed Ben Ali"
+    ],
+    "negations": [
+      [
+        "ne … pas",
+        "ne sont pas assurés par Ahmed",
+        "ok"
+      ]
+    ],
+    "sparql": "PREFIX actors: <http://www.semanticweb.org/assurance/actors#>\nPREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\n# Généré par le module NLP (règles + templates) — intention SEARCH_VEHICLE\nSELECT DISTINCT ?x ?marque ?modele ?immatriculation ?annee ?valeur ?typeVehicule\nWHERE {\n  ?x a/rdfs:subClassOf* actors:Vehicule .\n  FILTER NOT EXISTS { ?n1_contract actors:couvre ?x . ?n1_insured actors:possede ?n1_contract . VALUES ?n1_insured { actors:AhmedBenAli } }\n  OPTIONAL { ?x actors:marque ?marque }\n  OPTIONAL { ?x actors:modele ?modele }\n  OPTIONAL { ?x actors:immatriculation ?immatriculation }\n  OPTIONAL { ?x actors:anneeFabrication ?annee }\n  OPTIONAL { ?x actors:valeurVehicule ?valeur }\n  OPTIONAL { ?x a ?typeVehicule . ?typeVehicule rdfs:subClassOf actors:Vehicule }\n}\nORDER BY ?x",
+    "executed": true,
+    "ids": [
+      "Moto_001",
+      "Voiture_002"
+    ],
+    "count": null,
+    "expectedIds": [
+      "Moto_001",
+      "Voiture_002"
+    ],
+    "message": "Question traduite en SPARQL.",
+    "explanation": "2 véhicules trouvés (pas de assuré Ahmed Ben Ali) : Yamaha MT-07 (87TN3321); Renault Clio (245TN8812).",
+    "confidence": 1.0,
+    "ms": 158.09
+  },
+  {
+    "category": "Négation",
+    "question": "Quels assurés n'ont pas déclaré d'accident ?",
+    "ok": true,
+    "status": "ok",
+    "wantStatus": "ok",
+    "intent": "SEARCH_INSURED",
+    "modifiers": [
+      "FILTER_BY_TYPE"
+    ],
+    "wantIntent": "SEARCH_INSURED",
+    "entities": [],
+    "constraints": [
+      "pas de type « accident de la circulation » (AccidentCirculation)"
+    ],
+    "negations": [
+      [
+        "n' … pas",
+        "n' ont pas déclaré d' accident",
+        "ok"
+      ]
+    ],
+    "sparql": "PREFIX actors: <http://www.semanticweb.org/assurance/actors#>\nPREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\n# Généré par le module NLP (règles + templates) — intention SEARCH_INSURED\nSELECT DISTINCT ?x ?prenom ?nom ?permis\nWHERE {\n  ?x a/rdfs:subClassOf* actors:Assure .\n  FILTER NOT EXISTS { ?x actors:declare ?n1_claim . ?n1_claim a/rdfs:subClassOf* actors:AccidentCirculation . }\n  OPTIONAL { ?x actors:prenom ?prenom }\n  OPTIONAL { ?x actors:nom ?nom }\n  OPTIONAL { ?x actors:numeroPermis ?permis }\n}\nORDER BY ?x",
+    "executed": true,
+    "ids": [
+      "FatmaTrabelsi",
+      "YoussefHamdi"
+    ],
+    "count": null,
+    "expectedIds": [
+      "FatmaTrabelsi",
+      "YoussefHamdi"
+    ],
+    "message": "Question traduite en SPARQL.",
+    "explanation": "2 assurés trouvés (pas de type « accident de la circulation » (AccidentCirculation)) : Fatma Trabelsi; Youssef Hamdi.",
+    "confidence": 1.0,
+    "ms": 119.36
+  },
+  {
+    "category": "Négation",
+    "question": "Quels sinistres ne sont pas des accidents ?",
+    "ok": true,
+    "status": "ok",
+    "wantStatus": "ok",
+    "intent": "SEARCH_CLAIM",
+    "modifiers": [
+      "FILTER_BY_TYPE"
+    ],
+    "wantIntent": "SEARCH_CLAIM",
+    "entities": [],
+    "constraints": [
+      "pas de type « accident de la circulation » (AccidentCirculation)"
+    ],
+    "negations": [
+      [
+        "ne … pas",
+        "ne sont pas des accidents",
+        "ok"
+      ]
+    ],
+    "sparql": "PREFIX actors: <http://www.semanticweb.org/assurance/actors#>\nPREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\n# Généré par le module NLP (règles + templates) — intention SEARCH_CLAIM\nSELECT DISTINCT ?x ?numero ?date ?lieu ?description ?statut ?typeSinistre\nWHERE {\n  ?x a/rdfs:subClassOf* actors:Sinistre .\n  FILTER NOT EXISTS { ?x a/rdfs:subClassOf* actors:AccidentCirculation . }\n  OPTIONAL { ?x actors:numeroSinistre ?numero }\n  OPTIONAL { ?x actors:dateSinistre ?date }\n  OPTIONAL { ?x actors:lieuSinistre ?lieu }\n  OPTIONAL { ?x actors:descriptionSinistre ?description }\n  OPTIONAL { ?x actors:statutSinistre ?statut }\n  OPTIONAL { ?x a ?typeSinistre . ?typeSinistre rdfs:subClassOf actors:Sinistre }\n}\nORDER BY ?x",
+    "executed": true,
+    "ids": [
+      "Sinistre_002",
+      "Sinistre_003"
+    ],
+    "count": null,
+    "expectedIds": [
+      "Sinistre_002",
+      "Sinistre_003"
+    ],
+    "message": "Question traduite en SPARQL.",
+    "explanation": "2 sinistres trouvés (pas de type « accident de la circulation » (AccidentCirculation)) : S-002 (VolVehicule, Sousse); S-003 (IncendieVehicule, Sfax).",
+    "confidence": 1.0,
+    "ms": 133.88
+  },
+  {
+    "category": "Négation",
+    "question": "Quelles indemnisations ne sont pas refusées ?",
+    "ok": true,
+    "status": "ok",
+    "wantStatus": "ok",
+    "intent": "SEARCH_INDEMNIFICATION",
+    "modifiers": [],
+    "wantIntent": "SEARCH_INDEMNIFICATION",
+    "entities": [],
+    "constraints": [
+      "pas statut « refusée »"
+    ],
+    "negations": [
+      [
+        "ne … pas",
+        "ne sont pas refusées",
+        "ok"
+      ]
+    ],
+    "sparql": "PREFIX actors: <http://www.semanticweb.org/assurance/actors#>\nPREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\n# Généré par le module NLP (règles + templates) — intention SEARCH_INDEMNIFICATION\nSELECT DISTINCT ?x ?montant ?date ?statut ?motif ?beneficiaire\nWHERE {\n  ?x a/rdfs:subClassOf* actors:Indemnisation .\n  FILTER NOT EXISTS { ?x actors:statutIndemnisation \"Refusee\" . }\n  OPTIONAL { ?x actors:montantIndemnisation ?montant }\n  OPTIONAL { ?x actors:dateIndemnisation ?date }\n  OPTIONAL { ?x actors:statutIndemnisation ?statut }\n  OPTIONAL { ?x actors:motifDecision ?motif }\n  OPTIONAL { ?x actors:verseeA ?b . ?b actors:prenom ?bp . ?b actors:nom ?bn . BIND(CONCAT(?bp, \" \", ?bn) AS ?beneficiaire) }\n}\nORDER BY ?x",
+    "executed": true,
+    "ids": [
+      "Indemnisation_001",
+      "Indemnisation_003",
+      "Indemnisation_004"
+    ],
+    "count": null,
+    "expectedIds": [
+      "Indemnisation_001",
+      "Indemnisation_003",
+      "Indemnisation_004"
+    ],
+    "message": "Question traduite en SPARQL.",
+    "explanation": "3 indemnisations trouvées (pas statut « refusée ») : Indemnisation_001 : 4050 (Acceptee); Indemnisation_003 : 9360 (Acceptee); Indemnisation_004 : 2000 (EnCours).",
+    "confidence": 1.0,
+    "ms": 154.42000000000002
+  },
+  {
+    "category": "Négation",
+    "question": "Quels sinistres ne concernent pas une Peugeot 208 ?",
+    "ok": true,
+    "status": "ok",
+    "wantStatus": "ok",
+    "intent": "SEARCH_CLAIM",
+    "modifiers": [],
+    "wantIntent": "SEARCH_CLAIM",
+    "entities": [
+      [
+        "Peugeot 208",
+        [
+          "Voiture_001"
+        ]
+      ]
+    ],
+    "constraints": [
+      "pas de véhicule Peugeot 208 (123TN4567)"
+    ],
+    "negations": [
+      [
+        "ne … pas",
+        "ne concernent pas une Peugeot 208",
+        "ok"
+      ]
+    ],
+    "sparql": "PREFIX actors: <http://www.semanticweb.org/assurance/actors#>\nPREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\n# Généré par le module NLP (règles + templates) — intention SEARCH_CLAIM\nSELECT DISTINCT ?x ?numero ?date ?lieu ?description ?statut ?typeSinistre\nWHERE {\n  ?x a/rdfs:subClassOf* actors:Sinistre .\n  FILTER NOT EXISTS { ?x actors:concerne ?n1_vehicle . VALUES ?n1_vehicle { actors:Voiture_001 } }\n  OPTIONAL { ?x actors:numeroSinistre ?numero }\n  OPTIONAL { ?x actors:dateSinistre ?date }\n  OPTIONAL { ?x actors:lieuSinistre ?lieu }\n  OPTIONAL { ?x actors:descriptionSinistre ?description }\n  OPTIONAL { ?x actors:statutSinistre ?statut }\n  OPTIONAL { ?x a ?typeSinistre . ?typeSinistre rdfs:subClassOf actors:Sinistre }\n}\nORDER BY ?x",
+    "executed": true,
+    "ids": [
+      "Sinistre_002",
+      "Sinistre_003"
+    ],
+    "count": null,
+    "expectedIds": [
+      "Sinistre_002",
+      "Sinistre_003"
+    ],
+    "message": "Question traduite en SPARQL.",
+    "explanation": "2 sinistres trouvés (pas de véhicule Peugeot 208 (123TN4567)) : S-002 (VolVehicule, Sousse); S-003 (IncendieVehicule, Sfax).",
+    "confidence": 1.0,
+    "ms": 136.85
+  },
+  {
+    "category": "Négation",
+    "question": "Quels assurés n'ont pas de sinistre ?",
+    "ok": true,
+    "status": "ok",
+    "wantStatus": "ok",
+    "intent": "SEARCH_INSURED",
+    "modifiers": [],
+    "wantIntent": "SEARCH_INSURED",
+    "entities": [],
+    "constraints": [
+      "sans sinistre"
+    ],
+    "negations": [
+      [
+        "n' … pas",
+        "n' ont pas de sinistre",
+        "ok"
+      ]
+    ],
+    "sparql": "PREFIX actors: <http://www.semanticweb.org/assurance/actors#>\nPREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\n# Généré par le module NLP (règles + templates) — intention SEARCH_INSURED\nSELECT DISTINCT ?x ?prenom ?nom ?permis\nWHERE {\n  ?x a/rdfs:subClassOf* actors:Assure .\n  FILTER NOT EXISTS { ?x actors:declare ?n1_claim . }\n  OPTIONAL { ?x actors:prenom ?prenom }\n  OPTIONAL { ?x actors:nom ?nom }\n  OPTIONAL { ?x actors:numeroPermis ?permis }\n}\nORDER BY ?x",
+    "executed": true,
+    "ids": [],
+    "count": null,
+    "expectedIds": [],
+    "message": "Question traduite en SPARQL.",
+    "explanation": "Aucun assuré ne correspond à la question (sans sinistre). Aucune donnée de l'ontologie ne satisfait ces conditions.",
+    "confidence": 1.0,
+    "ms": 117.31
+  },
+  {
+    "category": "Négation",
+    "question": "Quels sinistres n'ont pas d'indemnisation ?",
+    "ok": true,
+    "status": "ok",
+    "wantStatus": "ok",
+    "intent": "SEARCH_CLAIM",
+    "modifiers": [],
+    "wantIntent": "SEARCH_CLAIM",
+    "entities": [],
+    "constraints": [
+      "sans indemnisation"
+    ],
+    "negations": [
+      [
+        "n' … pas",
+        "n' ont pas d' indemnisation",
+        "ok"
+      ]
+    ],
+    "sparql": "PREFIX actors: <http://www.semanticweb.org/assurance/actors#>\nPREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\n# Généré par le module NLP (règles + templates) — intention SEARCH_CLAIM\nSELECT DISTINCT ?x ?numero ?date ?lieu ?description ?statut ?typeSinistre\nWHERE {\n  ?x a/rdfs:subClassOf* actors:Sinistre .\n  FILTER NOT EXISTS { ?x actors:provoque ?n1_damage . ?n1_damage actors:donneLieuA ?n1_indemnification . }\n  OPTIONAL { ?x actors:numeroSinistre ?numero }\n  OPTIONAL { ?x actors:dateSinistre ?date }\n  OPTIONAL { ?x actors:lieuSinistre ?lieu }\n  OPTIONAL { ?x actors:descriptionSinistre ?description }\n  OPTIONAL { ?x actors:statutSinistre ?statut }\n  OPTIONAL { ?x a ?typeSinistre . ?typeSinistre rdfs:subClassOf actors:Sinistre }\n}\nORDER BY ?x",
+    "executed": true,
+    "ids": [],
+    "count": null,
+    "expectedIds": [],
+    "message": "Question traduite en SPARQL.",
+    "explanation": "Aucun sinistre ne correspond à la question (sans indemnisation). Aucune donnée de l'ontologie ne satisfait ces conditions.",
+    "confidence": 1.0,
+    "ms": 153.93
+  },
+  {
+    "category": "Négation (refus voulu)",
+    "question": "Quels contrats ne couvrent que le vol ?",
+    "ok": true,
+    "status": "unsupported",
+    "wantStatus": "unsupported",
+    "intent": "SEARCH_CONTRACT",
+    "modifiers": [
+      "FILTER_BY_TYPE"
+    ],
+    "wantIntent": null,
+    "entities": [],
+    "constraints": [
+      "type « vol » (GarantieVol)"
+    ],
+    "negations": [
+      [
+        "ne … que",
+        "ne couvrent que le vol",
+        "unsupported"
+      ]
+    ],
+    "sparql": null,
+    "executed": false,
+    "ids": null,
+    "count": null,
+    "expectedIds": null,
+    "message": "La structure restrictive « ne … que » n'est pas une négation et n'est pas prise en charge (reformulez sans « ne … que »).",
+    "explanation": "La structure restrictive « ne … que » n'est pas une négation et n'est pas prise en charge (reformulez sans « ne … que »).",
+    "confidence": 1.0,
+    "ms": 17.08
+  },
+  {
+    "category": "Négation (refus voulu)",
+    "question": "Quels sinistres n'ont pas une indemnisation supérieure à 3000 euros ?",
+    "ok": true,
+    "status": "unsupported",
+    "wantStatus": "unsupported",
+    "intent": "SEARCH_CLAIM",
+    "modifiers": [
+      "FILTER_BY_AMOUNT"
+    ],
+    "wantIntent": null,
+    "entities": [],
+    "constraints": [
+      "montant d'indemnisation supérieur à 3000"
+    ],
+    "negations": [
+      [
+        "n' … pas",
+        "n' ont pas une indemnisation supérieure à 3000 euros",
+        "unsupported"
+      ]
+    ],
+    "sparql": null,
+    "executed": false,
+    "ids": null,
+    "count": null,
+    "expectedIds": null,
+    "message": "La négation de « montant d'indemnisation supérieur à 3000 » n'est pas prise en charge : reformulez avec le comparateur contraire (ex. « inférieur à » au lieu de « pas supérieur à »).",
+    "explanation": "La négation de « montant d'indemnisation supérieur à 3000 » n'est pas prise en charge : reformulez avec le comparateur contraire (ex. « inférieur à » au lieu de « pas supérieur à »).",
+    "confidence": 1.0,
+    "ms": 17.79
+  },
+  {
+    "category": "Négation (refus voulu)",
+    "question": "Quels contrats ne sont pas ?",
+    "ok": true,
+    "status": "unsupported",
+    "wantStatus": "unsupported",
+    "intent": "SEARCH_CONTRACT",
+    "modifiers": [],
+    "wantIntent": null,
+    "entities": [],
+    "constraints": [],
+    "negations": [
+      [
+        "ne … pas",
+        "ne sont pas",
+        "unsupported"
+      ]
+    ],
+    "sparql": null,
+    "executed": false,
+    "ids": null,
+    "count": null,
+    "expectedIds": null,
+    "message": "Une négation (« ne … pas ») est détectée mais je ne sais pas à quel critère l'appliquer de façon sûre (types, statuts, entités et existence de relations sont pris en charge). Je n'exécute pas de requête qui ignorerait la négation.",
+    "explanation": "Une négation (« ne … pas ») est détectée mais je ne sais pas à quel critère l'appliquer de façon sûre (types, statuts, entités et existence de relations sont pris en charge). Je n'exécute pas de requête qui ignorerait la négation.",
+    "confidence": 0.85,
+    "ms": 15.46
+  },
+  {
+    "category": "Négation (refus voulu)",
+    "question": "sans",
+    "ok": true,
+    "status": "unsupported",
+    "wantStatus": "unsupported",
+    "intent": null,
+    "modifiers": [],
+    "wantIntent": null,
+    "entities": [],
+    "constraints": [],
+    "negations": [
+      [
+        "sans",
+        "sans",
+        "unsupported"
+      ]
+    ],
+    "sparql": null,
+    "executed": false,
+    "ids": null,
+    "count": null,
+    "expectedIds": null,
+    "message": "Une négation (« sans ») est détectée mais je ne sais pas à quel critère l'appliquer de façon sûre (types, statuts, entités et existence de relations sont pris en charge). Je n'exécute pas de requête qui ignorerait la négation.",
+    "explanation": "Une négation (« sans ») est détectée mais je ne sais pas à quel critère l'appliquer de façon sûre (types, statuts, entités et existence de relations sont pris en charge). Je n'exécute pas de requête qui ignorerait la négation.",
+    "confidence": 0.0,
+    "ms": 12.76
+  },
+  {
+    "category": "Entités inconnues",
+    "question": "Quels véhicules sont assurés par Zorglub ?",
+    "ok": true,
+    "status": "entity_not_found",
+    "wantStatus": "entity_not_found",
+    "intent": "SEARCH_VEHICLE",
+    "modifiers": [],
+    "wantIntent": null,
+    "entities": [],
+    "constraints": [],
+    "negations": [],
+    "sparql": null,
+    "executed": false,
+    "ids": null,
+    "count": null,
+    "expectedIds": null,
+    "message": "« Zorglub » ne correspond à aucun individu de l'ontologie. Je n'exécute pas de requête sur une entité introuvable.",
+    "explanation": "« Zorglub » ne correspond à aucun individu de l'ontologie. Je n'exécute pas de requête sur une entité introuvable.",
+    "confidence": 0.36,
+    "ms": 17.61
+  },
+  {
+    "category": "Entités inconnues",
+    "question": "Quel est le sinistre 007 ?",
+    "ok": true,
+    "status": "entity_not_found",
+    "wantStatus": "entity_not_found",
+    "intent": null,
+    "modifiers": [],
+    "wantIntent": null,
+    "entities": [
+      [
+        "sinistre 007",
+        []
+      ]
+    ],
+    "constraints": [],
+    "negations": [],
+    "sparql": null,
+    "executed": false,
+    "ids": null,
+    "count": null,
+    "expectedIds": null,
+    "message": "Aucun individu « sinistre 007 » n'existe dans l'ontologie (Sinistre_007). Je n'exécute pas de requête sur une entité introuvable.",
+    "explanation": "Aucun individu « sinistre 007 » n'existe dans l'ontologie (Sinistre_007). Je n'exécute pas de requête sur une entité introuvable.",
+    "confidence": 0.2,
+    "ms": 15.96
+  },
+  {
+    "category": "Entités inconnues",
+    "question": "Quel est le montant de l'indemnisation du sinistre 99 ?",
+    "ok": true,
+    "status": "entity_not_found",
+    "wantStatus": "entity_not_found",
+    "intent": "SEARCH_INDEMNIFICATION",
+    "modifiers": [],
+    "wantIntent": null,
+    "entities": [
+      [
+        "sinistre 99",
+        []
+      ]
+    ],
+    "constraints": [],
+    "negations": [],
+    "sparql": null,
+    "executed": false,
+    "ids": null,
+    "count": null,
+    "expectedIds": null,
+    "message": "Aucun individu « sinistre 99 » n'existe dans l'ontologie (Sinistre_099). Je n'exécute pas de requête sur une entité introuvable.",
+    "explanation": "Aucun individu « sinistre 99 » n'existe dans l'ontologie (Sinistre_099). Je n'exécute pas de requête sur une entité introuvable.",
+    "confidence": 0.43,
+    "ms": 17.93
+  },
+  {
+    "category": "Entités inconnues",
+    "question": "Quelles voitures Mercedes ont subi un accident ?",
+    "ok": true,
+    "status": "entity_not_found",
+    "wantStatus": "entity_not_found",
+    "intent": "SEARCH_VEHICLE",
+    "modifiers": [
+      "FILTER_BY_TYPE"
+    ],
+    "wantIntent": null,
+    "entities": [],
+    "constraints": [
+      "type « accident de la circulation » (AccidentCirculation)"
+    ],
+    "negations": [],
+    "sparql": null,
+    "executed": false,
+    "ids": null,
+    "count": null,
+    "expectedIds": null,
+    "message": "« Mercedes » ne correspond à aucun individu de l'ontologie. Je n'exécute pas de requête sur une entité introuvable.",
+    "explanation": "« Mercedes » ne correspond à aucun individu de l'ontologie. Je n'exécute pas de requête sur une entité introuvable.",
+    "confidence": 0.45,
+    "ms": 20.96
+  },
+  {
+    "category": "Entités ambiguës",
+    "question": "Quels sinistres concernent Trabelsi ?",
+    "ok": true,
+    "status": "clarification_needed",
+    "wantStatus": "clarification_needed",
+    "intent": "SEARCH_CLAIM",
+    "modifiers": [],
+    "wantIntent": null,
+    "entities": [
+      [
+        "Trabelsi",
+        [
+          "Expert_001",
+          "FatmaTrabelsi"
+        ]
+      ]
+    ],
+    "constraints": [],
+    "negations": [],
+    "sparql": null,
+    "executed": false,
+    "ids": null,
+    "count": null,
+    "expectedIds": null,
+    "message": "« Trabelsi » est ambigu : Karim Trabelsi (Expert_001) ; Fatma Trabelsi (FatmaTrabelsi). Précisez le prénom ou le rôle (assuré, expert...).",
+    "explanation": "« Trabelsi » est ambigu : Karim Trabelsi (Expert_001) ; Fatma Trabelsi (FatmaTrabelsi). Précisez le prénom ou le rôle (assuré, expert...).",
+    "confidence": 0.43,
+    "ms": 16.92
+  },
+  {
+    "category": "Rôle incompatible",
+    "question": "Quels sinistres ont été évalués par l'expert Ahmed ?",
+    "ok": true,
+    "status": "entity_not_found",
+    "wantStatus": "entity_not_found",
+    "intent": "SEARCH_CLAIM",
+    "modifiers": [],
+    "wantIntent": null,
+    "entities": [
+      [
+        "Ahmed",
+        []
+      ]
+    ],
+    "constraints": [
+      "avec expert"
+    ],
+    "negations": [],
+    "sparql": null,
+    "executed": false,
+    "ids": null,
+    "count": null,
+    "expectedIds": null,
+    "message": "Aucun expert nommé « Ahmed » dans l'ontologie. Individus portant ce nom : Ahmed Ben Ali (Assure/Conducteur). Je n'exécute pas de requête avec un rôle incompatible.",
+    "explanation": "Aucun expert nommé « Ahmed » dans l'ontologie. Individus portant ce nom : Ahmed Ben Ali (Assure/Conducteur). Je n'exécute pas de requête avec un rôle incompatible.",
+    "confidence": 0.5,
+    "ms": 18.3
+  },
+  {
+    "category": "Rôle incompatible",
+    "question": "Quels sinistres ont été évalués par Ahmed ?",
+    "ok": true,
+    "status": "entity_not_found",
+    "wantStatus": "entity_not_found",
+    "intent": "SEARCH_CLAIM",
+    "modifiers": [],
+    "wantIntent": null,
+    "entities": [
+      [
+        "Ahmed",
+        []
+      ]
+    ],
+    "constraints": [],
+    "negations": [],
+    "sparql": null,
+    "executed": false,
+    "ids": null,
+    "count": null,
+    "expectedIds": null,
+    "message": "Le verbe « évaluer » attend un expert, mais « Ahmed » désigne : Ahmed Ben Ali (Assure/Conducteur). Je n'exécute pas de requête avec un rôle incompatible.",
+    "explanation": "Le verbe « évaluer » attend un expert, mais « Ahmed » désigne : Ahmed Ben Ali (Assure/Conducteur). Je n'exécute pas de requête avec un rôle incompatible.",
+    "confidence": 0.43,
+    "ms": 15.8
+  },
+  {
+    "category": "Rôle incompatible",
+    "question": "Quels véhicules sont conduits par l'expert Karim ?",
+    "ok": true,
+    "status": "entity_not_found",
+    "wantStatus": "entity_not_found",
+    "intent": "SEARCH_VEHICLE",
+    "modifiers": [],
+    "wantIntent": null,
+    "entities": [
+      [
+        "Karim",
+        []
+      ]
+    ],
+    "constraints": [
+      "avec expert"
+    ],
+    "negations": [],
+    "sparql": null,
+    "executed": false,
+    "ids": null,
+    "count": null,
+    "expectedIds": null,
+    "message": "Le verbe « conduire » attend un conducteur, mais « Karim » désigne : Karim Trabelsi (Expert). Je n'exécute pas de requête avec un rôle incompatible.",
+    "explanation": "Le verbe « conduire » attend un conducteur, mais « Karim » désigne : Karim Trabelsi (Expert). Je n'exécute pas de requête avec un rôle incompatible.",
+    "confidence": 0.5,
+    "ms": 16.96
+  },
+  {
+    "category": "Rôle incompatible",
+    "question": "Quels sinistres ont été déclarés par l'expert Karim ?",
+    "ok": true,
+    "status": "entity_not_found",
+    "wantStatus": "entity_not_found",
+    "intent": "SEARCH_CLAIM",
+    "modifiers": [],
+    "wantIntent": null,
+    "entities": [
+      [
+        "Karim",
+        []
+      ]
+    ],
+    "constraints": [
+      "avec expert"
+    ],
+    "negations": [],
+    "sparql": null,
+    "executed": false,
+    "ids": null,
+    "count": null,
+    "expectedIds": null,
+    "message": "Le verbe « déclarer » attend un assuré ou conducteur, mais « Karim » désigne : Karim Trabelsi (Expert). Je n'exécute pas de requête avec un rôle incompatible.",
+    "explanation": "Le verbe « déclarer » attend un assuré ou conducteur, mais « Karim » désigne : Karim Trabelsi (Expert). Je n'exécute pas de requête avec un rôle incompatible.",
+    "confidence": 0.5,
+    "ms": 17.82
+  },
+  {
+    "category": "Rôle compatible (contrôle)",
+    "question": "Quels véhicules sont conduits par Ahmed ?",
+    "ok": true,
+    "status": "ok",
+    "wantStatus": "ok",
+    "intent": "SEARCH_VEHICLE",
+    "modifiers": [],
+    "wantIntent": "SEARCH_VEHICLE",
+    "entities": [
+      [
+        "Ahmed",
+        [
+          "AhmedBenAli"
+        ]
+      ]
+    ],
+    "constraints": [
+      "conducteur Ahmed Ben Ali"
+    ],
+    "negations": [],
+    "sparql": "PREFIX actors: <http://www.semanticweb.org/assurance/actors#>\nPREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\n# Généré par le module NLP (règles + templates) — intention SEARCH_VEHICLE\nSELECT DISTINCT ?x ?marque ?modele ?immatriculation ?annee ?valeur ?typeVehicule\nWHERE {\n  ?x a/rdfs:subClassOf* actors:Vehicule .\n  ?x actors:estConduitPar ?driver .\n  VALUES ?driver { actors:AhmedBenAli }\n  OPTIONAL { ?x actors:marque ?marque }\n  OPTIONAL { ?x actors:modele ?modele }\n  OPTIONAL { ?x actors:immatriculation ?immatriculation }\n  OPTIONAL { ?x actors:anneeFabrication ?annee }\n  OPTIONAL { ?x actors:valeurVehicule ?valeur }\n  OPTIONAL { ?x a ?typeVehicule . ?typeVehicule rdfs:subClassOf actors:Vehicule }\n}\nORDER BY ?x",
+    "executed": true,
+    "ids": [
+      "Voiture_001"
+    ],
+    "count": null,
+    "expectedIds": [
+      "Voiture_001"
+    ],
+    "message": "Question traduite en SPARQL.",
+    "explanation": "1 véhicule trouvé (conducteur Ahmed Ben Ali) : Peugeot 208 (123TN4567).",
+    "confidence": 1.0,
+    "ms": 113.89
+  },
+  {
+    "category": "Rôle compatible (contrôle)",
+    "question": "Quels sinistres ont été évalués par l'expert Trabelsi ?",
+    "ok": true,
+    "status": "ok",
+    "wantStatus": "ok",
+    "intent": "SEARCH_CLAIM",
+    "modifiers": [],
+    "wantIntent": "SEARCH_CLAIM",
+    "entities": [
+      [
+        "Trabelsi",
+        [
+          "Expert_001"
+        ]
+      ]
+    ],
+    "constraints": [
+      "expert Karim Trabelsi"
+    ],
+    "negations": [],
+    "sparql": "PREFIX actors: <http://www.semanticweb.org/assurance/actors#>\nPREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\n# Généré par le module NLP (règles + templates) — intention SEARCH_CLAIM\nSELECT DISTINCT ?x ?numero ?date ?lieu ?description ?statut ?typeSinistre\nWHERE {\n  ?x a/rdfs:subClassOf* actors:Sinistre .\n  ?x actors:faitObjetDe ?expertise .\n  ?expertise actors:realisePar ?expert .\n  VALUES ?expert { actors:Expert_001 }\n  OPTIONAL { ?x actors:numeroSinistre ?numero }\n  OPTIONAL { ?x actors:dateSinistre ?date }\n  OPTIONAL { ?x actors:lieuSinistre ?lieu }\n  OPTIONAL { ?x actors:descriptionSinistre ?description }\n  OPTIONAL { ?x actors:statutSinistre ?statut }\n  OPTIONAL { ?x a ?typeSinistre . ?typeSinistre rdfs:subClassOf actors:Sinistre }\n}\nORDER BY ?x",
+    "executed": true,
+    "ids": [
+      "Sinistre_001"
+    ],
+    "count": null,
+    "expectedIds": [
+      "Sinistre_001"
+    ],
+    "message": "Question traduite en SPARQL.",
+    "explanation": "1 sinistre trouvé (expert Karim Trabelsi) : S-001 (AccidentCirculation, Tunis).",
+    "confidence": 1.0,
+    "ms": 141.39
+  },
+  {
+    "category": "Vide / hors domaine",
+    "question": "",
+    "ok": true,
+    "status": "empty",
+    "wantStatus": "empty",
+    "intent": null,
+    "modifiers": [],
+    "wantIntent": null,
+    "entities": [],
+    "constraints": [],
+    "negations": [],
+    "sparql": null,
+    "executed": false,
+    "ids": null,
+    "count": null,
+    "expectedIds": null,
+    "message": "Posez une question en français (ex. « Quels véhicules sont assurés par Ahmed ? »).",
+    "explanation": "Posez une question en français (ex. « Quels véhicules sont assurés par Ahmed ? »).",
+    "confidence": null,
+    "ms": 0
+  },
+  {
+    "category": "Vide / hors domaine",
+    "question": "   ",
+    "ok": true,
+    "status": "empty",
+    "wantStatus": "empty",
+    "intent": null,
+    "modifiers": [],
+    "wantIntent": null,
+    "entities": [],
+    "constraints": [],
+    "negations": [],
+    "sparql": null,
+    "executed": false,
+    "ids": null,
+    "count": null,
+    "expectedIds": null,
+    "message": "Posez une question en français (ex. « Quels véhicules sont assurés par Ahmed ? »).",
+    "explanation": "Posez une question en français (ex. « Quels véhicules sont assurés par Ahmed ? »).",
+    "confidence": null,
+    "ms": 0
+  },
+  {
+    "category": "Vide / hors domaine",
+    "question": "?",
+    "ok": true,
+    "status": "clarification_needed",
+    "wantStatus": "clarification_needed",
+    "intent": null,
+    "modifiers": [],
+    "wantIntent": null,
+    "entities": [],
+    "constraints": [],
+    "negations": [],
+    "sparql": null,
+    "executed": false,
+    "ids": null,
+    "count": null,
+    "expectedIds": null,
+    "message": "Je n'ai pas compris ce que vous cherchez (véhicules, assurés, contrats, garanties, sinistres, dommages, expertises, indemnisations...). Pouvez-vous reformuler ?",
+    "explanation": "Je n'ai pas compris ce que vous cherchez (véhicules, assurés, contrats, garanties, sinistres, dommages, expertises, indemnisations...). Pouvez-vous reformuler ?",
+    "confidence": 0.0,
+    "ms": 12.97
+  },
+  {
+    "category": "Vide / hors domaine",
+    "question": "Quel temps fait-il à Paris ?",
+    "ok": true,
+    "status": "clarification_needed",
+    "wantStatus": "clarification_needed",
+    "intent": null,
+    "modifiers": [],
+    "wantIntent": null,
+    "entities": [],
+    "constraints": [],
+    "negations": [],
+    "sparql": null,
+    "executed": false,
+    "ids": null,
+    "count": null,
+    "expectedIds": null,
+    "message": "Je n'ai pas compris ce que vous cherchez (véhicules, assurés, contrats, garanties, sinistres, dommages, expertises, indemnisations...). Termes non reconnus : Paris, temps. Pouvez-vous reformuler ?",
+    "explanation": "Je n'ai pas compris ce que vous cherchez (véhicules, assurés, contrats, garanties, sinistres, dommages, expertises, indemnisations...). Termes non reconnus : Paris, temps. Pouvez-vous reformuler ?",
+    "confidence": 0.0,
+    "ms": 18.6
+  },
+  {
+    "category": "Vide / hors domaine",
+    "question": "Bonjour",
+    "ok": true,
+    "status": "clarification_needed",
+    "wantStatus": "clarification_needed",
+    "intent": null,
+    "modifiers": [],
+    "wantIntent": null,
+    "entities": [],
+    "constraints": [],
+    "negations": [],
+    "sparql": null,
+    "executed": false,
+    "ids": null,
+    "count": null,
+    "expectedIds": null,
+    "message": "Je n'ai pas compris ce que vous cherchez (véhicules, assurés, contrats, garanties, sinistres, dommages, expertises, indemnisations...). Termes non reconnus : Bonjour. Pouvez-vous reformuler ?",
+    "explanation": "Je n'ai pas compris ce que vous cherchez (véhicules, assurés, contrats, garanties, sinistres, dommages, expertises, indemnisations...). Termes non reconnus : Bonjour. Pouvez-vous reformuler ?",
+    "confidence": 0.0,
+    "ms": 14.98
+  },
+  {
+    "category": "Vide / hors domaine",
+    "question": "Raconte-moi une blague",
+    "ok": true,
+    "status": "clarification_needed",
+    "wantStatus": "clarification_needed",
+    "intent": null,
+    "modifiers": [],
+    "wantIntent": null,
+    "entities": [],
+    "constraints": [],
+    "negations": [],
+    "sparql": null,
+    "executed": false,
+    "ids": null,
+    "count": null,
+    "expectedIds": null,
+    "message": "Je n'ai pas compris ce que vous cherchez (véhicules, assurés, contrats, garanties, sinistres, dommages, expertises, indemnisations...). Termes non reconnus : Raconte, blague. Pouvez-vous reformuler ?",
+    "explanation": "Je n'ai pas compris ce que vous cherchez (véhicules, assurés, contrats, garanties, sinistres, dommages, expertises, indemnisations...). Termes non reconnus : Raconte, blague. Pouvez-vous reformuler ?",
+    "confidence": 0.0,
+    "ms": 17.61
+  },
+  {
+    "category": "Vide / hors domaine",
+    "question": "azerty uiop",
+    "ok": true,
+    "status": "clarification_needed",
+    "wantStatus": "clarification_needed",
+    "intent": null,
+    "modifiers": [],
+    "wantIntent": null,
+    "entities": [],
+    "constraints": [],
+    "negations": [],
+    "sparql": null,
+    "executed": false,
+    "ids": null,
+    "count": null,
+    "expectedIds": null,
+    "message": "Je n'ai pas compris ce que vous cherchez (véhicules, assurés, contrats, garanties, sinistres, dommages, expertises, indemnisations...). Termes non reconnus : azerty, uiop. Pouvez-vous reformuler ?",
+    "explanation": "Je n'ai pas compris ce que vous cherchez (véhicules, assurés, contrats, garanties, sinistres, dommages, expertises, indemnisations...). Termes non reconnus : azerty, uiop. Pouvez-vous reformuler ?",
+    "confidence": 0.0,
+    "ms": 15.44
+  },
+  {
+    "category": "Vide / hors domaine",
+    "question": "Mercedes",
+    "ok": true,
+    "status": "clarification_needed",
+    "wantStatus": "clarification_needed",
+    "intent": null,
+    "modifiers": [],
+    "wantIntent": null,
+    "entities": [],
+    "constraints": [],
+    "negations": [],
+    "sparql": null,
+    "executed": false,
+    "ids": null,
+    "count": null,
+    "expectedIds": null,
+    "message": "Je n'ai pas compris ce que vous cherchez (véhicules, assurés, contrats, garanties, sinistres, dommages, expertises, indemnisations...). Termes non reconnus : Mercedes. Pouvez-vous reformuler ?",
+    "explanation": "Je n'ai pas compris ce que vous cherchez (véhicules, assurés, contrats, garanties, sinistres, dommages, expertises, indemnisations...). Termes non reconnus : Mercedes. Pouvez-vous reformuler ?",
+    "confidence": 0.0,
+    "ms": 12.02
+  },
+  {
+    "category": "Structures non supportées / écriture",
+    "question": "Supprime tous les contrats",
+    "ok": true,
+    "status": "unsupported",
+    "wantStatus": "unsupported",
+    "intent": "SEARCH_CONTRACT",
+    "modifiers": [],
+    "wantIntent": null,
+    "entities": [],
+    "constraints": [],
+    "negations": [],
+    "sparql": null,
+    "executed": false,
+    "ids": null,
+    "count": null,
+    "expectedIds": null,
+    "message": "« Supprime » est une demande de modification. La recherche en langage naturel est en lecture seule : utilisez les formulaires de gestion ou SPARQL Update pour modifier les données.",
+    "explanation": "« Supprime » est une demande de modification. La recherche en langage naturel est en lecture seule : utilisez les formulaires de gestion ou SPARQL Update pour modifier les données.",
+    "confidence": 0.65,
+    "ms": 14.09
+  },
+  {
+    "category": "Structures non supportées / écriture",
+    "question": "Efface le sinistre 001",
+    "ok": true,
+    "status": "unsupported",
+    "wantStatus": "unsupported",
+    "intent": "SEARCH_CLAIM",
+    "modifiers": [],
+    "wantIntent": null,
+    "entities": [
+      [
+        "sinistre 001",
+        [
+          "Sinistre_001"
+        ]
+      ]
+    ],
+    "constraints": [
+      "sinistre S-001"
+    ],
+    "negations": [],
+    "sparql": null,
+    "executed": false,
+    "ids": null,
+    "count": null,
+    "expectedIds": null,
+    "message": "« Efface » est une demande de modification. La recherche en langage naturel est en lecture seule : utilisez les formulaires de gestion ou SPARQL Update pour modifier les données.",
+    "explanation": "« Efface » est une demande de modification. La recherche en langage naturel est en lecture seule : utilisez les formulaires de gestion ou SPARQL Update pour modifier les données.",
+    "confidence": 0.87,
+    "ms": 15.99
+  },
+  {
+    "category": "Structures non supportées / écriture",
+    "question": "Ajoute un véhicule Peugeot",
+    "ok": true,
+    "status": "unsupported",
+    "wantStatus": "unsupported",
+    "intent": "SEARCH_VEHICLE",
+    "modifiers": [],
+    "wantIntent": null,
+    "entities": [
+      [
+        "Peugeot",
+        [
+          "Voiture_001"
+        ]
+      ]
+    ],
+    "constraints": [
+      "véhicule Peugeot 208 (123TN4567)"
+    ],
+    "negations": [],
+    "sparql": null,
+    "executed": false,
+    "ids": null,
+    "count": null,
+    "expectedIds": null,
+    "message": "« Ajoute » est une demande de modification. La recherche en langage naturel est en lecture seule : utilisez les formulaires de gestion ou SPARQL Update pour modifier les données.",
+    "explanation": "« Ajoute » est une demande de modification. La recherche en langage naturel est en lecture seule : utilisez les formulaires de gestion ou SPARQL Update pour modifier les données.",
+    "confidence": 0.87,
+    "ms": 14.49
+  },
+  {
+    "category": "Structures non supportées / écriture",
+    "question": "Drop all contracts",
+    "ok": true,
+    "status": "unsupported",
+    "wantStatus": "unsupported",
+    "intent": null,
+    "modifiers": [],
+    "wantIntent": null,
+    "entities": [],
+    "constraints": [],
+    "negations": [],
+    "sparql": null,
+    "executed": false,
+    "ids": null,
+    "count": null,
+    "expectedIds": null,
+    "message": "« Drop » est une demande de modification. La recherche en langage naturel est en lecture seule : utilisez les formulaires de gestion ou SPARQL Update pour modifier les données.",
+    "explanation": "« Drop » est une demande de modification. La recherche en langage naturel est en lecture seule : utilisez les formulaires de gestion ou SPARQL Update pour modifier les données.",
+    "confidence": 0.0,
+    "ms": 19.13
+  },
+  {
+    "category": "Injection",
+    "question": "Quels véhicules sont assurés par Ahmed\" } ; DROP ALL ; SELECT * WHERE { ?s ?p ?o",
+    "ok": true,
+    "status": "unsupported",
+    "wantStatus": "unsupported",
+    "intent": "SEARCH_VEHICLE",
+    "modifiers": [],
+    "wantIntent": null,
+    "entities": [
+      [
+        "Ahmed",
+        [
+          "AhmedBenAli"
+        ]
+      ]
+    ],
+    "constraints": [
+      "assuré Ahmed Ben Ali"
+    ],
+    "negations": [],
+    "sparql": null,
+    "executed": false,
+    "ids": null,
+    "count": null,
+    "expectedIds": null,
+    "message": "« DROP » est une demande de modification. La recherche en langage naturel est en lecture seule : utilisez les formulaires de gestion ou SPARQL Update pour modifier les données.",
+    "explanation": "« DROP » est une demande de modification. La recherche en langage naturel est en lecture seule : utilisez les formulaires de gestion ou SPARQL Update pour modifier les données.",
+    "confidence": 0.37,
+    "ms": 39.93
+  },
+  {
+    "category": "Injection",
+    "question": "Quels sinistres concernent <http://evil.example/x> ?",
+    "ok": true,
+    "status": "ok",
+    "wantStatus": null,
+    "intent": "SEARCH_CLAIM",
+    "modifiers": [],
+    "wantIntent": null,
+    "entities": [],
+    "constraints": [],
+    "negations": [],
+    "sparql": "PREFIX actors: <http://www.semanticweb.org/assurance/actors#>\nPREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>\nPREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\n# Généré par le module NLP (règles + templates) — intention SEARCH_CLAIM\nSELECT DISTINCT ?x ?numero ?date ?lieu ?description ?statut ?typeSinistre\nWHERE {\n  ?x a/rdfs:subClassOf* actors:Sinistre .\n  OPTIONAL { ?x actors:numeroSinistre ?numero }\n  OPTIONAL { ?x actors:dateSinistre ?date }\n  OPTIONAL { ?x actors:lieuSinistre ?lieu }\n  OPTIONAL { ?x actors:descriptionSinistre ?description }\n  OPTIONAL { ?x actors:statutSinistre ?statut }\n  OPTIONAL { ?x a ?typeSinistre . ?typeSinistre rdfs:subClassOf actors:Sinistre }\n}\nORDER BY ?x",
+    "executed": true,
+    "ids": [
+      "Sinistre_001",
+      "Sinistre_002",
+      "Sinistre_003"
+    ],
+    "count": null,
+    "expectedIds": null,
+    "message": "Question traduite en SPARQL.",
+    "explanation": "3 sinistres trouvés : S-001 (AccidentCirculation, Tunis); S-002 (VolVehicule, Sousse); S-003 (IncendieVehicule, Sfax).",
+    "confidence": 0.72,
+    "ms": 116.22
+  }
+]

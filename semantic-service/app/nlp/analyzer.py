@@ -26,9 +26,19 @@ from .lexicon import (
     INTENTS,
     MAX_NGRAM,
     MONTHS,
+    NEG_FIRST,
+    NEG_RESTRICTIVE,
+    NEG_SCOPE_STOP,
+    NEG_SECOND,
+    NEG_STANDALONE,
     TYPE_CONCEPTS,
+    STRICT_VERB_ROLES,
     VERB_EXPECTED_ROLES,
+    VERB_NEGATED_EXISTENCE,
+    VERB_ROLE_LABEL,
     WHO_WORDS,
+    WRITE_KEYWORDS,
+    WRITE_VERBS,
     Concept,
     CONCEPTS_BY_ID,
     normalize,
@@ -61,6 +71,9 @@ ROLE_NODE = {"vehicle": "vehicle", "guarantee": "guarantee", "claim": "claim", "
 CLASS_CONCEPT_ROLE = {"GUARANTEE": "guarantee", "CLAIM": "claim", "CONTRACT": "contract", "DAMAGE": "damage", "VEHICLE": "vehicle"}
 STATUS_NODE = {"Actif": "contract", "Expire": "contract", "Resilie": "contract",
                "Acceptee": "indemnification", "Refusee": "indemnification", "EnCours": "indemnification", "Clos": "claim"}
+NODE_LABELS = {"insured": "assuré", "driver": "conducteur", "victim": "victime", "expert": "expert", "company": "compagnie",
+               "garage": "garage", "vehicle": "véhicule", "contract": "contrat", "claim": "sinistre", "damage": "dommage",
+               "expertise": "expertise", "indemnification": "indemnisation", "guarantee": "garantie"}
 CURRENCY = r"(?:€|euros?|eur\b|dinars?|dt\b|tnd\b)"
 
 COMPARATORS = [
@@ -103,6 +116,8 @@ class Constraint:
     data: dict[str, Any]
     source: str = ""
     description: str = ""
+    negated: bool = False  # portée d'une négation détectée (voir Analyzer._apply_negation)
+    span: tuple[int, int] | None = None  # indices de tokens spaCy (début inclus, fin exclue)
 
 
 @dataclass
@@ -130,6 +145,8 @@ class Analysis:
     unrecognized: list[str] = field(default_factory=list)
     confidence: float = 0.0
     steps: list[dict[str, Any]] = field(default_factory=list)
+    negations: list[dict[str, Any]] = field(default_factory=list)
+    allcaps: bool = False  # question saisie en MAJUSCULES : l'information de casse (noms propres) est perdue
 
 
 def _step(a: Analysis, name: str, t0: float, detail: str) -> float:
@@ -142,6 +159,11 @@ def preprocess(text: str) -> str:
     t = unicodedata.normalize("NFC", text or "")
     t = t.replace("’", "'").replace("`", "'").replace(" ", " ")
     t = re.sub(r"\s+", " ", t).strip()
+    letters = [ch for ch in t if ch.isalpha()]
+    if len(letters) >= 4 and sum(ch.isupper() for ch in letters) / len(letters) > 0.7:
+        # question écrite EN MAJUSCULES : sans cela chaque mot ressemble à un nom propre inconnu (« COUVRENT »)
+        t = t.lower()
+        t = t[:1].upper() + t[1:]
     return t
 
 
@@ -167,6 +189,7 @@ class Analyzer:
         a = Analysis(question=question)
         t = time.perf_counter()
         text = preprocess(question)
+        a.allcaps = text != re.sub(r"\s+", " ", unicodedata.normalize("NFC", question or "").replace("’", "'").replace("`", "'")).strip()             and any(ch.isalpha() for ch in question)
         a.normalized = text
         plain = strip_accents(text.lower())
         if len(plain) != len(text):  # sécurité : alignement caractères
@@ -216,6 +239,9 @@ class Analyzer:
 
         self._resolve_entities(a, doc, entity_mentions, gaz)
         self._build_frame(a, doc)
+        self._detect_write_request(a, doc)
+        self._apply_negation(a, doc)
+        self._add_positive_existence(a)
         self._finalize(a, doc, consumed_tok)
         _step(a, "Intention, focus et contraintes", t, f"intention={a.intent or '—'}")
         return a
@@ -370,6 +396,173 @@ class Analyzer:
                 i += 1
         a.mentions.sort(key=lambda m: m.start)
 
+
+    # ------------------------------------------------------------------ demandes d'écriture
+    @staticmethod
+    def _detect_write_request(a: Analysis, doc) -> None:
+        """Le module NLP est en lecture seule : « Supprime tous les contrats » ne doit pas devenir une liste."""
+        for tk in doc:
+            n = strip_accents(tk.lower_)
+            part = "Part" in tk.morph.get("VerbForm")
+            if n in WRITE_KEYWORDS or (n in WRITE_VERBS and not part):
+                a.issues.append({
+                    "code": "write_request",
+                    "message": (f"« {tk.text} » est une demande de modification. La recherche en langage naturel est en lecture seule : "
+                                "utilisez les formulaires de gestion ou SPARQL Update pour modifier les données."),
+                    "text": tk.text,
+                })
+                return
+
+    # ------------------------------------------------------------------ négation
+    @staticmethod
+    def _char_to_tokens(doc, span: tuple[int, int]) -> tuple[int, int]:
+        s, e = span
+        idx = [t.i for t in doc if t.idx < e and t.idx + len(t) > s]
+        return (idx[0], idx[-1] + 1) if idx else (0, 0)
+
+    @staticmethod
+    def _find_negations(a: Analysis, doc) -> list[dict[str, Any]]:
+        """Repère les marqueurs de négation (ne…pas/jamais/plus/aucun, sans, pas de, aucun, non, sauf, hors) et leur portée.
+
+        Portée = du marqueur jusqu'à la ponctuation ou une conjonction d'opposition (mais, alors…). « et/ou/ni » prolongent la portée
+        (« ne couvrent pas le vol ni l'incendie » = ni l'un ni l'autre).
+        """
+        in_mention = set()
+        for m in a.mentions:
+            in_mention.update(range(m.start, m.end))
+        toks = list(doc)
+        n = len(toks)
+        events: list[dict[str, Any]] = []
+        used: set[int] = set()
+        for i, tk in enumerate(toks):
+            low = strip_accents(tk.lower_)
+            if i in used or i in in_mention:
+                continue
+            if tk.lower_ in NEG_FIRST or low in NEG_FIRST:
+                second = None
+                for j in range(i + 1, min(n, i + 7)):
+                    lj = strip_accents(toks[j].lower_)
+                    if lj in NEG_RESTRICTIVE:
+                        second = ("restrictive", j)
+                        break
+                    if lj in NEG_SECOND:
+                        second = ("ne_" + lj, j)
+                        break
+                if second:
+                    events.append({"kind": second[0], "cues": [i, second[1]], "start": i})
+                    used.update({i, second[1]})
+                else:
+                    events.append({"kind": "ne_alone", "cues": [i], "start": i})
+                    used.add(i)
+            elif low in NEG_STANDALONE and not (low == "non" and i + 1 < n and toks[i + 1].pos_ == "PUNCT"):
+                events.append({"kind": low, "cues": [i], "start": i})
+                used.add(i)
+        events.sort(key=lambda e: e["start"])
+        for k, ev in enumerate(events):
+            end = max(ev["cues"]) + 1
+            limit = events[k + 1]["start"] if k + 1 < len(events) else n
+            scope_end = limit
+            for j in range(end, limit):
+                low = strip_accents(toks[j].lower_)
+                if toks[j].is_punct and toks[j].text in {",", ";", ".", "?", "!", ":"}:
+                    scope_end = j
+                    break
+                if low in NEG_SCOPE_STOP:
+                    scope_end = j
+                    break
+            ev["scope"] = (ev["start"], scope_end)
+        return events
+
+    def _apply_negation(self, a: Analysis, doc) -> None:
+        events = self._find_negations(a, doc)
+        if not events:
+            return
+        f = a.frame
+        toks = list(doc)
+        for ev in events:
+            s0, s1 = ev["scope"]
+            cue_text = " … ".join(toks[c].text for c in ev["cues"])
+            info: dict[str, Any] = {
+                "cue": cue_text, "kind": ev["kind"], "scope": " ".join(t.text for t in toks[s0:s1]),
+                "scopeTokens": [s0, s1], "head": toks[ev["cues"][-1]].head.text,
+                "dep": [toks[c].dep_ for c in ev["cues"]], "negated": [], "status": "ok",
+            }
+            a.negations.append(info)
+            if ev["kind"] == "restrictive":
+                a.issues.append({"code": "unsupported_negation", "message": (
+                    f"La structure restrictive « {cue_text} » n'est pas une négation et n'est pas prise en charge (reformulez sans « ne … que »)."), "text": cue_text})
+                info["status"] = "unsupported"
+                continue
+            negated: list[Constraint] = []
+            blocked = None
+            for c in f.constraints:
+                if c.span is None or not (s0 <= c.span[0] < s1):
+                    continue
+                if c.kind in {"entity", "type", "status"}:
+                    c.negated = True
+                    c.description = ("pas " if c.kind == "status" else "pas de ") + c.description
+                    negated.append(c)
+                    info["negated"].append({"kind": c.kind, "text": c.source})
+                else:
+                    blocked = c
+            if blocked is not None:
+                a.issues.append({"code": "unsupported_negation", "message": (
+                    f"La négation de « {blocked.description} » n'est pas prise en charge : "
+                    "reformulez avec le comparateur contraire (ex. « inférieur à » au lieu de « pas supérieur à »)."), "text": blocked.source})
+                info["status"] = "unsupported"
+                continue
+            nodes_done = {c.node for c in negated}
+            for m in a.mentions:
+                if not (s0 <= m.start < s1) or m.concept.kind != "class":
+                    continue
+                node = FOCUS_NODE.get(m.concept.id)
+                if node is None or node == f.focus or node in nodes_done:
+                    continue
+                ex = Constraint("exists", node, {"label": m.concept.label}, m.text, f"sans {m.concept.label}",
+                                negated=True, span=(m.start, m.end))
+                f.constraints.append(ex)
+                nodes_done.add(node)
+                negated.append(ex)
+                info["negated"].append({"kind": "exists", "text": m.text})
+            if not negated:
+                for m in a.mentions:
+                    if m.concept.kind != "verb" or not (s0 <= m.start < s1):
+                        continue
+                    node = VERB_NEGATED_EXISTENCE.get((m.concept.id, f.focus or ""))
+                    if node and node not in nodes_done:
+                        ex = Constraint("exists", node, {"label": NODE_LABELS[node]}, m.text,
+                                        f"sans {NODE_LABELS[node]} (« {m.text} » nié)", negated=True, span=(m.start, m.end))
+                        f.constraints.append(ex)
+                        nodes_done.add(node)
+                        negated.append(ex)
+                        info["negated"].append({"kind": "exists", "text": m.text})
+            if not negated:
+                a.issues.append({"code": "unsupported_negation", "message": (
+                    f"Une négation (« {cue_text} ») est détectée mais je ne sais pas à quel critère l'appliquer de façon sûre "
+                    "(types, statuts, entités et existence de relations sont pris en charge). Je n'exécute pas de requête qui ignorerait la négation."),
+                    "text": cue_text})
+                info["status"] = "unsupported"
+
+
+    @staticmethod
+    def _add_positive_existence(a: Analysis) -> None:
+        """« Quels assurés ont un sinistre ? » : un concept de classe non-focus, sans autre contrainte sur son noeud
+        et hors de toute portée de négation, devient une contrainte d'existence (EXISTS via le chemin de relations)."""
+        f = a.frame
+        if not f.focus:
+            return
+        scopes = [tuple(n["scopeTokens"]) for n in a.negations]
+        constrained = {c.node for c in f.constraints}
+        for m in a.mentions:
+            if m.concept.kind != "class" or any(s0 <= m.start < s1 for s0, s1 in scopes):
+                continue
+            node = FOCUS_NODE.get(m.concept.id)
+            if node is None or node == f.focus or node in constrained:
+                continue
+            f.constraints.append(Constraint("exists", node, {"label": m.concept.label}, m.text,
+                                            f"avec {m.concept.label}", negated=False, span=(m.start, m.end)))
+            constrained.add(node)
+
     # ------------------------------------------------------------------ entités : rôle, ambiguïté
     def _resolve_entities(self, a: Analysis, doc, mentions: list[EntityMention], gaz: Gazetteer) -> None:
         lemma_norm = {t.i: normalize(t.lemma_) for t in doc}
@@ -387,7 +580,8 @@ class Analyzer:
                 continue
             capitalized = tk.text[:1].isupper()
             norm = normalize(tk.text)
-            named = capitalized and (pos[tk.i] in {"PROPN", "X"} or tk.i in ents_spacy)
+            # en MAJUSCULES la casse n'est plus un indice : on se fie uniquement à l'étiquette spaCy / aux entités nommées
+            named = (capitalized or a.allcaps) and (pos[tk.i] in {"PROPN", "X"} or tk.i in ents_spacy)
             typo_candidate = pos[tk.i] in {"PROPN", "X", "NOUN", "ADJ"} and not tk.is_stop and len(norm) >= 5
             if not named and not typo_candidate:
                 continue
@@ -409,7 +603,7 @@ class Analyzer:
             if em.kind == "place":
                 info.update(resolved=[{"id": None, "label": em.place, "classes": ["Lieu"]}])
                 a.entities.append(info)
-                a.frame.constraints.append(Constraint("place", "claim", {"value": em.place}, em.text, f"lieu « {em.place} »"))
+                a.frame.constraints.append(Constraint("place", "claim", {"value": em.place}, em.text, f"lieu « {em.place} »", span=(em.start, em.end)))
                 continue
             if not em.candidates:
                 a.entities.append(info)
@@ -427,6 +621,22 @@ class Analyzer:
                     verb = m
             expected = set(VERB_EXPECTED_ROLES.get(verb.concept.id, set())) if verb else set()
             cands = list(em.candidates)
+            strict = STRICT_VERB_ROLES.get(verb.concept.id) if verb else None
+            if em.kind == "person" and strict:
+                compatible = bool(cue & strict) if cue else any(c.classes & strict for c in cands)
+                if not compatible:
+                    wanted = " ou ".join(sorted(VERB_ROLE_LABEL[r] for r in strict))
+                    a.issues.append({
+                        "code": "role_mismatch",
+                        "message": (f"Le verbe « {verb.concept.label} » attend un {wanted}, mais « {em.text} » désigne : "
+                                    + ", ".join(f"{c.label} ({'/'.join(sorted(k for k in c.classes if k in {'Assure','Conducteur','Victime','Expert'}))})" for c in cands)
+                                    + "."),
+                        "text": em.text,
+                        "candidates": [{"id": c.id, "label": c.label} for c in cands],
+                    })
+                    info["resolved"] = []
+                    a.entities.append(info)
+                    continue
             chosen = cands
             if em.kind == "person" or em.kind == "org":
                 if cue:
@@ -469,7 +679,7 @@ class Analyzer:
                 continue
             a.frame.constraints.append(Constraint(
                 "entity", node, {"ids": [c.id for c in chosen], "labels": [c.label for c in chosen], "via": verb.concept.id if verb else None},
-                em.text, f"{self._node_label(node)} {', '.join(c.label for c in chosen)}"))
+                em.text, f"{self._node_label(node)} {', '.join(c.label for c in chosen)}", span=(em.start, em.end)))
 
     @staticmethod
     def _node_label(node: str) -> str:
@@ -511,6 +721,12 @@ class Analyzer:
                 focus_concept, type_is_focus = first_class.concept.id, None
         elif first_class:
             focus_concept = first_class.concept.id
+            if who:  # « Qui a déclaré un sinistre ? » : « qui » désigne une personne, pas la classe nommée
+                verb = next((m for m in mentions if m.concept.kind == "verb"), None)
+                whom = {"V_DECLARE": "INSURED", "V_EVALUATE": "EXPERT", "V_REPAIR": "GARAGE", "V_DRIVE": "DRIVER",
+                        "V_OWN": "INSURED", "V_INSURE": "INSURED"}.get(verb.concept.id if verb else "")
+                if whom:
+                    focus_concept = whom
         elif who:
             verb = next((m for m in mentions if m.concept.kind == "verb"), None)
             focus_concept = {"V_EVALUATE": "EXPERT", "V_REPAIR": "GARAGE"}.get(verb.concept.id if verb else "", "INSURED")
@@ -541,7 +757,7 @@ class Analyzer:
             nodes = [(ROLE_NODE[r], cls) for r, cls in variants]
             a.frame.constraints.append(Constraint(
                 "type", nodes[0][0], {"alternatives": [{"node": n, "class": c} for n, c in nodes], "label": m.concept.label},
-                m.text, f"type « {m.concept.label} » ({' ou '.join(c for _, c in nodes)})"))
+                m.text, f"type « {m.concept.label} » ({' ou '.join(c for _, c in nodes)})", span=(m.start, m.end)))
 
         # statuts
         for m in mentions:
@@ -552,7 +768,7 @@ class Analyzer:
                     node = "indemnification"  # statut de l'indemnisation du sinistre
                 if f.focus == "contract" and val == "Clos":
                     continue
-                a.frame.constraints.append(Constraint("status", node, {"value": val}, m.text, f"statut « {m.concept.label} »"))
+                a.frame.constraints.append(Constraint("status", node, {"value": val}, m.text, f"statut « {m.concept.label} »", span=(m.start, m.end)))
 
         # montants et dates
         attr_mentions = [m for m in mentions if m.concept.kind in {"attribute", "class"}]
@@ -560,13 +776,13 @@ class Analyzer:
             if num["type"] == "amount":
                 target = self._amount_target(num, attr_mentions, a, doc, f)
                 a.frame.constraints.append(Constraint("amount", target["node"], {**{k: num[k] for k in ("op", "value") if k in num}, **({"value2": num["value2"]} if "value2" in num else {}), "attr": target["attr"], "label": target["label"]},
-                                                      num["text"], self._amount_text(target["label"], num)))
+                                                      num["text"], self._amount_text(target["label"], num), span=self._char_to_tokens(doc, num["span"])))
             elif num["type"] == "date":
                 node = {"vehicle": "claim", "insured": "claim", "driver": "claim", "victim": "claim", "company": "claim", "garage": "claim",
                         "contract": "contract", "guarantee": "contract", "claim": "claim", "damage": "claim", "expertise": "expertise",
                         "expert": "expertise", "indemnification": "indemnification"}.get(f.focus or "claim", "claim")
                 a.frame.constraints.append(Constraint("date", node, {k: num.get(k) for k in ("op", "year", "month", "day")}, num["text"],
-                                                      self._date_text(num)))
+                                                      self._date_text(num), span=self._char_to_tokens(doc, num["span"])))
 
     @staticmethod
     def _fmt(d: Decimal) -> str:

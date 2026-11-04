@@ -321,6 +321,8 @@ export interface NlpResponse {
   entities?: { text: string; kind: string; source: string; fuzzy: boolean; resolved: { id: string | null; label: string; classes: string[] }[]; cue?: string | null; expectedByVerb?: string | null }[];
   numbers?: Record<string, unknown>[];
   constraints?: { kind: string; node: string; description: string; source: string }[];
+  /** Négations détectées (analyse linguistique explicite : marqueur, portée, critères niés, statut). */
+  negations?: { cue: string; kind: string; scope: string; head: string; dep: string[]; negated: { kind: string; text: string }[]; status: string }[];
   unrecognized?: string[];
   issues?: { code: string; message: string }[];
   sparql: string | null;

@@ -141,6 +141,8 @@ class QueryBuilder:
         self.counter = 0
         self.fragments: list[str] = []
         self.alias_count: dict[str, int] = {}
+        self.neg_prefix = ""  # préfixe des variables à l'intérieur d'un FILTER NOT EXISTS (évite toute corrélation accidentelle)
+        self.neg_count = 0
 
     # --------------------------------------------------------------- validation des valeurs injectées
     def iri(self, local: str) -> str:
@@ -155,6 +157,8 @@ class QueryBuilder:
 
     # --------------------------------------------------------------- variables et chemins
     def _new_var(self, node: str, fresh: bool = False) -> str:
+        if self.neg_prefix:
+            return f"?{self.neg_prefix}{node}"
         if fresh:
             self.alias_count[node] = self.alias_count.get(node, 1) + 1
             return f"?{node}{self.alias_count[node]}"
@@ -184,8 +188,41 @@ class QueryBuilder:
 
     # --------------------------------------------------------------- contraintes
     def apply(self, c) -> None:
+        if getattr(c, "negated", False):
+            self._apply_negated(c)
+        else:
+            self._apply_positive(c)
+
+    def _apply_negated(self, c) -> None:
+        """Négation sûre : le motif de la contrainte est construit seul (focus ?x uniquement lié) puis enveloppé dans
+        FILTER NOT EXISTS { ... } avec des variables privées ; rien n'est inventé ni exécuté si le motif est vide."""
+        saved = (self.patterns, self.bound, self.typed)
+        self.neg_count += 1
+        self.neg_prefix = f"n{self.neg_count}_"
+        self.patterns, self.bound, self.typed = [], {self.focus: "?x"}, set()
+        try:
+            if c.kind == "exists":
+                if c.node == self.focus:
+                    raise Unsupported("Négation d'existence sur le résultat lui-même : non gérée.")
+                self.ensure(c.node)
+                self.fragments.append(f"négation:existence({c.node})")
+            else:
+                self._apply_positive(c)
+                self.fragments[-1] = "négation:" + self.fragments[-1]
+            inner = self.patterns
+        finally:
+            self.patterns, self.bound, self.typed = saved
+            self.neg_prefix = ""
+        if not inner:
+            raise Unsupported("La négation ne correspond à aucun motif SPARQL sûr.")
+        self.patterns.append("FILTER NOT EXISTS { " + " ".join(inner) + " }")
+
+    def _apply_positive(self, c) -> None:
         kind = c.kind
-        if kind == "entity":
+        if kind == "exists":
+            self.ensure(c.node)  # le chemin de relations impose l'existence ; Unsupported s'il n'existe aucune relation
+            self.fragments.append(f"existence:{c.node}")
+        elif kind == "entity":
             var = self.ensure(c.node)
             values = " ".join(self.iri(i) for i in c.data["ids"])
             self.patterns.append(f"VALUES {var} {{ {values} }}")

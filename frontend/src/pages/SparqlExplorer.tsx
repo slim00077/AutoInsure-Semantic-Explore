@@ -46,7 +46,7 @@ export default function SparqlExplorer() {
   const taRef = useRef<HTMLTextAreaElement>(null);
 
   const run = async (confirmed = false) => {
-    if (!query.trim()) return;
+    if (!query.trim()) { setResult(null); setUpdateRes(null); setError({ message: "La requête est vide : saisissez une requête SPARQL avant d'exécuter.", code: "EMPTY" }); return; }
     const update = isUpdate(query);
     if (update && !confirmed) return setConfirm(true);
     setConfirm(false); setRunning(true); setError(null); setResult(null); setUpdateRes(null); setFilter("");

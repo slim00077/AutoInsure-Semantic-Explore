@@ -46,6 +46,36 @@ describe("SPARQL query / update", () => {
     }
   });
 
+  it("interdit FROM / USING / WITH / GRAPH : aucun accès fichier ni réseau, un seul graphe (403)", async () => {
+    const queries = [
+      "SELECT * FROM <file:///etc/passwd> WHERE { ?s ?p ?o }",
+      "SELECT * FROM <http://127.0.0.1:9/x> WHERE { ?s ?p ?o }",
+      "SELECT * WHERE { GRAPH <urn:x> { ?s ?p ?o } }",
+    ];
+    for (const query of queries) expect((await api.post("/api/sparql/query").send({ query })).status).toBe(403);
+    const updates = [
+      "INSERT { ?s ?p ?o } USING <file:///etc/passwd> WHERE { ?s ?p ?o }",
+      "WITH <urn:g> INSERT { actors:Z a actors:Assure } WHERE { }",
+      "INSERT DATA { GRAPH <urn:g> { actors:Z a actors:Assure } }",
+    ];
+    const before = (await stats()).ontology.triples;
+    for (const update of updates) expect((await api.post("/api/sparql/update").send({ update })).status).toBe(403);
+    expect((await stats()).ontology.triples).toBe(before);
+  });
+
+  it("refuse l'effacement massif (DELETE WHERE { ?s ?p ?o }) et laisse le graphe intact (403)", async () => {
+    const before = (await stats()).ontology.triples;
+    const r = await api.post("/api/sparql/update").send({ update: "DELETE WHERE { ?s ?p ?o }" });
+    expect(r.status).toBe(403);
+    expect(r.body.error.message).toMatch(/supprimerait/);
+    expect((await stats()).ontology.triples).toBe(before);
+  });
+
+  it("une erreur d'évaluation SPARQL renvoie 400/403 et jamais 500", async () => {
+    const r = await api.post("/api/sparql/query").send({ query: "SELECT * WHERE { GRAPH ?g { ?s ?p ?o } }" });
+    expect([400, 403]).toContain(r.status);
+  });
+
   it("valide le corps de la requête", async () => {
     expect((await api.post("/api/sparql/query").send({})).status).toBe(422);
     expect((await api.post("/api/sparql/query").send({ query: "" })).status).toBe(422);

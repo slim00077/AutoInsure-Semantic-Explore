@@ -20,12 +20,12 @@ Question → 1 Prétraitement → 2 spaCy → 3 Entités (gazetteer + référenc
 
 Chaque étape est affichée dans la page *Recherche NLP* avec son temps d'exécution.
 
-1. **Prétraitement** (`analyzer.preprocess`) : normalisation Unicode, apostrophes, espaces.
+1. **Prétraitement** (`analyzer.preprocess`) : normalisation Unicode, apostrophes, espaces ; une question écrite **en majuscules** (> 70 % de lettres capitales) est passée en minuscules (sinon chaque mot ressemble à un nom propre inconnu) et l'analyse se fie alors à l'étiquette spaCy plutôt qu'à la casse.
 2. **spaCy** : tokens, lemmes, POS, dépendances, NER. Le POS lève des ambiguïtés : « assurés » **VERB** (participe, relation *assurer*) ≠ « assurés » **NOUN** (concept *Assuré*).
 3. **Entités liées aux individus** (`gazetteer.py`) : le gazetteer est reconstruit à partir du graphe RDF (invalidé à chaque modification) : prénom, nom, nom complet, marque, marque + modèle, immatriculation, raison sociale, lieux. Références codées par regex : « sinistre 001 », « contrat C-003 », « S-002 ». Correspondance approchée NLTK pour les mots ≥ 5 lettres.
 4. **Nombres** : montants (`3000`, `3 000 €`, `3.000`), comparateurs (« supérieur à », « plus de », « dépasse », « au moins », « inférieur à », « moins de », « au plus », « égal à », « entre X et Y », comparateur postposé « 3000 euros au plus »), dates (année, mois + année, « avant/après/depuis 2026 », « en octobre », AAAA-MM-JJ, JJ/MM/AAAA).
 5. **Concepts et synonymes** (`lexicon.py`) : correspondance du plus long n-gramme sur formes ou lemmes normalisés (sans accents, singulier). Les concepts « classe » (véhicule, assuré, contrat, garantie, sinistre, dommage, expertise, indemnisation, compagnie, garage…), « type » (sous-classes OWL), « statut », « attribut » et « verbe » sont reliés à l'ontologie.
-6. **Intention et frame** (`analyzer._build_frame`).
+6. **Intention et frame** (`analyzer._build_frame`), puis **demandes d'écriture** (`_detect_write_request`), **négation** (`_apply_negation`) et **existence positive** (`_add_positive_existence`).
 7. **Template SPARQL** (`templates.py`).
 8. **Validation** : `prepareQuery` (RDFLib) ; refus si invalide.
 9. **Exécution** par le store ; `SERVICE` interdit.
@@ -73,6 +73,25 @@ Liste complète : onglet « Dictionnaire & intentions » de la page Recherche NL
 - **Montant** : rattaché au concept le plus proche à gauche du comparateur (indemnisation → `montantIndemnisation`, dommage → `coutEstime`, prime, valeur du véhicule, plafond, franchise) sinon valeur par défaut selon le focus.
 - **Jointures** : déduites d'un graphe de relations de l'ontologie (`templates.EDGES`, ex. `Assure -possede-> Contrat -couvre-> Vehicule`) par plus court chemin pondéré ; les personnes/organisations ne sont jamais traversées (évite des raccourcis sémantiquement faux). Les variables intermédiaires sont partagées entre contraintes (« véhicules ayant subi un **accident en 2026** » exige le même sinistre).
 
+## Négation (analyse linguistique explicite)
+
+La négation n'est **jamais ignorée** : elle est détectée, sa portée est calculée, puis traduite en `FILTER NOT EXISTS` ; sinon la question est refusée.
+
+1. **Marqueurs** (`lexicon.NEG_*`) : discontinus `ne … pas / jamais / plus / aucun(e) / guère / point` (la particule `ne` / `n'` + un second terme dans les 6 tokens) ; isolés `sans`, `pas`, `aucun(e)`, `jamais`, `non`, `sauf`, `hors` (« pas de », « mais pas »). Les tokens déjà reconnus comme concept (ex. « non réglé ») ne sont pas des marqueurs ; « plus de 3000 » reste un comparateur.
+2. **Portée** : du marqueur (la particule `ne` incluse, donc le verbe nié est dans la portée) jusqu'à la ponctuation ou à une conjonction d'opposition (`mais`, `alors`, `puis`…). `et / ou / ni` **prolongent** la portée : « ne couvrent pas le vol et l'incendie » = ni l'un ni l'autre. La réponse expose le marqueur, la portée, le gouverneur spaCy (`head`) et les dépendances (`dep`).
+3. **Ce qui est nié** (contraintes dont le jeton est dans la portée) : **type** (« pas de garantie vol »), **statut** (« pas actif »), **entité** (« pas assurés par Ahmed »), **existence d'une relation** (« n'ont pas de sinistre », « sans indemnisation », verbe nié : « ne sont pas indemnisés » → pas d'indemnisation).
+4. **Gabarit sûr** : la contrainte est construite seule (seul `?x` lié) avec des variables **privées** `?n1_…`, puis enveloppée dans `FILTER NOT EXISTS { … }` — aucune corrélation accidentelle avec les contraintes affirmées : « couvrent le vol **mais pas** l'incendie » ⇒ `?x contient ?guarantee (vol)` ET `NOT EXISTS { ?x contient ?n1_guarantee (incendie) }`.
+5. **Refus explicites (statut `unsupported`, rien n'est exécuté)** : négation d'un **montant ou d'une date** (« pas supérieur à 3000 » — reformuler « inférieur à »), structure restrictive « **ne … que** », négation dont la portée ne contient aucun critère reconnu (« Quels contrats ne sont pas ? »).
+
+Sémantique : négation **par l'échec** (monde fermé du graphe RDF), pas la négation classique d'OWL. Question « Quels contrats ne couvrent pas le vol ? » → complémentaire exact de « Quels contrats couvrent le vol ? » (testé).
+
+## Rôles incompatibles et demandes d'écriture
+
+- **Rôle strict** (`lexicon.STRICT_VERB_ROLES`) : *évaluer* attend un Expert, *conduire* un Conducteur, *déclarer* un Assuré/Conducteur. Une personne d'un autre rôle (« évalués par **Ahmed** » alors qu'Ahmed est assuré ; « conduits par l'**expert** Karim ») produit `entity_not_found` avec « rôle incompatible » — **aucune requête**.
+- **Écriture** (`lexicon.WRITE_VERBS` / `WRITE_KEYWORDS`) : « Supprime / Efface / Ajoute / Crée / Modifie… » (hors participes passés comme « refusées ») et mots-clés `DROP DELETE INSERT UPDATE CLEAR TRUNCATE ALTER` → `unsupported`, « la recherche en langage naturel est en lecture seule ».
+- « **Qui** a déclaré un sinistre ? » → liste de **personnes** (`SEARCH_INSURED`) : « qui » l'emporte sur la classe nommée (`sinistre`).
+- **Existence affirmative** : un concept de classe non-focus sans autre contrainte (« assurés qui ont **un sinistre** », « véhicules réparés par **un garage** ») devient une contrainte d'existence (le chemin de relations impose le lien).
+
 ## Templates SPARQL
 
 Un gabarit de base par focus (colonnes `OPTIONAL` adaptées : véhicule → marque, modèle, immatriculation, année, valeur…), plus des fragments : `entité`, `type`, `statut`, `filtre montant`, `filtre date`, `filtre lieu`. Identifiant de template renvoyé : ex. `SEARCH_CONTRACT_LIST`, fragments `base:contract · type:GarantieVol`.
@@ -103,16 +122,16 @@ ORDER BY ?x
 |---|---|---|
 | `clarification_needed` | pas de focus, confiance < 50 %, entité ambiguë | message + suggestions, **pas d'exécution** |
 | `entity_not_found` | nom inconnu, rôle incompatible (« expert Ahmed »), référence inexistante (« sinistre 007 ») | message explicite, **pas d'exécution** |
-| `unsupported` | compris mais non traduisible (aucune relation OWL) | message |
+| `unsupported` | compris mais non traduisible (aucune relation OWL), **négation non sûre**, **demande d'écriture** | message, **pas d'exécution** |
 | `ok` | requête valide exécutée | résultats + explication |
 
 ## Limites
 
-Français uniquement ; pas de négation (« sans sinistre »), de disjonctions arbitraires, de superlatifs ni de questions multi-étapes ; pas d'agrégats autres que le comptage ; vocabulaire limité au dictionnaire (extensible dans `lexicon.py`) ; « accident » = `AccidentCirculation` ; la correspondance approchée ne s'applique qu'aux noms d'individus ; montants sans conversion de devise ; la qualité dépend du modèle spaCy `md` (erreurs de POS possibles sur des tournures rares).
+Français uniquement ; négation limitée aux types/statuts/entités/existences (voir ci-dessus) ; pas de disjonctions arbitraires, de superlatifs ni de questions multi-étapes ; pas d'agrégats autres que le comptage ; vocabulaire limité au dictionnaire (extensible dans `lexicon.py`) ; « accident » = `AccidentCirculation` ; la correspondance approchée ne s'applique qu'aux noms d'individus ; montants sans conversion de devise ; la qualité dépend du modèle spaCy `md` (erreurs de POS possibles sur des tournures rares).
 
 ## Étendre le module
 
 1. Ajouter des termes dans `lexicon.py` (`CLASS_CONCEPTS`, `TYPE_CONCEPTS`, …).
 2. Nouvelle relation : ajouter une arête dans `templates.EDGES`.
 3. Nouvelle colonne : `templates.COLUMNS`.
-4. Ajouter un cas dans `tests/test_nlp.py::CASES` (question, intention, entités, résultats attendus).
+4. Ajouter un cas dans `tests/test_nlp.py::CASES` (question, intention, entités, résultats attendus) et dans `tools/nlp_validation_report.py::CASES` (puis `npm run report:nlp` régénère [NLP_VALIDATION_REPORT.md](NLP_VALIDATION_REPORT.md) avec vérité terrain SPARQL).

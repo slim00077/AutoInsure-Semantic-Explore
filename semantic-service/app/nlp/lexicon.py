@@ -156,6 +156,14 @@ VERB_EXPECTED_ROLES = {
     "V_INDEMNIFY": {"CompagnieAssurance", "Assure", "Victime"},
 }
 
+# verbes dont le sujet/agent a un rôle impératif : une personne d'un autre rôle est refusée (pas de requête exécutée)
+STRICT_VERB_ROLES = {
+    "V_EVALUATE": {"Expert"},
+    "V_DRIVE": {"Conducteur"},
+    "V_DECLARE": {"Assure", "Conducteur"},
+}
+VERB_ROLE_LABEL = {"Expert": "expert", "Conducteur": "conducteur", "Assure": "assuré"}
+
 # concept "classe" explicite devant une entité (« l'expert Ahmed ») -> classes OWL de la personne
 CUE_ROLES = {
     "EXPERT": {"Expert"},
@@ -226,3 +234,34 @@ def lexicon_summary() -> list[dict]:
             }
         )
     return out
+
+
+# ---------------------------------------------------------------------------- négation (analyse linguistique explicite)
+# Particule initiale du « ne ... X » et seconds termes ; marqueurs prépositionnels ; limites de portée.
+NEG_FIRST = {"ne", "n'", "n’"}
+NEG_SECOND = {"pas", "jamais", "plus", "aucun", "aucune", "guere", "point", "nullement"}
+NEG_STANDALONE = {"sans", "pas", "jamais", "aucun", "aucune", "sauf", "hors", "excepte", "non"}
+NEG_SCOPE_STOP = {"mais", "alors", "tandis", "puis", "cependant", "toutefois"}
+# « ne ... que » = restriction (pas une négation) : refusé plutôt que mal interprété
+NEG_RESTRICTIVE = {"que", "qu'", "qu’"}
+
+# Verbes niés qui équivalent à « n'a pas de X » : (concept verbe, noeud focus) -> noeud dont l'existence est niée
+VERB_NEGATED_EXISTENCE = {
+    ("V_INDEMNIFY", "claim"): "indemnification",
+    ("V_INDEMNIFY", "damage"): "indemnification",
+    ("V_EVALUATE", "claim"): "expertise",
+    ("V_EVALUATE", "damage"): "expertise",
+    ("V_INSURE", "vehicle"): "contract",
+    ("V_DECLARE", "insured"): "claim",
+    ("V_OWN", "insured"): "contract",
+    ("V_COVER", "contract"): "guarantee",
+}
+
+# Demandes d'écriture / mots-clés SQL-SPARQL : le NLP est en lecture seule, on refuse explicitement.
+WRITE_VERBS = {
+    "supprime", "supprimer", "supprimez", "efface", "effacer", "effacez", "detruis", "detruire", "detruisez",
+    "modifie", "modifier", "modifiez", "ajoute", "ajouter", "ajoutez", "cree", "creer", "creez", "insere", "inserer",
+    "inserez", "vide", "vider", "videz", "retire", "retirer", "retirez", "mets", "mettre", "mettez", "change",
+    "changer", "changez", "remplace", "remplacer", "renomme", "renommer", "enleve", "enlever", "resilie", "resilier",
+}
+WRITE_KEYWORDS = {"drop", "delete", "insert", "truncate", "alter", "update", "clear"}

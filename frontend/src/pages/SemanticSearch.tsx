@@ -186,6 +186,17 @@ export default function SemanticSearch() {
                     <h4 className="mb-2 text-xs font-semibold uppercase tracking-wide text-muted">Concepts reconnus (synonymes → OWL)</h4>
                     {res.concepts?.length ? <ul className="space-y-1.5">{res.concepts.map((c, i) => <li key={i} className="flex flex-wrap items-center gap-1.5 text-sm"><Badge tone="gray">{c.matched}</Badge><ArrowRight className="h-3 w-3 text-muted" /><Badge>{c.label}</Badge><span className="text-xs text-muted">{c.kind}{c.owl ? ` · ${c.owl}` : ""} · via {c.via}</span></li>)}</ul> : <p className="text-sm text-muted">Aucun concept.</p>}
                     {res.constraints && res.constraints.length > 0 && <><h4 className="mb-2 mt-4 text-xs font-semibold uppercase tracking-wide text-muted">Contraintes extraites</h4><ul className="space-y-1">{res.constraints.map((c, i) => <li key={i} className="text-sm"><Badge tone="amber">{c.kind}</Badge> {c.description}</li>)}</ul></>}
+                    {res.negations && res.negations.length > 0 && (
+                      <div className="mt-4" data-testid="negation-analysis">
+                        <h4 className="mb-2 text-xs font-semibold uppercase tracking-wide text-muted">Négation détectée (portée → SPARQL FILTER NOT EXISTS)</h4>
+                        <ul className="space-y-1.5">{res.negations.map((n, i) => (
+                          <li key={i} className="rounded-lg border border-line p-2 text-sm">
+                            <Badge tone={n.status === "ok" ? "amber" : "red"}>{n.cue}</Badge> <span className="text-xs text-muted">portée : « {n.scope} » · gouverneur « {n.head} » · dépendances {n.dep.join("/")}</span>
+                            <p className="text-xs">{n.negated.length ? <>critère(s) nié(s) : {n.negated.map((x) => `${x.kind} « ${x.text} »`).join(", ")}</> : <span className="text-red-600">portée non résolue : aucune requête exécutée</span>}</p>
+                          </li>
+                        ))}</ul>
+                      </div>
+                    )}
                     {res.unrecognized && res.unrecognized.length > 0 && <p className="mt-3 text-xs text-muted">Termes non exploités : {res.unrecognized.join(", ")}</p>}
                   </div>
                 </div>

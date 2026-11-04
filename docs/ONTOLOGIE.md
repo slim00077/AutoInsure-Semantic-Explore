@@ -10,7 +10,7 @@ Documents lus : XML, PDF « Web Semantics Project » (17 pages), DOCX de prépar
 | Triplets (fichier original) | 819 (846 avec extensions + inverses matérialisées) |
 | Classes nommées | 45 |
 | ObjectProperties | 29 |
-| DataProperties | 40 |
+| DataProperties | 38 (**40** avec les 2 extensions) |
 | Individus nommés | 56 |
 | Restrictions (cardinalité / existentielles) | 14 |
 | Groupes `AllDisjointClasses` | 8 |
@@ -57,7 +57,7 @@ possede (Assure→Contrat) · propose/estProposePar (Compagnie↔Contrat, estPro
 | Disjonctions | idem | OK |
 | Identifiants uniques (immatriculation, n° contrat/sinistre/permis) | idem | OK |
 | Inverses matérialisées | idem | OK (après matérialisation) |
-| **Raisonneur HermiT** | Protégé | **Non exécuté** : Java est absent de la machine de développement. À faire dans Protégé : ouvrir l'export RDF/XML → *Reasoner → HermiT → Start reasoner* |
+| **Raisonneur HermiT 1.4.x** (OWLAPI 5.1.9) | `tools/hermit-validator` | ✔ **Exécuté** : ontologie **cohérente**, 0 classe insatisfiable, `ContratActif` = Contrat_001..003, `SinistreExpertise` = Sinistre_001 et _003 ; 49 vérifications → [HERMIT_VALIDATION.md](HERMIT_VALIDATION.md) |
 
 La validation RDFLib est volontairement nommée « structurelle » : elle ne remplace pas un raisonneur OWL (pas d'inférence de classes, pas de détection d'inconsistance logique subtile).
 
@@ -78,9 +78,9 @@ La validation RDFLib est volontairement nommée « structurelle » : elle ne rem
 
 Le fichier original reste ouvrable tel quel. L'ontologie fusionnée (original + extensions + données saisies dans l'application) s'exporte via **Ontology Explorer → Export RDF/XML** ou `GET /api/ontology/export?format=xml`. Les extensions sont aussi disponibles seules dans `ontology/assurance_auto_extensions.ttl` (à importer dans Protégé via *File → Open*, ou fusionner).
 
-## Préparation HermiT (étudiant 1)
+## HermiT dans Protégé (étudiant 1 — optionnel, déjà validé par l'utilitaire Java)
 
-1. Installer Java 17+ (ou utiliser le Protégé embarquant sa JRE).
+1. Installer Protégé 5.6 (JRE embarquée) — ou utiliser Java 17+ (déjà installé : Temurin 21).
 2. Ouvrir l'export RDF/XML dans Protégé.
 3. *Reasoner → HermiT 1.4 → Start reasoner* ; vérifier l'absence d'inconsistance, puis *Inferred* : `Contrat_001`, `Contrat_002` et `Contrat_003` doivent être inférés `ContratActif`, `Sinistre_001` et `Sinistre_003` `SinistreExpertise`.
 4. Noter les résultats dans le rapport (capture d'écran).
